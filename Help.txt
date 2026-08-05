@@ -1,0 +1,13 @@
+| 文件夹                     | 存什么     | 举例                               
+| ---------------       - | ----          | -------------------------------- 
+| 00_Project             | 项目说明 | README、更新记录                      
+| 01_Product            | 产品资料 | 1717、1417、无线、有线探测器               
+| 02_Component     | 硬件组成 | TFT、Gate Driver、ASIC、电池、Wi-Fi 模块 
+| 03_Failure              | 故障知识 | 无法连接、曝光失败、黑屏、花屏                  
+| 04_DecisionTree  | 排查流程 | 网络故障树、图像故障树                      
+| 05_SOP                  | 标准流程 | 安装 SOP、校准 SOP、维修 SOP             
+| 06_Case                 | 真实案例 | 医院现场维修记录                         
+| 07_ImageArtifact | 图像异常 | Banding、Dead Pixel、Ghost、Lag     
+| 08_ErrorCode       | 错误码     | Error 101、Error 205 等            
+| 09_Template        | 模板         | 故障报告、客户回复、维修记录                   
+| 10_Glossary          | 术语         | DQE、MTF、Offset、Gain 等            

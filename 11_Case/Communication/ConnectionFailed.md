@@ -499,3 +499,445 @@ After correcting the Jumbo Frame configuration:
 Communication failures are not always caused by detector hardware.
 
 When the detector can be connected but image acquisition fails, network adapter configuration (including Jumbo Frame) should be verified before replacing hardware.
+## Case 02 – Incorrect Mode.ini Configuration
+
+### Product
+
+Pluto Series
+
+### Customer
+
+OEM Customer
+
+### Symptom
+
+- Detector can be discovered normally.
+- Detector connection is successful.
+- Image acquisition fails after starting.
+- Some acquisition modes cannot output images.
+- The problem appears after replacing the SDK or modifying the configuration.
+
+### Investigation
+
+The following items were checked:
+
+- Detector communication: Normal
+- Network status: Normal
+- Firmware version: Compatible
+- License status: Valid
+
+No hardware abnormalities were found.
+
+Comparison between the customer's configuration file and the released configuration showed that several Mode.ini parameters were inconsistent with the detector configuration.
+
+### Root Cause
+
+The Mode.ini configuration did not match the detector operating mode, resulting in acquisition initialization failure.
+
+The detector hardware and firmware were functioning normally.
+
+### Corrective Action
+
+1. Obtain the official Mode.ini file corresponding to the detector model.
+2. Compare the customer configuration with the official release.
+3. Restore the required parameters.
+4. Restart the SDK or application.
+5. Perform image acquisition verification.
+
+### Verification
+
+After replacing the correct Mode.ini:
+
+- Detector connected normally.
+- Image acquisition started successfully.
+- All configured acquisition modes operated correctly.
+
+### Lessons Learned
+
+Mode.ini is a critical runtime configuration file.
+
+When communication is normal but acquisition fails, configuration consistency should be verified before suspecting detector hardware or firmware.
+
+# 16. Field Experience
+
+## Experience 01 – Incorrect Jumbo Frame Configuration
+
+### Source
+
+FAE Pre-sales Weekly Report
+
+### Product
+
+Mercu1616TE
+
+### Symptom
+
+- Detector could be discovered successfully.
+- SDK connected normally.
+- Image acquisition could not be started.
+- Acquisition timed out after exposure.
+
+### Investigation
+
+Detector hardware was verified to be operating normally.
+
+The following items were checked:
+
+- Detector communication
+- IP configuration
+- Firmware version
+- SDK version
+
+No abnormalities were found.
+
+The Ethernet adapter configuration was then inspected.
+
+### Root Cause
+
+The Jumbo Frame configuration of the network adapter did not match the detector communication requirements.
+
+This prevented normal transmission of image data.
+
+### Solution
+
+- Open the Ethernet adapter properties.
+- Check the Jumbo Frame parameter.
+- Configure the value according to the detector communication specification.
+- Restart the network adapter if necessary.
+- Verify image acquisition again.
+
+### Result
+
+Image acquisition returned to normal.
+
+No detector repair was required.
+
+---
+
+## Experience 02 – Incorrect Mode.ini Configuration
+
+### Source
+
+FAE Pre-sales Weekly Report
+
+### Product
+
+Pluto Series
+
+### Symptom
+
+- Detector connected successfully.
+- Image acquisition initialization failed.
+- Some acquisition modes could not output images.
+
+### Investigation
+
+Hardware communication was normal.
+
+Comparison with the official release package showed that the customer's Mode.ini configuration differed from the released version.
+
+### Root Cause
+
+Mode.ini parameters did not match the detector operating mode.
+
+The detector hardware was functioning normally.
+
+### Solution
+
+- Replace Mode.ini with the official release version.
+- Restart the SDK.
+- Verify acquisition in all operating modes.
+
+### Result
+
+All acquisition modes resumed normal operation.
+
+---
+
+## Experience 03 – Communication Failure Classification
+
+### Summary
+
+Based on accumulated field cases, communication failures should not be assumed to be detector failures.
+
+Typical classification:
+
+| Category | Examples |
+|----------|----------|
+| Detector Hardware | Hardware damage |
+| Detector Firmware | Firmware abnormal |
+| Detector Configuration | Parameter configuration |
+| Network Configuration | Jumbo Frame / IP / MTU |
+| Operating System | Driver / Firewall |
+| Third-party Equipment | Switch / Router / Cable |
+
+### Recommendation
+
+When detector discovery is successful but image acquisition fails:
+
+1. Verify SDK configuration.
+2. Verify Mode.ini.
+3. Verify Jumbo Frame.
+4. Verify IP configuration.
+5. Verify Windows network settings.
+6. Verify detector firmware.
+
+Detector replacement should be considered only after the above checks have been completed.
+
+---
+
+## Experience 04 – SDK DLL Load Failure
+
+### Source
+
+FAE Pre-sales Weekly Report
+
+### Product
+
+Pluto Series
+
+### Symptom
+
+- SDK application failed to start correctly.
+- Detector could not be initialized.
+- Image acquisition function was unavailable.
+- Error occurred immediately after software startup.
+
+### Investigation
+
+The following items were verified:
+
+- Detector power supply: Normal
+- Network connection: Normal
+- Detector communication: Normal
+- Firmware version: Compatible
+
+The detector was accessible, but the SDK runtime environment was incomplete.
+
+Further inspection showed that the required SDK DLL files were missing or mismatched with the application version.
+
+### Root Cause
+
+The SDK runtime environment was incomplete, or the application loaded an incorrect DLL version.
+
+The detector hardware was functioning normally.
+
+### Solution
+
+1. Verify that all SDK DLL files are present.
+2. Confirm that the DLL version matches the SDK release package.
+3. Replace outdated or missing DLL files using the official release package.
+4. Restart the application.
+5. Verify detector initialization and image acquisition.
+
+### Verification
+
+After restoring the correct SDK DLL files:
+
+- SDK started successfully.
+- Detector initialization completed normally.
+- Image acquisition resumed.
+
+### Lessons Learned
+
+When the application cannot initialize the detector immediately after startup, the SDK runtime environment should be verified before investigating detector hardware.
+
+SDK DLL version consistency is an essential part of software deployment.
+
+---
+
+## Experience 05 – FrameNo Abnormal During Continuous Acquisition
+
+### Source
+
+FAE Pre-sales Weekly Report
+
+### Product
+
+Pluto Series
+
+### Symptom
+
+- Detector communication is normal.
+- Continuous image acquisition is successful.
+- The application detects abnormal FrameNo values.
+- Image display may freeze, skip frames, or lose synchronization.
+
+### Investigation
+
+The following items were verified:
+
+- Detector communication: Normal
+- Network transmission: Normal
+- Firmware version: Compatible
+- SDK version: Compatible
+
+The detector continued to output image data correctly.
+
+Further analysis focused on the software handling of FrameNo and image buffer management.
+
+### Root Cause
+
+The abnormal FrameNo was caused by incorrect software processing of acquisition data rather than detector hardware failure.
+
+Possible causes include:
+
+- Frame synchronization logic error
+- Application buffer management issue
+- Incorrect FrameNo interpretation
+- Multi-thread synchronization problem
+
+### Solution
+
+1. Verify FrameNo increment behavior during continuous acquisition.
+2. Check whether image frames are received sequentially.
+3. Confirm that the application correctly releases image buffers.
+4. Review SDK callback implementation.
+5. Compare the behavior with the official SDK demo application.
+
+### Verification
+
+After correcting the application processing logic:
+
+- FrameNo increased continuously without interruption.
+- No frame loss was observed.
+- Continuous acquisition remained stable.
+
+### Lessons Learned
+
+FrameNo abnormalities do not necessarily indicate detector communication failure.
+
+When image transmission is normal but FrameNo appears abnormal, priority should be given to reviewing SDK integration and application logic before investigating detector hardware.
+
+---
+
+## Experience 06 – 3×3 Acquisition Mode Configuration
+
+### Source
+
+FAE Pre-sales Weekly Report
+
+### Product
+
+Venu Series / Pluto Series
+
+### Symptom
+
+- Detector communication is normal.
+- Standard acquisition mode operates correctly.
+- 3×3 acquisition mode cannot output images or behaves abnormally.
+- Other acquisition modes remain available.
+
+### Investigation
+
+The following items were verified:
+
+- Detector connection: Normal
+- Firmware version: Compatible
+- SDK version: Compatible
+- Network communication: Normal
+
+Detector hardware operated normally.
+
+Further investigation focused on acquisition mode configuration and application parameters.
+
+### Root Cause
+
+The 3×3 acquisition mode was not correctly configured in the application or SDK.
+
+Possible causes include:
+
+- Incorrect acquisition mode selection.
+- Incomplete Mode.ini configuration.
+- Unsupported application parameter settings.
+- Application did not switch to the correct acquisition workflow.
+
+### Solution
+
+1. Verify that the detector supports the required acquisition mode.
+2. Check the Mode.ini configuration.
+3. Verify SDK acquisition parameters.
+4. Compare with the official SDK Demo configuration.
+5. Repeat the acquisition test.
+
+### Verification
+
+After correcting the acquisition configuration:
+
+- 3×3 acquisition started normally.
+- Image output was stable.
+- Other acquisition modes remained unaffected.
+
+### Lessons Learned
+
+Failure of a specific acquisition mode does not necessarily indicate detector failure.
+
+When only one acquisition mode is abnormal, priority should be given to verifying SDK configuration and application parameters.
+
+---
+
+## Experience 07 – DSA Mode Configuration
+
+### Source
+
+FAE Pre-sales Weekly Report
+
+### Product
+
+Venu Series / Pluto Series
+
+### Symptom
+
+- Detector communication is normal.
+- Standard image acquisition operates correctly.
+- DSA mode cannot acquire images correctly or fails to initialize.
+- Switching back to normal acquisition restores operation.
+
+### Investigation
+
+The following items were verified:
+
+- Detector connection: Normal
+- Firmware version: Compatible
+- SDK version: Compatible
+- License status: Valid
+- Standard acquisition: Normal
+
+Detector hardware operated normally.
+
+Further investigation focused on DSA-related software configuration and application workflow.
+
+### Root Cause
+
+The detector was functioning normally.
+
+The DSA acquisition workflow was not configured correctly in the application, or the application did not invoke the correct SDK interface for DSA acquisition.
+
+Possible causes include:
+
+- Incorrect DSA mode selection.
+- Application workflow error.
+- Incorrect acquisition sequence.
+- Unsupported software configuration.
+
+### Solution
+
+1. Verify that the detector model supports DSA mode.
+2. Confirm that the SDK version supports the required DSA functions.
+3. Verify application configuration.
+4. Compare the acquisition sequence with the official SDK Demo.
+5. Repeat DSA acquisition testing.
+
+### Verification
+
+After correcting the application configuration:
+
+- DSA mode initialized successfully.
+- Continuous acquisition remained stable.
+- Image output was normal.
+
+### Lessons Learned
+
+DSA mode failures are usually related to application workflow or SDK integration rather than detector hardware.
+
+When standard acquisition operates normally but DSA mode fails, software configuration should be investigated before replacing detector components.

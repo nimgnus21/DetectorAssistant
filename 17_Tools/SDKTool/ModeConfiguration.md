@@ -505,4 +505,71 @@ A：
 
 | Version | Date | Author | Description |
 |----------|------|--------|-------------|
-| V1.0 | 2026-08 | Initial Release | 建立 Mode Configuration 文档，整理 Mode 配置结构、参数说明、工程经验及常见问题。 |
+| V1.0 | 2026-08 | Initial Release | 建立 Mode Configuration 文档，整理 Mode 配置结构、参数说明、工程经验及常见问题。|
+
+---
+
+## Common Configuration Errors
+
+### Incorrect Mode.ini Configuration
+
+Typical symptoms:
+
+- Detector can be connected.
+- Image acquisition cannot start.
+- Only specific acquisition modes fail.
+
+Checklist:
+
+- Verify detector model.
+- Verify Mode.ini version.
+- Compare with the official release package.
+- Restart the application after modification.
+
+---
+
+## Acquisition Mode Verification
+
+### Before Testing
+
+Verify:
+
+- Detector Model
+- Firmware Version
+- SDK Version
+- Mode.ini
+- Acquisition Mode
+
+### Common Symptoms
+
+- Only one acquisition mode fails.
+- Standard acquisition is normal.
+- Continuous acquisition is normal.
+- Specific mode initialization fails.
+
+### Recommendation
+
+Always compare acquisition parameters with the official SDK Demo before modifying application logic.
+
+---
+
+## DSA Mode Checklist
+
+### Verify Before Testing
+
+- Detector model supports DSA.
+- Firmware version is compatible.
+- SDK version matches the release package.
+- DSA workflow is enabled in the application.
+- Acquisition parameters are correctly configured.
+
+### Typical Symptoms
+
+- Normal acquisition is available.
+- DSA mode cannot start.
+- DSA initialization fails.
+- Switching to normal mode restores operation.
+
+### Recommendation
+
+If DSA mode is abnormal while normal acquisition functions correctly, compare the application workflow with the official SDK Demo and verify that the required DSA interfaces and configuration are correctly implemented.

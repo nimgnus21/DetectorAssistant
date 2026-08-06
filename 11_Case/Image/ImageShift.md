@@ -569,3 +569,77 @@ Decision Tree：
 | Version | Date | Description |
 |----------|------|-------------|
 | V1.0 | 2026-08 | 建立 Image Shift 图像异常案例。 |
+
+---
+
+## Field Experience 01 – Image Shift During Image Acquisition
+
+### Source
+
+FAE Pre-sales Weekly Report
+
+### Product
+
+Mercu Series / Pluto Series
+
+### Symptom
+
+- Detector communication is normal.
+- Image acquisition succeeds.
+- The displayed image is shifted horizontally or vertically.
+- The shift is repeatable under the same acquisition conditions.
+
+### Investigation
+
+The following items were verified:
+
+- Detector communication: Normal
+- Firmware version: Compatible
+- Offset calibration: Passed
+- Gain calibration: Passed
+- Detector hardware: Normal
+
+No abnormalities were found in the detector.
+
+Further investigation focused on the acquisition software, synchronization settings and image display process.
+
+### Root Cause
+
+The image shift was not caused by detector hardware.
+
+Possible contributing factors included:
+
+- Incorrect image reconstruction parameters.
+- Synchronization mismatch between detector output and software processing.
+- Incorrect display offset configuration.
+- Application-side image processing logic.
+
+### Failure Classification
+
+- Detector Hardware：No
+- Detector Firmware：No
+- Detector Configuration：No
+- Customer Environment：Yes
+- Third-party Software：Yes
+
+### Solution
+
+1. Verify detector output resolution.
+2. Check image reconstruction parameters.
+3. Verify synchronization settings.
+4. Compare the result with the official SDK Demo.
+5. Repeat acquisition after parameter correction.
+
+### Verification
+
+After correcting the software configuration:
+
+- Image position returned to normal.
+- No additional detector calibration was required.
+- Continuous acquisition remained stable.
+
+### Lessons Learned
+
+Image shift should not be treated as detector failure without first verifying the acquisition software and synchronization parameters.
+
+Software configuration and image processing logic should always be checked before replacing detector hardware.

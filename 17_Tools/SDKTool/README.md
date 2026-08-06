@@ -390,3 +390,22 @@ SDKTool
 | Version | Date | Description |
 |----------|------|-------------|
 | V1.0 | 2026-08 | 建立 SDKTool 模块导航文档，整合 DTDITool、FirmwareUpgrade、LicenseManagement、ModeConfiguration、CalibrationTools 及 LogExport。 |
+
+---
+
+## Common SDK Runtime Issues
+
+### SDK DLL Load Failure
+
+Typical Symptoms
+
+- SDK cannot start.
+- Detector initialization fails.
+- Image acquisition is unavailable.
+
+Checklist
+
+- Verify SDK DLL files exist.
+- Verify DLL version matches the SDK release.
+- Confirm executable and DLLs originate from the same release package.
+- Restart the application after replacing DLLs.

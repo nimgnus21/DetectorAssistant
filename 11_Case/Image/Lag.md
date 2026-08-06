@@ -192,3 +192,141 @@ Decision Tree：
 | Version | Date | Description |
 |----------|------|-------------|
 | V1.0 | 2026-08 | 建立 Lag Artifact 现场案例。 |
+
+---
+
+## Experience 02 – Low Gray Value on the First Image
+
+### Source
+
+FAE Pre-sales Weekly Report
+
+### Product
+
+Mercu Series / Venu Series
+
+### Symptom
+
+- Detector communication is normal.
+- The first acquired image has a noticeably lower gray value.
+- Subsequent images return to normal.
+- The issue can be reproduced after restarting the application.
+
+### Investigation
+
+Verified items:
+
+- Detector communication: Normal
+- Offset calibration: Passed
+- Gain calibration: Passed
+- Firmware version: Compatible
+- Generator output: Stable
+
+No abnormalities were found in detector hardware or calibration data.
+
+The issue only occurred during the first acquisition after initialization.
+
+### Root Cause
+
+The first-frame gray value was affected by the initialization sequence or exposure synchronization rather than detector hardware.
+
+Possible contributing factors include:
+
+- Detector initialization
+- Application startup sequence
+- Exposure synchronization timing
+- Generator trigger timing
+
+### Solution
+
+1. Verify detector initialization sequence.
+2. Perform a warm-up exposure if required.
+3. Verify generator trigger timing.
+4. Compare acquisition behavior with the official SDK Demo.
+5. Repeat acquisition verification.
+
+### Verification
+
+After optimizing the acquisition sequence:
+
+- First-frame gray value returned to normal.
+- Continuous acquisition remained stable.
+- No detector abnormalities were observed.
+
+### Lessons Learned
+
+If only the first frame is abnormal while subsequent images are normal, priority should be given to checking software initialization and exposure synchronization instead of recalibration or hardware replacement.
+
+---
+
+## Field Experience 03 – Exposure Synchronization Timing
+
+### Source
+
+FAE Pre-sales Weekly Report
+
+### Product
+
+Mercu Series / Pluto Series
+
+### Symptom
+
+- Detector communication is normal.
+- Trigger signal is received.
+- Image acquisition is unstable.
+- First image is abnormal.
+- Continuous acquisition becomes normal.
+
+### Investigation
+
+Verified:
+
+- Detector communication: Normal
+- Detector firmware: Normal
+- Offset calibration: Passed
+- Gain calibration: Passed
+- Generator output: Stable
+
+Detector hardware showed no abnormalities.
+
+Further analysis focused on generator trigger timing.
+
+### Root Cause
+
+Exposure synchronization between the generator and detector was not properly matched.
+
+The detector entered exposure normally, but the trigger timing was inconsistent with the X-ray output timing.
+
+### Failure Classification
+
+Detector Hardware：No
+
+Detector Firmware：No
+
+Detector Configuration：No
+
+Customer Environment：Yes
+
+Third-party Equipment：Yes
+
+### Solution
+
+1. Verify generator trigger timing.
+2. Verify detector exposure mode.
+3. Check trigger delay configuration.
+4. Repeat exposure synchronization test.
+5. Verify continuous acquisition.
+
+### Verification
+
+After adjusting exposure synchronization:
+
+- Image acquisition became stable.
+- First-frame abnormality disappeared.
+- Continuous acquisition operated normally.
+
+### Lessons Learned
+
+Many first-frame image problems originate from exposure synchronization rather than detector hardware.
+
+Generator timing should always be verified before recalibration or detector replacement.

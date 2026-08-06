@@ -830,3 +830,30 @@ RAW 保留完整原始数据，便于：
 | Version | Date | Author | Description |
 |----------|------|--------|-------------|
 | V1.0 | 2026-08 | Initial Release | 建立 DTDITool 使用说明，包含参数说明、标准流程、工程经验及常见问题。 |
+
+---
+
+## FrameNo Verification
+
+### Purpose
+
+Verify whether image frames are received sequentially during continuous acquisition.
+
+### Check Items
+
+- FrameNo increases continuously.
+- No duplicated FrameNo.
+- No skipped FrameNo.
+- Callback execution is stable.
+- Image buffer is released correctly.
+
+### Typical Symptoms
+
+- Frozen image
+- Missing frames
+- Frame synchronization errors
+- Continuous acquisition instability
+
+### Recommendation
+
+If FrameNo is abnormal while detector communication remains normal, compare the application behavior with the official SDK demo to determine whether the issue originates from the application layer.

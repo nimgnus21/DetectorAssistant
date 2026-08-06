@@ -203,3 +203,133 @@ Tools：
 | Version | Date | Description |
 |----------|------|-------------|
 | V1.0 | 2026-08 | 建立 Noise 现场案例。 |
+
+---
+
+## Case 03 – Grid Installed in Wrong Direction
+
+### Product
+
+Mercu1724
+
+### Customer
+
+OEM Customer
+
+### Symptom
+
+- Image shows obvious non-uniformity.
+- Brightness is inconsistent across the image.
+- Detector communication is normal.
+- Calibration has been completed.
+- Recalibration does not improve the image.
+
+### Investigation
+
+The following items were verified:
+
+- Detector communication: Normal
+- Firmware version: Normal
+- Offset calibration: Passed
+- Gain calibration: Passed
+- Ghost correction: Passed
+
+No abnormalities were found in the detector.
+
+Further inspection revealed that the anti-scatter grid was installed in the wrong orientation.
+
+### Root Cause
+
+Incorrect grid installation introduced additional X-ray attenuation, resulting in image non-uniformity.
+
+The detector was operating normally.
+
+### Corrective Action
+
+1. Confirm the installation direction of the grid.
+2. Reinstall the grid according to the manufacturer's specification.
+3. Repeat image acquisition.
+4. Compare the image before and after correction.
+
+### Verification
+
+After correcting the grid orientation:
+
+- Image uniformity returned to normal.
+- No additional calibration was required.
+- Detector function remained normal.
+
+### Lessons Learned
+
+Image non-uniformity is not always caused by detector failure.
+
+Before repeating calibration or replacing hardware, verify external imaging components such as the grid and X-ray generator.
+
+---
+
+## Field Experience 01 – Image Non-uniformity Caused by Incorrect Grid Installation
+
+### Source
+
+FAE Pre-sales Weekly Report
+
+### Product
+
+Mercu1724
+
+### Symptom
+
+- Image shows obvious brightness non-uniformity.
+- Local contrast is inconsistent.
+- Detector communication is normal.
+- Offset, Gain and Ghost calibration have all passed.
+- Recalibration does not improve image quality.
+
+### Investigation
+
+The following items were verified:
+
+- Detector communication: Normal
+- Firmware version: Compatible
+- Offset calibration: Passed
+- Gain calibration: Passed
+- Ghost correction: Passed
+
+No abnormalities were found in the detector.
+
+Further inspection of the imaging system found that the anti-scatter grid had been installed in the wrong orientation.
+
+### Root Cause
+
+The image artifact was caused by incorrect installation of the anti-scatter grid.
+
+The detector hardware, firmware and calibration data were all functioning normally.
+
+### Failure Classification
+
+- Detector Hardware：No
+- Detector Firmware：No
+- Detector Configuration：No
+- Customer Environment：Yes
+- Third-party Equipment：Yes
+
+### Solution
+
+1. Confirm the installation direction of the anti-scatter grid.
+2. Reinstall the grid according to the manufacturer's specification.
+3. Repeat image acquisition.
+4. Compare image uniformity before and after correction.
+
+### Verification
+
+After reinstalling the grid correctly:
+
+- Image uniformity returned to normal.
+- No recalibration was required.
+- Detector performance remained normal.
+
+### Lessons Learned
+
+Image non-uniformity is not always caused by detector defects.
+
+When calibration results are normal but image quality remains abnormal, external imaging components such as the anti-scatter grid should be inspected before replacing detector hardware.

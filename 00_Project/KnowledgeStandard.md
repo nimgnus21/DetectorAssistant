@@ -1,303 +1,354 @@
 # Knowledge Standard
 
-> Version: v2.0
->
-> Status: Active
->
-> Scope: Entire DetectorAssistant Knowledge Base
+> DetectorAssistant Knowledge Documentation Standard
+
+Project: DetectorAssistant
+
+Version: v1.0.0
 
 ---
 
 # 1. Purpose
 
-This document defines the governance rules for the DetectorAssistant knowledge base.
+This document defines the documentation standards for DetectorAssistant.
 
-Its objectives are to:
+The objective is to ensure that all engineering knowledge is:
 
-- Ensure document consistency.
-- Improve maintainability.
-- Establish knowledge traceability.
-- Standardize engineering documentation.
-- Prevent duplicated knowledge.
+- Consistent
+- Accurate
+- Reusable
+- Maintainable
+- Traceable
+- AI-readable
 
-This document is the highest-level writing and maintenance standard within DetectorAssistant.
-
----
-
-# 2. Knowledge Architecture
-
-DetectorAssistant adopts a layered knowledge architecture.
-
-```
-Project Governance
-
-↓
-
-Product Knowledge
-
-↓
-
-Workflow
-
-↓
-
-Failure Knowledge
-
-↓
-
-Image Diagnosis
-
-↓
-
-Decision Tree
-
-↓
-
-Case
-
-↓
-
-Tool
-
-↓
-
-Reference
-
-↓
-
-Knowledge Assets
-```
-
-Each layer has a unique responsibility.
-
-Knowledge duplication between layers should be avoided.
+Every document included in DetectorAssistant shall comply with this standard.
 
 ---
 
-# 3. Document Responsibility
+# 2. Design Principles
 
-Each document shall answer only one primary question.
+DetectorAssistant follows the following knowledge principles.
 
-| Module | Primary Responsibility |
-|---------|------------------------|
-| Product | What is it? |
-| Hardware | How is it built? |
-| Workflow | How to perform it? |
-| Failure Knowledge | Why does it happen? |
-| Image Diagnosis | What does it look like? |
-| Decision Tree | How to troubleshoot it? |
-| Case | What happened in the field? |
-| Tool | How to use the tool? |
-| Reference | Where is the source? |
-| Template | How to write it? |
+- Single Source of Truth (SSOT)
+- One Document, One Topic
+- Layered Knowledge Architecture
+- Modular Documentation
+- Reusable Content
+- Cross-Referenced Knowledge
+- Version Controlled Documentation
 
 ---
 
-# 4. Knowledge Lifecycle
+# 3. Knowledge Classification
 
-Every document follows the same lifecycle.
+Engineering knowledge is classified into the following categories.
+
+| Category | Description |
+|----------|-------------|
+| Project | Project governance |
+| Product | Product information |
+| Hardware | Hardware architecture |
+| Software | Software operation |
+| SDK | Development interfaces |
+| Calibration | Calibration principles |
+| Workflow | Engineering processes |
+| Failure | Failure analysis |
+| Image | Image diagnosis |
+| DecisionTree | Troubleshooting logic |
+| SOP | Standard procedures |
+| Case | Engineering cases |
+| ErrorCode | Error definitions |
+| Template | Standard templates |
+| Glossary | Engineering terminology |
+| Reference | Quick references |
+| Tool | Engineering utilities |
+
+Every document shall belong to one primary category.
+
+---
+
+# 4. One Document, One Topic
+
+Each Markdown document shall describe one primary engineering topic.
+
+Correct examples:
+
+- Offset Calibration
+- Detector Connection
+- Firmware Upgrade
+- Detector Busy
+- Image Noise
+
+Incorrect examples:
+
+- Calibration and Firmware
+- SDK + Image + Network
+- Installation and Troubleshooting
+
+A document should answer one engineering question.
+
+---
+
+# 5. Knowledge Granularity
+
+Documentation should be written at a consistent level of detail.
+
+Each document should:
+
+- Focus on one concept.
+- Avoid excessive fragmentation.
+- Avoid combining unrelated subjects.
+- Be reusable by other documents.
+
+---
+
+# 6. Standard Document Structure
+
+Unless otherwise required, documents should follow the structure below.
 
 ```
-Create
+Title
 
 ↓
 
-Review
+Purpose
+
+↓
+
+Scope
+
+↓
+
+Description
+
+↓
+
+Procedure / Explanation
+
+↓
+
+Notes
+
+↓
+
+Related Documents
+
+↓
+
+Revision History
+```
+
+Specialized modules (SOP, Case, ErrorCode, Template) may extend this structure while preserving consistency.
+
+---
+
+# 7. Writing Style
+
+Documents shall be:
+
+- Technical
+- Objective
+- Concise
+- Consistent
+- Action-oriented
+
+Avoid:
+
+- Personal opinions
+- Marketing language
+- Ambiguous wording
+- Informal expressions
+
+Preferred wording:
+
+- Verify
+- Configure
+- Initialize
+- Generate
+- Acquire
+- Connect
+- Calibrate
+
+---
+
+# 8. Terminology Standard
+
+Engineering terminology shall:
+
+- Use English as the canonical identifier.
+- Be defined in the Glossary.
+- Have one semantic meaning.
+- Remain consistent across all modules.
+
+Preferred example:
+
+```
+Offset
+```
+
+Do not alternate between:
+
+```
+Offset Image
+Offset File
+Offset Calibration
+```
+
+unless they represent different engineering concepts.
+
+---
+
+# 9. Cross-Reference Rules
+
+Documents should reference related documents instead of duplicating information.
+
+Each document should include a **Related Documents** section.
+
+Recommended references:
+
+- Upstream knowledge
+- Downstream procedures
+- Related workflows
+- Relevant cases
+- Applicable SOPs
+
+---
+
+# 10. Duplication Policy
+
+Duplicate technical content is prohibited.
+
+If multiple documents require the same explanation:
+
+- Keep one authoritative source.
+- Reference the original document.
+- Do not copy content.
+
+---
+
+# 11. File Organization
+
+Each document shall:
+
+- Belong to one module.
+- Have one owner.
+- Have one primary purpose.
+
+Documents shall not exist outside the defined project architecture.
+
+---
+
+# 12. Version Control
+
+Every document shall contain:
+
+- Revision History
+- Version
+- Update Date
+
+Major technical revisions should also be recorded in `CHANGELOG.md`.
+
+---
+
+# 13. Quality Requirements
+
+Before a document is considered complete, it shall satisfy the following requirements.
+
+| Requirement | Description |
+|-------------|-------------|
+| Accuracy | Technically correct |
+| Completeness | Covers the intended topic |
+| Consistency | Matches project standards |
+| Traceability | Version and history recorded |
+| Reusability | Can be referenced by other documents |
+| Maintainability | Easy to update |
+| Readability | Clear structure and terminology |
+
+---
+
+# 14. AI Compatibility
+
+Documents should be optimized for AI-assisted retrieval.
+
+Recommendations:
+
+- One topic per document.
+- Descriptive headings.
+- Consistent terminology.
+- Clear hierarchical structure.
+- Explicit relationships.
+- Minimal ambiguity.
+
+Avoid relying on context that exists only in another document without providing a reference.
+
+---
+
+# 15. Review Process
+
+Engineering documents should be reviewed in the following order.
+
+```
+Author
+
+↓
+
+Technical Review
+
+↓
+
+Consistency Review
+
+↓
+
+Knowledge Integration
 
 ↓
 
 Release
-
-↓
-
-Maintain
-
-↓
-
-Archive
-
-↓
-
-Retire
 ```
 
-Documents shall never skip the review process.
+---
+
+# 16. Maintenance Rules
+
+When updating existing documents:
+
+- Preserve document purpose.
+- Avoid breaking existing references.
+- Update the revision history.
+- Review related documents if terminology changes.
+- Record significant project-wide changes in `CHANGELOG.md`.
 
 ---
 
-# 5. Document Classification
+# 17. Document Completion Checklist
 
-Knowledge is classified into:
+A document is considered complete when:
 
-- Official Knowledge
-- Engineering Knowledge
-- Field Experience
-- Reference Information
-- Supporting Assets
-
-Each document shall belong to only one primary category.
-
----
-
-# 6. Naming Rules
-
-Document names shall:
-
-- Use PascalCase.
-- Be concise.
-- Represent one concept only.
-- Avoid abbreviations unless officially defined.
-
-Examples:
-
-ConnectionFailed.md
-
-GhostCorrection.md
-
-CalibrationWorkflow.md
-
-SDKReference.md
+- [ ] The scope is clearly defined.
+- [ ] The content focuses on one topic.
+- [ ] Terminology follows the Glossary.
+- [ ] Related Documents are included.
+- [ ] Revision History is updated.
+- [ ] Duplicate content has been avoided.
+- [ ] Formatting complies with project standards.
 
 ---
 
-# 7. Source Traceability
+# Related Documents
 
-Every engineering conclusion should be traceable.
-
-Recommended source priority:
-
-1. Official Documentation
-2. Internal Training
-3. Engineering Verification
-4. Field Experience
-
-Unsupported assumptions shall not be recorded as engineering facts.
-
----
-
-# 8. Related Documents
-
-Documents should reference related knowledge instead of duplicating content.
-
-Recommended relationship:
-
-Case
-
-↓
-
-Decision Tree
-
-↓
-
-Workflow
-
-↓
-
-Failure Knowledge
-
-↓
-
-Tool
-
-↓
-
-Reference
-
-Cross-module navigation should always use references rather than repeated explanations.
-
----
-
-# 9. Field Experience Rules
-
-Field Experience should:
-
-- Originate from real engineering activities.
-- Be technically verified.
-- Record facts before conclusions.
-- Distinguish symptoms from root causes.
-- Be appended to existing Case documents whenever possible.
-
-Creating a new Case document should be the exception rather than the default.
-
----
-
-# 10. Review Rules
-
-Documents should be reviewed when:
-
-- SDK version changes.
-- Firmware version changes.
-- Product specification changes.
-- Workflow changes.
-- New engineering experience is accumulated.
-
----
-
-# 11. Version Management
-
-Every document should include:
-
-- Version
-- Status
-- Last Updated
-
-Major revisions should be recorded in CHANGELOG.md.
-
----
-
-# 12. Maintenance Principles
-
-DetectorAssistant follows the following principles:
-
-- Single Source of Truth
-- Minimum Duplication
-- Engineering First
-- Traceable Knowledge
-- Continuous Improvement
-- Reusable Experience
-
----
-
-# 13. Quality Checklist
-
-Before publishing, verify:
-
-□ Scope is clear.
-
-□ No duplicated knowledge.
-
-□ Terminology is consistent.
-
-□ Related documents are linked.
-
-□ Sources are traceable.
-
-□ Engineering conclusions are verified.
-
-□ Formatting follows the template.
-
----
-
-# 14. Governance
-
-Knowledge ownership belongs to the engineering team.
-
-Knowledge contributors should:
-
-- Follow the standard.
-- Maintain consistency.
-- Update references.
-- Preserve engineering traceability.
-
-Knowledge governance takes precedence over document quantity.
-
----
-
-# 15. Related Documents
-
-- SystemWritingStandard.md
 - NamingConvention.md
+- EngineeringPrinciples.md
+- KnowledgeMap.md
 - KnowledgeRelationship.md
+- ObjectModel.md
 - Ontology.md
-- ProjectScope.md
-- CHANGELOG.md
+- 14_Glossary
+
+---
+
+# Revision History
+
+| Version | Date | Description |
+|---------|------|-------------|
+| v1.0 | 2026-08-07 | Initial documentation standard established |

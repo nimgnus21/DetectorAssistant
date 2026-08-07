@@ -1,0 +1,467 @@
+# Hardware
+
+> Module: Glossary
+>
+> Category: Hardware Terminology
+
+---
+
+# Overview
+
+This document defines the standard hardware terminology related to Flat Panel Detectors (FPDs).
+
+These terms describe the detector hardware architecture, signal acquisition path, electronic components, and supporting hardware used throughout the DetectorAssistant knowledge base.
+
+This glossary provides terminology only. Hardware principles and troubleshooting should refer to the corresponding Hardware and FailureKnowledge modules.
+
+---
+
+# Flat Panel Detector (FPD)
+
+## Definition
+
+A digital X-ray imaging device that converts X-ray energy into digital image data.
+
+## Main Components
+
+- Scintillator
+- TFT Array
+- Photodiode Array
+- Gate Driver
+- Readout Electronics
+- ADC
+- FPGA
+- Power Board
+- Communication Board
+
+---
+
+# Scintillator
+
+## Definition
+
+A scintillation layer that converts incoming X-ray photons into visible light.
+
+## Common Materials
+
+- CsI (Cesium Iodide)
+- GOS (Gadolinium Oxysulfide)
+
+## Purpose
+
+Improve X-ray detection efficiency.
+
+## Related Terms
+
+- Photodiode
+- TFT
+
+---
+
+# CsI
+
+## Definition
+
+Cesium Iodide scintillator.
+
+## Characteristics
+
+- Columnar crystal structure
+- High light conversion efficiency
+- Excellent spatial resolution
+
+## Typical Application
+
+Medical DR detectors.
+
+---
+
+# GOS
+
+## Definition
+
+Gadolinium Oxysulfide scintillator.
+
+## Characteristics
+
+- Powder structure
+- High mechanical strength
+- Lower cost
+- Good durability
+
+---
+
+# Photodiode
+
+## Definition
+
+A semiconductor device that converts visible light into electrical charge.
+
+## Purpose
+
+Receive light emitted by the scintillator.
+
+---
+
+# TFT
+
+## Definition
+
+Thin Film Transistor.
+
+Each detector pixel contains one TFT switch used to read stored electrical charge.
+
+## Purpose
+
+Control pixel readout.
+
+## Related Terms
+
+- Gate Driver
+- Readout
+
+---
+
+# Pixel
+
+## Definition
+
+The smallest imaging element within a detector.
+
+Each pixel contains:
+
+- Scintillator
+- Photodiode
+- Storage Capacitor
+- TFT Switch
+
+---
+
+# Pixel Pitch
+
+## Definition
+
+The distance between the centers of adjacent pixels.
+
+## Unit
+
+μm (Micrometer)
+
+---
+
+# Pixel Matrix
+
+## Definition
+
+The arrangement of pixels in rows and columns.
+
+## Example
+
+```
+3072 × 3072
+
+2048 × 2048
+```
+
+---
+
+# Gate Driver
+
+## Definition
+
+A circuit responsible for sequentially enabling each TFT row during image readout.
+
+## Purpose
+
+Control row-by-row pixel readout.
+
+## Related Terms
+
+- TFT
+- Readout
+
+---
+
+# Gate Line
+
+## Definition
+
+A control line connected to every TFT within the same row.
+
+---
+
+# Data Line
+
+## Definition
+
+A signal line used to transfer pixel charge to the readout electronics.
+
+---
+
+# Readout Circuit
+
+## Definition
+
+Electronic circuitry responsible for reading electrical signals from detector pixels.
+
+---
+
+# Readout Board
+
+## Definition
+
+A hardware board responsible for signal acquisition, amplification, and transmission.
+
+---
+
+# Analog Front End (AFE)
+
+## Definition
+
+An analog signal conditioning circuit located before analog-to-digital conversion.
+
+## Functions
+
+- Signal amplification
+- Noise reduction
+- Signal conditioning
+
+---
+
+# ADC
+
+## Definition
+
+Analog-to-Digital Converter.
+
+## Purpose
+
+Convert analog detector signals into digital data.
+
+---
+
+# FPGA
+
+## Definition
+
+Field Programmable Gate Array.
+
+## Functions
+
+- Image data processing
+- Detector control
+- Communication protocol processing
+- Timing control
+
+---
+
+# Main Control Board
+
+## Definition
+
+The primary controller responsible for detector operation and subsystem coordination.
+
+---
+
+# Communication Board
+
+## Definition
+
+Hardware responsible for network communication between the detector and host computer.
+
+---
+
+# Ethernet Interface
+
+## Definition
+
+Hardware interface providing detector network communication.
+
+---
+
+# Trigger Interface
+
+## Definition
+
+Hardware interface receiving external exposure trigger signals.
+
+---
+
+# Power Board
+
+## Definition
+
+Circuit board responsible for detector power conversion and voltage regulation.
+
+---
+
+# Power Supply
+
+## Definition
+
+The electrical source supplying operating voltage to the detector.
+
+---
+
+# Battery
+
+## Definition
+
+Rechargeable power source used in wireless detectors.
+
+---
+
+# Battery Management System (BMS)
+
+## Definition
+
+Electronic system responsible for monitoring and protecting the detector battery.
+
+---
+
+# Temperature Sensor
+
+## Definition
+
+Sensor used to monitor detector internal temperature.
+
+## Purpose
+
+Protect detector hardware from overheating.
+
+---
+
+# Humidity Sensor
+
+## Definition
+
+Sensor used to monitor internal detector humidity.
+
+## Purpose
+
+Detect excessive moisture that may affect detector reliability.
+
+---
+
+# Heat Sink
+
+## Definition
+
+Passive cooling component used to dissipate heat generated by electronic components.
+
+---
+
+# Fan
+
+## Definition
+
+Active cooling device used in certain detector systems.
+
+---
+
+# Flash Memory
+
+## Definition
+
+Non-volatile memory used to store firmware and configuration data.
+
+---
+
+# EEPROM
+
+## Definition
+
+Electrically Erasable Programmable Read-Only Memory.
+
+## Purpose
+
+Store detector configuration parameters.
+
+---
+
+# Connector
+
+## Definition
+
+Mechanical interface used for electrical or communication connections.
+
+## Examples
+
+- Power Connector
+- Ethernet Connector
+- Trigger Connector
+
+---
+
+# Shielding
+
+## Definition
+
+Hardware structure used to reduce electromagnetic interference (EMI).
+
+---
+
+# Ground
+
+## Definition
+
+Electrical reference potential used for signal stability and equipment protection.
+
+---
+
+# EMC
+
+## Definition
+
+Electromagnetic Compatibility.
+
+The ability of equipment to operate correctly without generating or suffering unacceptable electromagnetic interference.
+
+---
+
+# EMI
+
+## Definition
+
+Electromagnetic Interference.
+
+Unwanted electromagnetic noise affecting electronic equipment.
+
+---
+
+# ESD
+
+## Definition
+
+Electrostatic Discharge.
+
+A sudden transfer of static electricity that may damage detector electronics.
+
+---
+
+# PCB
+
+## Definition
+
+Printed Circuit Board.
+
+The physical board supporting electronic components and signal routing.
+
+---
+
+# Related Modules
+
+- 03_Hardware
+- 05_Calibration
+- 07_FailureKnowledge
+- 08_Image
+- 09_DecisionTree
+- 12_ErrorCode
+
+---
+
+# Revision History
+
+| Version | Date | Description |
+|---------|------|-------------|
+| v1.0 | 2026-08-07 | Initial release |

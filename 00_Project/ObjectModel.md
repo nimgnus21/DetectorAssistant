@@ -1,585 +1,529 @@
-# Detector Assistant Object Model
+# Object Model
 
-Version: V1.0
+> DetectorAssistant Domain Object Model
+
+Project: DetectorAssistant
+
+Version: v1.0.0
 
 ---
 
 # 1. Purpose
 
-Object Model（对象模型）用于定义 Detector Assistant 知识系统中的所有知识对象。
+This document defines the core engineering objects of DetectorAssistant and the relationships between them.
 
-所有知识必须归属于某一种 Object Type。
+The Object Model serves as the conceptual foundation of the knowledge base, providing a unified representation of detector systems, engineering activities, failures, and technical documentation.
 
-任何新增文档、SOP、案例、故障、图片、参数，都必须先确定所属 Object，再建立关联关系。
+It is intended to:
 
-Object Model 是整个知识系统的数据基础。
-
----
-
-# 2. Design Principles
-
-## 2.1 One Concept One Object
-
-一个对象只描述一个概念。
-
-例如：
-
-Gate Driver
-
-Readout ASIC
-
-Gain Calibration
-
-Dead Pixel
-
-Connection Failure
-
-不能把多个知识写在同一个 Object 中。
+- Standardize engineering concepts.
+- Establish consistent object definitions.
+- Support knowledge organization.
+- Enable future AI-based semantic retrieval.
+- Provide a stable architecture for future expansion.
 
 ---
 
-## 2.2 Everything is an Object
+# 2. Object Modeling Principles
 
-整个知识系统中的任何知识，都应该属于某一个 Object。
+DetectorAssistant models engineering knowledge using domain objects rather than documents.
 
-例如：
+Each object:
 
-产品
+- Represents a real engineering entity or concept.
+- Has a clearly defined responsibility.
+- Can reference other objects.
+- Exists independently of document structure.
 
-硬件
-
-软件
-
-工作流
-
-参数
-
-故障
-
-图像异常
-
-SOP
-
-案例
-
-日志
-
-错误码
-
-模板
+A document describes one or more objects.
 
 ---
 
-## 2.3 Relationship First
+# 3. Core Domain Model
 
-Object 不允许孤立存在。
-
-每个 Object 都必须建立关联。
-
-例如：
-
-Gate Driver
-
-↓
-
-TFT Array
-
-↓
-
-Bad Row
-
-↓
-
-Row Banding
-
-↓
-
-Troubleshooting SOP
-
----
-
-## 2.4 Single Source of Truth
-
-每个知识点只能存在一个正式定义。
-
-其它文档采用引用方式，不重复描述。
-
-例如：
-
-Gate Driver 的定义
-
-只能存在：
-
-03_Hardware/Gate_Driver
-
-其它文档引用即可。
+```
+Product
+    │
+    ▼
+Detector
+    │
+    ├─────────────┐
+    ▼             ▼
+Hardware      Software
+    │             │
+    └──────┬──────┘
+           ▼
+          SDK
+           │
+           ▼
+     Communication
+           │
+           ▼
+      Calibration
+           │
+           ▼
+     Image Acquisition
+           │
+           ▼
+         Image
+           │
+           ▼
+        Failure
+           │
+           ▼
+     DecisionTree
+           │
+           ▼
+         Solution
+           │
+           ▼
+      Verification
+```
 
 ---
 
-# 3. Object Type
-
-整个知识系统采用以下 Object 分类。
-
----
+# 4. Core Objects
 
 ## Product
 
-表示产品型号。
+Represents a detector product family.
 
-例如：
+Examples:
 
-Mercu1717V
+- Pluto0001X
+- Pluto0002X
+- Pluto0900X
+- Mercu Series
 
-Mercu1212X
+Attributes:
 
-Mars1717X
-
-Jupi1212X
-
-Venu1717X
+- Product Name
+- Product Family
+- Detector Type
+- Supported SDK
+- Supported Firmware
 
 ---
 
-## System
+## Detector
 
-表示系统级知识。
+Represents one physical detector.
 
-例如：
+Attributes
 
-Detector Architecture
+- Serial Number
+- Model
+- Hardware Revision
+- Firmware Version
+- MAC Address
+- IP Address
+- Status
 
-Signal Flow
+Relationships
 
-Image Pipeline
-
-Communication
-
-Power Architecture
+- Belongs to Product
+- Contains Hardware
+- Runs Firmware
+- Communicates through SDK
 
 ---
 
 ## Hardware
 
-表示硬件模块。
+Represents detector hardware components.
 
-例如：
+Contains:
 
-Scintillator
-
-Photodiode
-
-TFT Array
-
-Gate Driver
-
-Readout ASIC
-
-ADC
-
-FPGA
-
-DDR
-
-WiFi
-
-Battery
-
-Power Board
+- TFT
+- FPGA
+- ADC
+- Battery
+- Power
+- Ethernet
+- Trigger
+- Sensor
+- WiFi
 
 ---
 
 ## Software
 
-表示软件模块。
+Represents engineering software.
 
-例如：
+Examples:
 
-Home
-
-Acquire
-
-Detector
-
-Calibrate
-
-SDK
-
-Settings
-
-Log
-
-Upgrade
+- iDetector
+- Configuration Tool
+- Firmware Tool
+- DTDI Tool
 
 ---
 
-## Workflow
+## SDK
 
-表示工程流程。
+Represents software interfaces used to control detectors.
 
-例如：
+Contains:
 
-Installation
+- Initialization
+- Device
+- Acquisition
+- Callback
+- Generator
+- Image
+- Calibration
+- License
+- Firmware
 
-Activation
+---
 
-Connection
+## Communication
 
-Configuration
+Represents detector communication.
 
-Acquisition
+Attributes:
 
-Calibration
-
-Acceptance
-
-Maintenance
+- IP Address
+- Port
+- Connection State
+- Link Status
+- Packet Loss
 
 ---
 
 ## Calibration
 
-表示校准对象。
+Represents detector calibration.
 
-例如：
+Contains:
 
-Offset
+- Offset
+- Gain
+- Defect
+- Dynamic Correction
 
-Gain
+Relationships:
 
-Defect
+Produces Image Quality.
 
-Template
+---
 
-Calibration Theory
+## Image
+
+Represents an acquired detector image.
+
+Attributes:
+
+- Width
+- Height
+- Bit Depth
+- Exposure
+- Timestamp
+- Calibration State
 
 ---
 
 ## Failure
 
-表示故障对象。
+Represents an engineering failure.
 
-例如：
+Examples:
 
-Connection Failure
+- Communication Failure
+- Calibration Failure
+- Firmware Failure
+- Image Failure
+- SDK Failure
+- Hardware Failure
 
-Exposure Failure
+Relationships:
 
-Image Failure
+Can generate ErrorCode.
 
-Calibration Failure
-
-Power Failure
-
-Network Failure
-
-Software Failure
-
-Hardware Failure
+Can trigger DecisionTree.
 
 ---
 
-## Image Artifact
+## ErrorCode
 
-表示图像异常。
+Represents a standardized error.
 
-例如：
+Attributes:
 
-Dead Pixel
+- Error ID
+- Description
+- Cause
+- Solution
 
-Bad Pixel
+Generated by:
 
-Bad Row
+- SDK
+- Firmware
+- Detector
 
-Bad Column
+---
 
-Banding
+## DecisionTree
 
-Ghost
+Represents a troubleshooting process.
 
-Lag
+Input:
 
-Noise
+Failure
 
-NonUniformity
+Output:
+
+Solution
+
+---
+
+## Workflow
+
+Represents a standardized engineering process.
+
+Examples:
+
+- Installation
+- Configuration
+- Calibration
+- Firmware Upgrade
+- Remote Support
 
 ---
 
 ## SOP
 
-表示标准操作流程。
+Represents an executable engineering procedure.
 
-例如：
-
-Installation SOP
-
-Calibration SOP
-
-Maintenance SOP
-
-Upgrade SOP
-
-Troubleshooting SOP
+Each SOP implements one Workflow.
 
 ---
 
 ## Case
 
-表示现场案例。
+Represents a real engineering case.
 
-例如：
+Contains:
 
-Case001
-
-Case002
-
-Case003
-
----
-
-## Error Code
-
-表示错误代码。
-
-例如：
-
-E1001
-
-E2003
-
-Timeout
-
-Detector Disconnect
+- Problem
+- Environment
+- Root Cause
+- Solution
+- Verification
 
 ---
 
-## Parameter
+## Tool
 
-表示参数。
+Represents engineering utilities.
 
-例如：
+Examples:
 
-Exposure Time
-
-Frame Rate
-
-Trigger Mode
-
-Gain
-
-Offset
-
-Temperature
-
-Battery Level
-
-IP Address
-
-MAC Address
+- SDK Tool
+- DTDI Tool
+- Firmware Tool
 
 ---
 
-## Document
+## Reference
 
-表示厂家文档。
+Represents supporting engineering information.
 
-例如：
+Examples:
 
-User Manual
-
-Service Manual
-
-SDK Manual
-
-Release Note
-
-Specification
+- Glossary
+- Quick Reference
+- Command Reference
 
 ---
 
-# 4. Object Metadata
-
-每个 Object 必须包含以下 Metadata。
-
-Name
-
-Type
-
-Description
-
-Version
-
-Status
-
-Applicable Product
-
-Related Object
-
-Reference Document
-
-Keywords
-
-Last Update
-
----
-
-# 5. Object Relationship
-
-Object 之间允许建立以下关系。
-
-Depends On
-
-Part Of
-
-Contains
-
-Uses
-
-Controls
-
-Produces
-
-Causes
-
-References
-
-Related To
-
-Resolved By
-
-Verified By
-
----
-
-# 6. Relationship Example
-
-Gate Driver
-
-Depends On
-
-↓
-
-FPGA
-
-Controls
-
-↓
-
-TFT Array
-
-Causes
-
-↓
-
-Bad Row
-
-Related To
-
-↓
-
-Banding
-
-Resolved By
-
-↓
-
-Gate Driver Troubleshooting SOP
-
-Verified By
-
-↓
-
-Case023
-
----
-
-# 7. Knowledge Hierarchy
-
-Object
-
-↓
-
-Relationship
-
-↓
-
-Document
-
-↓
-
-Workflow
-
-↓
-
-Failure
-
-↓
-
-Decision Tree
-
-↓
-
-Case
-
----
-
-# 8. Future Extension
-
-后续可增加新的 Object Type，例如：
-
+# 5. Object Relationships
+
+```
+Product
+    │
+contains
+    ▼
+Detector
+    │
+contains
+    ▼
+Hardware
+
+Detector
+    │
+runs
+    ▼
 Firmware
 
-Driver
+Software
+    │
+uses
+    ▼
+SDK
 
-SDK API
+SDK
+    │
+controls
+    ▼
+Detector
 
-Communication Protocol
+Detector
+    │
+produces
+    ▼
+Image
 
-Image Algorithm
+Calibration
+    │
+affects
+    ▼
+Image
 
-Test Tool
+Image
+    │
+reveals
+    ▼
+Failure
 
-Production
+Failure
+    │
+generates
+    ▼
+ErrorCode
 
-QA
+Failure
+    │
+starts
+    ▼
+DecisionTree
 
-Service Record
+DecisionTree
+    │
+references
+    ▼
+Workflow
 
-Training Course
+Workflow
+    │
+implemented by
+    ▼
+SOP
+
+Case
+    │
+validates
+    ▼
+Workflow
+```
 
 ---
 
-# 9. Naming Rule
+# 6. Object Lifecycle
 
-Object Name 使用统一英文名称。
+Engineering objects evolve through the following lifecycle.
 
-例如：
+```
+Product
 
-Gate_Driver
+↓
 
-Readout_ASIC
+Detector
 
-PowerBoard
+↓
 
-DeadPixel
+Installation
 
-BadRow
+↓
 
-Offset
+Configuration
 
-Gain
+↓
 
-ConnectionFailure
+Calibration
 
-InstallationSOP
+↓
 
-Case001
+Image Acquisition
+
+↓
+
+Failure Detection
+
+↓
+
+Diagnosis
+
+↓
+
+Repair
+
+↓
+
+Verification
+
+↓
+
+Maintenance
+
+↓
+
+Retirement
+```
 
 ---
 
-# 10. Notes
+# 7. Object Dependency Matrix
 
-Object Model 是整个知识系统最高层规范。
+| Object | Depends On | Produces |
+|----------|------------|-----------|
+| Product | — | Detector |
+| Detector | Product | Image |
+| Hardware | Detector | Status |
+| Software | Hardware | SDK Access |
+| SDK | Software | Commands |
+| Communication | SDK | Connection |
+| Calibration | Communication | Corrected Image |
+| Image | Calibration | Image Data |
+| Failure | Image | ErrorCode |
+| DecisionTree | Failure | Workflow |
+| Workflow | DecisionTree | SOP |
+| SOP | Workflow | Standard Operation |
+| Case | SOP | Engineering Experience |
 
-所有 Markdown 文档、Drawio 架构图、Decision Tree、SOP、Case 都必须符合本规范。
+---
 
-未经 Object Model 定义的对象，不允许直接加入知识系统。
+# 8. Modeling Rules
+
+Every object shall:
+
+- Have one clear responsibility.
+- Have a unique definition.
+- Avoid duplication.
+- Reference other objects instead of duplicating information.
+- Remain independent of directory structure.
+
+---
+
+# 9. Future Expansion
+
+New detector models, software modules, SDK interfaces, and engineering workflows shall extend existing objects whenever possible.
+
+New object types should only be introduced when existing objects cannot accurately represent the new concept.
+
+---
+
+# Related Documents
+
+- KnowledgeMap.md
+- KnowledgeRelationship.md
+- Ontology.md
+- EngineeringPrinciples.md
+
+---
+
+# Revision History
+
+| Version | Date | Description |
+|---------|------|-------------|
+| v1.0 | 2026-08-07 | Initial object model |

@@ -10,159 +10,78 @@
 
 This document describes exposure-related abnormalities between the detector and the X-ray generator.
 
-The detector relies on the generator to provide a valid exposure signal. If exposure timing, trigger mode, or generator configuration is incorrect, image acquisition may fail or produce abnormal images.
-
-Although the SDK does not define dedicated generator exposure error codes, exposure failures are commonly reflected through SDK events and detector behavior.
+Generator exposure failures are often reflected through SDK events rather than a dedicated generator error code. The diagnostic objective is to determine which stage failed: permission, acquisition readiness, trigger, actual exposure, or image delivery.
 
 ---
 
-# Related Commands
+# Related Commands / Events
 
-- Cmd_StartAcq
-- Cmd_StopAcq
-- Cmd_ClearAcq
+Commands:
 
----
+- `Cmd_StartAcq`
+- `Cmd_StopAcq`
+- `Cmd_ClearAcq`
 
-# Related Events
+Events:
 
-- Evt_Exp_Enable
-- Evt_Exp_Prohibit
-- Evt_WaitImage_Timeout
-- Evt_TaskResult_Failed
-
----
-
-# Typical Symptoms
-
-- Exposure cannot start.
-- Exposure starts but no image is received.
-- Exposure ends immediately.
-- Detector remains waiting for exposure.
-- Exposure timeout.
-- Continuous acquisition stops unexpectedly.
+- `Evt_Exp_Enable`
+- `Evt_Exp_Prohibit`
+- `Evt_WaitImage_Timeout`
+- `Evt_TaskResult_Failed`
+- `Evt_Image`
 
 ---
 
-# Related SDK Errors
+# Error / Event → Diagnostic Entry
 
-## Err_TaskTimeOut
-
-The acquisition task exceeded the allowed execution time.
-
----
-
-## Err_DetectorRespTimeout
-
-The detector did not respond within the expected time.
-
----
-
-## Evt_WaitImage_Timeout
-
-The detector waited for an image but no valid image was received within the timeout period.
-
-Possible causes include:
-
-- Generator did not expose.
-- Exposure signal not received.
-- Trigger configuration mismatch.
-- Image transmission failure.
-
----
-
-# Possible Causes
-
-## Generator
-
-- Generator not ready.
-- Exposure inhibited.
-- Incorrect exposure parameters.
-- Generator fault.
-
----
-
-## Detector
-
-- Detector not in Ready state.
-- Acquisition not started.
-- Incorrect application mode.
-- Detector busy.
-
----
-
-## Trigger
-
-- Wrong trigger mode.
-- Trigger pulse not generated.
-- Trigger polarity mismatch.
-- Trigger cable disconnected.
-
----
-
-## Configuration
-
-- Exposure time too short.
-- Exposure synchronization incorrect.
-- Detector and generator configuration inconsistent.
+| Event / Symptom | Primary Path | Evidence |
+|---|---|---|
+| `Evt_Exp_Prohibit` / cannot expose | [NoExposure](../../09_DecisionTree/Connection/NoExposure.md) | Interlock, generator state, detector state |
+| `Evt_WaitImage_Timeout` | [AcquisitionTimeout](../../09_DecisionTree/Software/AcquisitionTimeout.md) | Acquisition, trigger, exposure, log |
+| Exposure completed but no `Evt_Image` | [ImageLoss](../../09_DecisionTree/Image/ImageLoss.md) | Exposure proof, image/RAW, network/log |
+| `Err_DetectorRespTimeout` | [ConnectionTimeout](../../09_DecisionTree/Connection/ConnectionTimeout.md) | Device/network state, log |
 
 ---
 
 # Diagnostic Procedure
 
-1. Verify detector status is **Ready**.
-2. Execute `Cmd_StartAcq`.
-3. Confirm `Evt_Exp_Enable` is received.
-4. Verify generator Ready status.
-5. Verify trigger signal.
-6. Perform an exposure.
-7. Confirm `Evt_Image` is received.
-8. Check `Detector.log`.
+1. Confirm detector is `Ready`.
+2. Start acquisition and record the command/result.
+3. Confirm exposure permission (`Evt_Exp_Enable`) or identify prohibition (`Evt_Exp_Prohibit`).
+4. Verify generator state.
+5. Verify trigger mode and synchronization.
+6. Confirm whether physical exposure actually occurred.
+7. If exposure occurred, confirm whether `Evt_Image` or image data was received.
+8. Route missing exposure to [NoExposure](../../09_DecisionTree/Connection/NoExposure.md); route missing image after confirmed exposure to [ImageLoss](../../09_DecisionTree/Image/ImageLoss.md).
+9. Export `Detector.log` and correlate timestamps.
+10. Perform one controlled retest after the identified condition is corrected.
 
 ---
 
-# Recommended Inspection Items
+# Evidence Package
 
-- Detector Ready
-- Generator Ready
-- Trigger cable
-- Exposure cable
-- Exposure parameters
-- Trigger mode
-- Synchronization mode
-- Detector.log
-
----
-
-# Related DecisionTree
-
-- 09_DecisionTree/Connection/NoExposure.md
-- 09_DecisionTree/Image/ImageLoss.md
-- 09_DecisionTree/Software/AcquisitionTimeout.md
+- exact event/error and timestamp;
+- detector state;
+- acquisition mode and key parameters;
+- exposure permission/prohibition state;
+- generator state/fault indication;
+- trigger mode and timing evidence;
+- proof of actual exposure;
+- image/RAW evidence when an image was delivered;
+- `Detector.log`;
+- controlled retest result.
 
 ---
 
-# Related Workflow
+# Related DecisionTree / Workflow / Tool
 
-- 06_Workflow/ImageGenerationWorkflow.md
-- 06_Workflow/ConfigurationWorkflow.md
-
----
-
-# Related Case
-
-- 11_Case/Image
-- 11_Case/Communication
-
----
-
-# Related Log
-
-```
-Detector.log
-```
-
-Exposure-related problems should be analyzed together with detector logs, generator configuration, trigger waveform, and acquisition timing.
+- [NoExposure](../../09_DecisionTree/Connection/NoExposure.md)
+- [ImageLoss](../../09_DecisionTree/Image/ImageLoss.md)
+- [AcquisitionTimeout](../../09_DecisionTree/Software/AcquisitionTimeout.md)
+- [ImageGenerationWorkflow](../../06_Workflow/ImageGenerationWorkflow.md)
+- [ConfigurationWorkflow](../../06_Workflow/ConfigurationWorkflow.md)
+- [LogExport](../../17_Tools/SDKTool/LogExport.md)
+- [Log Viewer](../../17_Tools/Log%20Viewer/README.md)
 
 ---
 
@@ -170,4 +89,5 @@ Exposure-related problems should be analyzed together with detector logs, genera
 
 | Version | Date | Description |
 |---------|------|-------------|
+| v1.1 | 2026-08-10 | Added stage-based exposure routing, evidence package and verification rules |
 | v1.0 | 2026-08-07 | Initial release |

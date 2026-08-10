@@ -5,6 +5,8 @@
 > SOP ID: SOP-003
 >
 > Category: Detector Calibration
+>
+> Version: v1.1
 
 ---
 
@@ -65,12 +67,13 @@ Before calibration, confirm:
 - X-ray Generator
 - Calibration Fixture (if required)
 
-## Software
+## Software / Diagnostics
 
-- SDK Tool
-- DTDI Tool
-- Calibration Tool
-- Detector Configuration Tool
+- [SDK Tool / iDetector](../17_Tools/SDKTool/iDetectorQuickTroubleshooting.md)
+- [DTDI Tool](../17_Tools/SDKTool/DTDITool.md)
+- [Calibration Tools](../17_Tools/SDKTool/CalibrationTools.md)
+- [Offset Viewer](../17_Tools/OffsetViewer/)（Offset 结果或异常分析时）
+- [Log Viewer](../17_Tools/LogViewer/)（重复失败或 SDK 事件分析时）
 
 ---
 
@@ -161,10 +164,7 @@ Detector operates normally.
 
 ### Exception Handling
 
-Refer to:
-
-- DecisionTree/Device
-- ErrorCode/Initialization
+Resolve connection or initialization problems before calibration. Use the [Connection DecisionTree](../09_DecisionTree/Connection/) and [SDK Tool / iDetector](../17_Tools/SDKTool/iDetectorQuickTroubleshooting.md) when the detector is not Ready.
 
 ---
 
@@ -190,10 +190,7 @@ Correct SubSet selected.
 
 ### Exception Handling
 
-Check:
-
-- DynamicApplicationMode.ini
-- Cmd_SetCaliSubset
+Check `DynamicApplicationMode.ini` and `Cmd_SetCaliSubset` using the applicable [SDK Tool / iDetector](../17_Tools/SDKTool/iDetectorQuickTroubleshooting.md) workflow.
 
 ---
 
@@ -219,10 +216,7 @@ Generation completed successfully.
 
 ### Exception Handling
 
-Refer to:
-
-- Err_Cali_NotEnoughIntervalTime_OffsetTmpl
-- Err_Cali_GeneralError
+Preserve `Detector.log`; use [Log Viewer](../17_Tools/LogViewer/) for repeated failures. Refer to the [Calibration DecisionTree](../09_DecisionTree/Calibration/) and applicable calibration error-code documentation.
 
 ---
 
@@ -255,10 +249,7 @@ Check:
 - Image quantity
 - Image quality
 
-Refer to:
-
-- Err_Cali_DataNotReadyForGen
-- Err_Cali_UnexpectImage_DoseHighHigh
+Use [Calibration Tools](../17_Tools/SDKTool/CalibrationTools.md) or [DTDI Tool](../17_Tools/SDKTool/DTDITool.md) according to the applicable product procedure. Preserve logs before repeated retries.
 
 ---
 
@@ -284,10 +275,7 @@ Generation completed successfully.
 
 ### Exception Handling
 
-Refer to:
-
-- Err_Cali_DataNotReadyForGen
-- Err_Cali_GeneralError
+Verify the required calibration images and run the applicable [Calibration Tools](../17_Tools/SDKTool/CalibrationTools.md) procedure. For repeated failure, retain images, templates and `Detector.log`.
 
 ---
 
@@ -314,10 +302,7 @@ Download completed successfully.
 
 ### Exception Handling
 
-Refer to:
-
-- Err_FPD_HWCaliFileError
-- Err_OpenFileFailed
+Verify communication first, then inspect template compatibility. Use [SDK Tool / iDetector](../17_Tools/SDKTool/iDetectorQuickTroubleshooting.md) and [Log Viewer](../17_Tools/LogViewer/) when an error is reported.
 
 ---
 
@@ -344,7 +329,7 @@ Detector reports successful selection.
 
 ### Exception Handling
 
-Verify template type and SubSet.
+Verify template type, compatibility and SubSet before replacing files.
 
 ---
 
@@ -363,6 +348,8 @@ Detector Ready.
 - Verify ghost artifacts.
 - Verify line artifacts.
 
+Use [Offset Viewer](../17_Tools/OffsetViewer/) when Offset-related abnormality is suspected.
+
 ### Output
 
 Calibration verified.
@@ -377,8 +364,9 @@ Calibration verified.
 
 Refer to:
 
-- SOP/ImageTroubleshooting
-- DecisionTree/Image
+- [Image Troubleshooting SOP](ImageTroubleshooting.md)
+- [Image DecisionTree](../09_DecisionTree/Image/)
+- [Calibration Stripe](../07_FailureKnowledge/ImageFailure/CalibrationStripe.md)
 
 ---
 
@@ -395,6 +383,7 @@ Verified detector.
 - Record firmware version.
 - Record SDK version.
 - Record calibration version.
+- Record tools used and validation images.
 
 ### Output
 
@@ -413,19 +402,20 @@ Calibration completed.
 - Templates selected
 - Test image verified
 - Detector.log archived
+- Tool output retained when used for diagnosis
 
 ---
 
 # Exception Matrix
 
-| Symptom | Possible Cause | Action |
-|----------|----------------|--------|
-| Offset generation failed | Detector not stable | Wait and retry |
-| Gain generation failed | Exposure abnormal | Verify generator output |
-| Defect generation failed | Insufficient images | Reacquire calibration images |
-| Template download failed | Communication abnormal | Verify detector connection |
-| Template selection failed | Wrong template type | Verify template compatibility |
-| Image artifacts remain | Calibration incomplete | Repeat calibration procedure |
+| Symptom | Direction | Action |
+|----------|-----------|--------|
+| Offset generation failed | Detector state / interval / calibration process | Preserve log and follow Calibration DecisionTree |
+| Gain generation failed | Exposure or calibration input | Verify generator output and input images |
+| Defect generation failed | Image quantity or image selection | Reacquire required calibration images |
+| Template download failed | Communication or template compatibility | Verify connection and inspect logs |
+| Template selection failed | Template type / SubSet | Verify compatibility before replacement |
+| Image artifacts remain | Calibration not effective or another fault class | Enter Image Troubleshooting and Image DecisionTree |
 
 ---
 
@@ -444,6 +434,7 @@ Record the following information:
 - Template Version
 - Detector.log
 - Test Images
+- Tool outputs used for diagnosis
 
 ---
 
@@ -459,14 +450,17 @@ Record the following information:
 
 # Related Documents
 
-- 05_Calibration
-- 06_Workflow/CalibrationWorkflow
-- 09_DecisionTree/Calibration
-- 11_Case/Calibration
-- 12_ErrorCode/Calibration
-- 14_Glossary/Calibration
-- SOP/DetectorInstallation
-- SOP/ImageTroubleshooting
+- [Calibration Module](../05_Calibration/README.md)
+- [Calibration DecisionTree](../09_DecisionTree/Calibration/)
+- [Calibration Cases](../11_Case/Calibration/)
+- [Image Troubleshooting SOP](ImageTroubleshooting.md)
+- [Image DecisionTree](../09_DecisionTree/Image/)
+- [Calibration Stripe](../07_FailureKnowledge/ImageFailure/CalibrationStripe.md)
+- [SDK Tool / iDetector](../17_Tools/SDKTool/iDetectorQuickTroubleshooting.md)
+- [Calibration Tools](../17_Tools/SDKTool/CalibrationTools.md)
+- [DTDI Tool](../17_Tools/SDKTool/DTDITool.md)
+- [Offset Viewer](../17_Tools/OffsetViewer/)
+- [Log Viewer](../17_Tools/LogViewer/)
 
 ---
 
@@ -474,4 +468,5 @@ Record the following information:
 
 | Version | Date | Description |
 |---------|------|-------------|
+| v1.1 | 2026-08-10 | Added direct tool links and calibration-to-image verification flow |
 | v1.0 | 2026-08-07 | Initial release |

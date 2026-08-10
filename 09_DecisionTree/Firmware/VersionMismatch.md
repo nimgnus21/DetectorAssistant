@@ -4,7 +4,7 @@
 >
 > Category: Decision Tree
 >
-> Version: v1.1
+> Version: v1.2
 >
 > Last Updated: 2026-08-10
 
@@ -160,10 +160,6 @@ Escalate when:
 - [FirmwareUpgrade](../../17_Tools/SDKTool/FirmwareUpgrade.md)
 - [SDKTool README](../../17_Tools/SDKTool/README.md)
 
-## Reference
-
-- [SDKReference](../../15_Reference/SDKReference.md)
-
 ## Failure Knowledge
 
 - [FailureAnalysisMethod](../../07_FailureKnowledge/FailureAnalysisMethod.md)
@@ -176,5 +172,6 @@ Escalate when:
 
 | Version | Date | Description |
 |---------|------|-------------|
+| v1.2 | 2026-08-10 | P0 Markdown link audit: removed nonexistent SDKReference target |
 | v1.1 | 2026-08-10 | Replaced obsolete FirmwareUpgradeWorkflow and FirmwareFailure links with existing workflow and generic FailureKnowledge nodes |
 | v1.0 | 2026-08-06 | Initial release |

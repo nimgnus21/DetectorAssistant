@@ -4,9 +4,9 @@
 >
 > Category: Decision Tree
 >
-> Version: v1.0
+> Version: v1.1
 >
-> Last Updated: 2026-08-06
+> Last Updated: 2026-08-10
 
 ---
 
@@ -27,51 +27,19 @@ Typical symptoms include:
 # Diagnostic Flow
 
 ```
-                    Boot Failure
-                          │
-                  Power Supply Normal?
-                          │
-              ┌───────────┴───────────┐
-              │                       │
-             NO                      YES
-              │                       │
-      Check Power Adapter       Continue
-      Check Power Cable              │
-                                     ▼
-                     Detector Detected by SDK?
-                                     │
-                     ┌───────────────┴───────────────┐
-                     │                               │
-                    NO                              YES
-                     │                               │
-         Go to Detector Offline              Continue
-                                             │
-                                             ▼
-                          Firmware Version Readable?
-                                             │
-                     ┌───────────────┴───────────────┐
-                     │                               │
-                    NO                              YES
-                     │                               │
-              Firmware Corrupted?            Continue
-                     │                               │
-             Parameter Recovery              ▼
-                                     Detector Status Normal?
-                                             │
-                     ┌───────────────┴───────────────┐
-                     │                               │
-                    NO                              YES
-                     │                               │
-              Check Configuration          Continue
-                                             │
-                                             ▼
-                           Image Acquisition Successful?
-                                             │
-                     ┌───────────────┴───────────────┐
-                     │                               │
-                    NO                              YES
-                     │                               │
-               Go to Image Tree           Problem Solved
+Boot Failure
+    ↓
+Power / link normal?
+    ├─ No → Check power and physical connection
+    └─ Yes → Detector detected by SDK?
+                 ├─ No → Connection / DetectorOffline branch
+                 └─ Yes → Firmware version readable?
+                              ├─ No → Upgrade/recovery branch
+                              └─ Yes → Configuration valid?
+                                           ├─ No → Configuration recovery
+                                           └─ Yes → Acquisition successful?
+                                                        ├─ No → Image branch
+                                                        └─ Yes → Problem solved
 ```
 
 ---
@@ -99,22 +67,16 @@ Before escalation, verify:
 - Incomplete firmware upgrade
 - Version incompatibility
 
----
-
 ## Configuration
 
 - Invalid detector parameters
 - Startup configuration error
-
----
 
 ## Hardware
 
 - Flash storage failure
 - FPGA startup abnormal
 - Power initialization failure
-
----
 
 ## Software
 
@@ -137,12 +99,12 @@ Priority 2
 
 Priority 3
 
-- Perform Parameter Recovery.
+- Perform approved parameter/configuration recovery.
 - Reboot detector.
 
 Priority 4
 
-- Re-upgrade firmware if corruption is confirmed.
+- Re-upgrade firmware only when the package/version scope and failure branch justify recovery.
 
 ---
 
@@ -162,25 +124,29 @@ Escalate when:
 
 ## Workflow
 
-- 06_Workflow/FirmwareUpgradeWorkflow.md
+- [InitializationWorkflow](../../06_Workflow/InitializationWorkflow.md)
+- [ConfigurationWorkflow](../../06_Workflow/ConfigurationWorkflow.md)
 
 ## Case
 
-- 11_Case/Firmware/BootFailed.md
-- 11_Case/Firmware/VersionMismatch.md
-- 11_Case/Firmware/ParameterRecovery.md
+- [BootFailed](../../11_Case/Firmware/BootFailed.md)
+- [VersionMismatch](../../11_Case/Firmware/VersionMismatch.md)
+- [ParameterRecovery](../../11_Case/Firmware/ParameterRecovery.md)
 
 ## Tools
 
-- 17_Tools/SDKTool/FirmwareUpgrade.md
+- [FirmwareUpgrade](../../17_Tools/SDKTool/FirmwareUpgrade.md)
+- [LogExport](../../17_Tools/SDKTool/LogExport.md)
 
 ## Reference
 
-- 15_Reference/SDKReference.md
+- [SDKReference](../../15_Reference/SDKReference.md)
 
 ## Failure Knowledge
 
-- 07_FailureKnowledge/Firmware/
+- [FailureAnalysisMethod](../../07_FailureKnowledge/FailureAnalysisMethod.md)
+- [FailureClassification](../../07_FailureKnowledge/FailureClassification.md)
+- [FailureCode](../../07_FailureKnowledge/FailureCode.md)
 
 ---
 
@@ -188,4 +154,5 @@ Escalate when:
 
 | Version | Date | Description |
 |---------|------|-------------|
+| v1.1 | 2026-08-10 | Replaced obsolete FirmwareUpgradeWorkflow and FirmwareFailure links with existing workflow and generic FailureKnowledge nodes |
 | v1.0 | 2026-08-06 | Initial release |

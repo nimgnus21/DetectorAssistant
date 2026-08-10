@@ -1,6 +1,6 @@
 # ConfigurationWorkflow
 
-Version: V1.0
+Version: V1.1
 
 Module: Workflow
 
@@ -31,6 +31,7 @@ Related Documents:
 - ExposureWorkflow.md
 - ReadoutWorkflow.md
 - ImageGenerationWorkflow.md
+- ../17_Tools/SDKTool/ModeConfiguration.md
 
 ---
 
@@ -74,37 +75,21 @@ Detector 配置流程如下：
 
 ```text
 Power On
-
 ↓
-
 Detector Initialization
-
 ↓
-
 Read Hardware Information
-
 ↓
-
 Load Configuration
-
 ↓
-
 Load Mode
-
 ↓
-
 Load Calibration Templates
-
 ↓
-
 Verify Configuration
-
 ↓
-
 Initialize Runtime Parameters
-
 ↓
-
 Detector Ready
 ```
 
@@ -118,7 +103,6 @@ Detector Configuration 主要由以下几部分组成：
 
 ```text
 Configuration
-
 ├── Detector Information
 ├── Hardware Configuration
 ├── Firmware Configuration
@@ -166,9 +150,9 @@ Mode 决定 Detector 工作方式。
 - Dynamic Mode
 - Swap Mode
 
-Mode 加载完成后：
+Mode 加载完成后进入 Runtime Configuration。
 
-进入 Runtime Configuration。
+当出现 Mode 无法加载、特定采集模式失败、ROI / Frame Rate / Trigger 配置异常、Mode 与 Calibration 不匹配等问题时，使用 [Mode Configuration Tool](../17_Tools/SDKTool/ModeConfiguration.md) 作为参数检查与配置恢复入口。
 
 ---
 
@@ -219,17 +203,11 @@ Frame Period 必须满足：
 
 ```text
 Frame Period
-
 ≥
-
 Exposure Time
-
 +
-
 Readout Time
-
 +
-
 Processing Time
 ```
 
@@ -238,6 +216,8 @@ Processing Time
 - Image Loss
 - Frame Drop
 - Timeout
+
+参数检查可参考 [Mode Configuration Tool](../17_Tools/SDKTool/ModeConfiguration.md) 中的 Frame Rate、Readout 和 Trigger 配置项。
 
 ---
 
@@ -262,6 +242,8 @@ Processing Time
 - Detector No Response
 - Exposure Failure
 - Timeout
+
+涉及 Mode 参数时使用 [Mode Configuration Tool](../17_Tools/SDKTool/ModeConfiguration.md) 复核 Trigger 与当前 Mode 的一致性。
 
 ---
 
@@ -368,26 +350,19 @@ Detector 进入 Ready 状态。
 主要检查：
 
 ✓ Detector Model
-
 ✓ Firmware Version
-
 ✓ FPGA Version
-
 ✓ SDK Compatibility
-
 ✓ Mode
-
 ✓ ROI
-
 ✓ Frame Rate
-
 ✓ Trigger
-
 ✓ Calibration Template
-
 ✓ Communication Parameters
 
 任何一项失败均应终止采集流程。
+
+Mode、ROI、Frame Rate 或 Trigger 无法确认时，回到 [Mode Configuration Tool](../17_Tools/SDKTool/ModeConfiguration.md) 完成参数复核，再重新验证 Configuration。
 
 ---
 
@@ -395,9 +370,7 @@ Detector 进入 Ready 状态。
 
 ## Firmware Version
 
-升级 Firmware 前：
-
-必须保存：
+升级 Firmware 前必须保存：
 
 - Factory Parameters
 - Calibration Parameters
@@ -434,6 +407,8 @@ Detector 进入 Ready 状态。
 - Swap
 - Ghost Correction
 - Lag Correction
+
+涉及具体 Mode 参数检查时使用 [Mode Configuration Tool](../17_Tools/SDKTool/ModeConfiguration.md)。
 
 ---
 
@@ -484,9 +459,19 @@ Detector 进入 Ready 状态。
 - ExposureWorkflow.md
 - ReadoutWorkflow.md
 - ImageGenerationWorkflow.md
+- [Mode Configuration Tool](../17_Tools/SDKTool/ModeConfiguration.md)
 
 ---
 
 # 20. Summary
 
-Configuration Workflow 是 Detector 进入采集状态前最重要的准备流程，负责完成硬件识别、Firmware 初始化、Mode 加载、ROI 配置、Frame Rate 配置、Calibration Template 加载、通信参数配置及一致性验证。正确的 Configuration 能够保证 Detector 在静态及动态模式下稳定工作，并有效降低因参数错误导致的 Image Loss、Calibration Failure、Communication Timeout 及 Workflow Failure 等问题，为后续 Exposure、Readout、Image Generation 和 Dynamic Acquisition 提供可靠基础。
+Configuration Workflow 是 Detector 进入采集状态前最重要的准备流程，负责完成硬件识别、Firmware 初始化、Mode 加载、ROI 配置、Frame Rate 配置、Calibration Template 加载、通信参数配置及一致性验证。`ModeConfiguration.md` 已作为具体配置工具接入 Mode、ROI、Frame Rate、Trigger 与动态参数复核，用于在配置异常时提供可执行的反向入口。
+
+---
+
+# Revision History
+
+| Version | Date | Description |
+|----------|------|-------------|
+| V1.1 | 2026-08-10 | Linked Mode Configuration Tool to configuration verification and troubleshooting |
+| V1.0 | 2026-08 | Initial release |

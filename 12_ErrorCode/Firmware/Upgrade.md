@@ -8,186 +8,151 @@
 
 # Overview
 
-This document describes firmware upgrade-related error codes.
+This document describes firmware upgrade-related errors during download, verification, activation, reboot, and rollback.
 
-These errors occur during firmware download, firmware verification, firmware activation, or detector reboot after a firmware update.
+Firmware errors must be interpreted with detector model, current/target firmware version, SDK version, package identity, power/communication state, and `Detector.log`.
 
 ---
 
 # Related Commands
 
-- Cmd_UpdateFirmware
-- Cmd_Reset
-- Cmd_Connect
-
----
+- `Cmd_UpdateFirmware`
+- `Cmd_Reset`
+- `Cmd_Connect`
 
 # Related Events
 
-- Evt_TaskResult_Failed
-- Evt_TaskResult_Succeed
-- Evt_GeneralError
+- `Evt_TaskResult_Failed`
+- `Evt_TaskResult_Succeed`
+- `Evt_GeneralError`
+
+---
+
+# Error Code → Diagnostic Entry
+
+| Error | Primary Entry | Tool / Evidence |
+|---|---|---|
+| `Err_ApplyFirmwareFailed` | [FirmwareUpgradeFailed](../../09_DecisionTree/Firmware/FirmwareUpgradeFailed.md) | Package identity, `Detector.log`, upgrade record |
+| `Err_FirmwareUpdated` | [FirmwareUpgrade](../../10_SOP/FirmwareUpgrade.md) post-upgrade verification | Reboot/reconnect/version/acquisition evidence |
+| `Err_FPD_FirmwareFallback` | [FirmwareUpgradeFailed](../../09_DecisionTree/Firmware/FirmwareUpgradeFailed.md) + [VersionMismatch](../../09_DecisionTree/Firmware/VersionMismatch.md) | Rollback evidence, version comparison, log |
+| `Err_FPD_General_FirmwareUpgrade_Error` | [FirmwareUpgradeFailed](../../09_DecisionTree/Firmware/FirmwareUpgradeFailed.md) | Communication/power/package/log evidence |
 
 ---
 
 # Error Codes
 
----
-
 ## Err_ApplyFirmwareFailed
 
-### Description
+The firmware package was downloaded, but the detector failed to apply or activate it.
 
-The firmware file was successfully downloaded to the detector, but the detector failed to activate the new firmware.
+### Diagnostic Path
 
-### Possible Causes
-
-- Firmware file is corrupted.
-- Firmware version is incompatible.
-- Firmware verification failed.
-- Detector flash write failed.
-- Detector reboot failed after upgrade.
-
-### Recommended Actions
-
-1. Verify the firmware package.
-2. Confirm firmware matches the detector model.
-3. Perform the upgrade again.
-4. Restart the detector.
-5. If the issue persists, recover the previous firmware.
+1. Stop repeated upgrade attempts and preserve the failure evidence.
+2. Record detector model, current firmware, target firmware, SDK version, and package identity.
+3. Enter [FirmwareUpgradeFailed](../../09_DecisionTree/Firmware/FirmwareUpgradeFailed.md).
+4. Verify package/model/version compatibility through [VersionMismatch](../../09_DecisionTree/Firmware/VersionMismatch.md).
+5. Review the upgrade procedure in [FirmwareUpgrade](../../10_SOP/FirmwareUpgrade.md).
+6. Export logs with [LogExport](../../17_Tools/SDKTool/LogExport.md).
+7. Retry only after the failure branch has been identified and corrected.
 
 ---
 
 ## Err_FirmwareUpdated
 
-### Description
+Firmware update completed successfully. This is an informational status, not a failure.
 
-Firmware update completed successfully.
+### Required Verification
 
-The detector must be powered off, restarted, and reconnected before the new firmware becomes effective.
+1. Complete the required detector power-cycle/reboot procedure.
+2. Reconnect using `Cmd_Connect`.
+3. Verify the reported firmware version.
+4. Verify the detector state is normal.
+5. Perform a controlled acquisition test.
+6. If dynamic-product calibration state is affected by reset, follow the applicable calibration/configuration requirement before declaring release.
 
-### Possible Causes
-
-This is an informational status rather than a failure.
-
-### Recommended Actions
-
-1. Power off the detector.
-2. Wait several seconds.
-3. Power on the detector.
-4. Execute Cmd_Connect again.
-5. Verify the firmware version.
+Use [FirmwareUpgrade](../../10_SOP/FirmwareUpgrade.md) as the verification path.
 
 ---
 
 ## Err_FPD_FirmwareFallback
 
-### Description
+The detector automatically rolled back to the previous firmware version, reported during the first connection through `Evt_GeneralError`.
 
-The detector has automatically rolled back to the previous firmware version.
+### Diagnostic Path
 
-The SDK reports this condition during the first connection through **Evt_GeneralError**.
-
-### Possible Causes
-
-- Firmware verification failed.
-- Firmware startup failed.
-- Firmware compatibility issue.
-- Upgrade interrupted.
-
-### Recommended Actions
-
-1. Verify detector firmware version.
-2. Check Detector.log.
-3. Perform the firmware upgrade again.
-4. Use the correct firmware package.
-5. Contact technical support if rollback occurs repeatedly.
+1. Preserve the rollback event and log before another upgrade.
+2. Record the current version and attempted target version.
+3. Follow [FirmwareUpgradeFailed](../../09_DecisionTree/Firmware/FirmwareUpgradeFailed.md).
+4. Compare compatibility through [VersionMismatch](../../09_DecisionTree/Firmware/VersionMismatch.md).
+5. Do not repeatedly force the same package until package/version compatibility and failure evidence are reviewed.
 
 ---
 
 ## Err_FPD_General_FirmwareUpgrade_Error
 
-### Description
+General detector-side firmware upgrade failure.
 
-General firmware upgrade failure reported by the detector.
+### Diagnostic Path
 
-### Possible Causes
-
-- Firmware transmission failed.
-- Flash programming failed.
-- Firmware verification failed.
-- Internal firmware exception.
-
-### Recommended Actions
-
-1. Verify firmware package integrity.
-2. Verify detector communication.
-3. Upgrade again using a stable network.
-4. Restart detector after failure.
-5. Collect Detector.log before escalation.
+1. Preserve the exact error, command result, and timestamp.
+2. Verify stable power and communication.
+3. Verify package identity and detector model before retry.
+4. Follow [FirmwareUpgradeFailed](../../09_DecisionTree/Firmware/FirmwareUpgradeFailed.md).
+5. If communication evidence is abnormal, enter [NetworkFailure](../../09_DecisionTree/Connection/NetworkFailure.md).
+6. Export `Detector.log` and upgrade evidence with [LogExport](../../17_Tools/SDKTool/LogExport.md).
 
 ---
 
-# Firmware Upgrade Recommendations
+# Pre-Upgrade Control
 
-Before upgrading firmware:
+Before upgrading:
 
 - Verify detector model.
-- Verify firmware version.
-- Verify SDK compatibility.
-- Ensure stable power supply.
-- Ensure stable Ethernet connection.
-- Close all acquisition tasks.
-- Do not interrupt the upgrade process.
+- Record current firmware version.
+- Verify target firmware applicability.
+- Verify SDK compatibility where required.
+- Ensure stable power.
+- Ensure stable Ethernet communication.
+- Close acquisition tasks.
+- Preserve existing version/configuration evidence.
+- Do not interrupt the upgrade.
 
 ---
 
-# Diagnostic Checklist
+# Evidence Package
 
-When firmware upgrade errors occur, verify the following:
+Collect:
 
-- Firmware package is correct.
-- Firmware package is not corrupted.
-- Detector model matches the firmware.
-- Detector communication is stable.
-- Detector power is stable.
-- Detector reboot completed successfully.
-- Detector.log contains no firmware exceptions.
-
----
-
-# Related DecisionTree
-
-- 09_DecisionTree/Firmware/FirmwareUpgradeFailed.md
-- 09_DecisionTree/Firmware/VersionMismatch.md
+- Exact error/event and timestamp
+- Detector model and applicable identity
+- Current firmware version
+- Target firmware version
+- SDK version
+- Firmware package identity/check information
+- Upgrade step where failure occurred
+- Detector power/reboot result
+- Network/communication state when applicable
+- `Detector.log`
+- Result after controlled retry or rollback
 
 ---
 
-# Related Case
+# Related DecisionTree / SOP / Tool / Case
 
-- 11_Case/Firmware/VersionMismatch.md
-- 11_Case/Firmware/ParameterRecovery.md
-
----
-
-# Related Workflow
-
-- 06_Workflow/FirmwareUpgradeWorkflow.md
-
----
-
-# Related Log
-
-```
-Detector.log
-```
-
-Firmware upgrade failures should always be analyzed together with Detector.log, firmware package information, detector model, firmware version, and SDK version.
+- [FirmwareUpgradeFailed](../../09_DecisionTree/Firmware/FirmwareUpgradeFailed.md)
+- [VersionMismatch](../../09_DecisionTree/Firmware/VersionMismatch.md)
+- [NetworkFailure](../../09_DecisionTree/Connection/NetworkFailure.md)
+- [FirmwareUpgrade](../../10_SOP/FirmwareUpgrade.md)
+- [Firmware Upgrade Tool](../../17_Tools/SDKTool/FirmwareUpgrade.md)
+- [LogExport](../../17_Tools/SDKTool/LogExport.md)
+- [VersionMismatch Case](../../11_Case/Firmware/VersionMismatch.md)
+- [ParameterRecovery Case](../../11_Case/Firmware/ParameterRecovery.md)
 
 ---
 
 # Revision History
 
 | Version | Date | Description |
-|---------|------|-------------|
+|---|---|---|
+| v1.1 | 2026-08-10 | Added direct upgrade failure mapping, evidence package, and post-upgrade verification chain |
 | v1.0 | 2026-08-07 | Initial release |

@@ -1,10 +1,16 @@
 # VerticalLine
 
-Version: V1.0
+Version: V1.1
 
 Module: 11_Case / Image
 
-Status: Released
+Status: Resolved
+
+Case Classification: Field Case Record
+
+Evidence Level: Resolved — the event-level symptom, diagnostic observations, corrective disposition, and post-repair verification are recorded. The exact failed Column Readout hardware mechanism is not independently documented.
+
+Promotion Rule: Promote the root-cause conclusion to `Verified` only when hardware/return analysis, component diagnosis, or equivalent technical evidence confirms the specific failed mechanism.
 
 Severity: ★★★★★
 
@@ -18,206 +24,348 @@ Applicable Products:
 
 Related Documents:
 
-- ../../08_ImageDiagnosis/VerticalLineArtifact/
-- ../../07_FailureKnowledge/ImageFailure/ColumnFailure.md
-- ../../09_DecisionTree/Image/VerticalLine.md
-- ../../13_Principles/TFTReadout/
-- ../../13_Principles/GateDriver/
+- [VerticalLineArtifact](../../08_ImageDiagnosis/VerticalLineArtifact/)
+- [ColumnFailure](../../07_FailureKnowledge/ImageFailure/ColumnFailure.md)
+- [VerticalLine DecisionTree](../../09_DecisionTree/Image/VerticalLine.md)
+- [TFTReadout](../../13_Principles/TFTReadout/)
+- [GateDriver](../../13_Principles/GateDriver/)
+- [ImageTroubleshooting SOP](../../10_SOP/ImageTroubleshooting.md)
+- [Calibration SOP](../../10_SOP/Calibration.md)
+- [Case Admission Checklist](../CaseAdmissionChecklist.md)
+- [Knowledge Feedback Record](../KnowledgeFeedbackRecord.md)
 
 ---
 
-# 1. Case Summary
+# 1. Admission Audit Result
+
+This record contains a concrete product, operating scenario, observed symptom, actual diagnostic sequence, corrective disposition, and post-repair verification. It therefore remains a Case record.
+
+The available evidence supports the following conclusion:
+
+> A persistent fixed-column artifact was observed in corrected images, dark images, and multiple RAW images, and the symptom was resolved after hardware repair.
+
+The available record does **not** independently document the exact failed electronic component or Column Readout channel. Therefore:
+
+- `Status: Resolved`
+- `Verified Root Cause: Not Fully Confirmed`
+- `Suspected Failure Mechanism: Column Readout Path / related hardware`
+
+The symptom evidence is stronger than the mechanism evidence.
+
+---
+
+# 2. Case Summary
 
 ## Case Name
 
-Vertical Line Appears Across the Entire Image
+Persistent Vertical Line Appears Across the Entire Image
+
+## Case Boundary
+
+This Case describes a persistent fixed-position vertical line. It must not be used as a universal root-cause template for all vertical stripe artifacts.
+
+For other vertical-line patterns, first distinguish:
+
+- fixed column artifact;
+- repeating periodic stripe;
+- calibration-related stripe;
+- communication/image-transfer corruption;
+- transient or environment-dependent interference.
+
+Primary routing: [VerticalLine DecisionTree](../../09_DecisionTree/Image/VerticalLine.md).
 
 ---
 
-# 2. Customer Environment
+# 3. Customer Environment
 
-Customer：
+Customer:
 
 - Hospital DR Department
 
-Product：
+Product:
 
 - Pluto1717
 
-Operation：
+Operation:
 
 - Static Radiography
 
-Detector：
+Detector:
 
 - Wired Ethernet Detector
 
----
+Recorded environment limitation:
 
-# 3. Fault Description
+- exact detector SN not preserved in the current Case;
+- software / SDK / firmware versions are not recorded;
+- repair report or hardware analysis result is not attached.
 
-客户反馈：
-
-图像中始终存在一条贯穿整个图像高度的亮线。
-
-特点：
-
-- 每次曝光位置固定
-- 与曝光条件无关
-- 重启软件后仍然存在
-- 更换被摄体后位置不变
-
-客户怀疑探测器已经损坏。
+These missing records prevent promotion of the failure mechanism to `Verified`.
 
 ---
 
-# 4. Troubleshooting Timeline
+# 4. Fault Description
 
-## Step 1
+Customer reported a persistent bright vertical line extending across the image height.
 
-检查网络通信状态。
+Observed characteristics:
 
-确认：
+- fixed column position on every exposure;
+- no visible change with exposure-condition changes;
+- no visible change after changing the imaged object;
+- remained after application restart.
 
-- Detector Online
-- 无 Image Loss
-- 无 Timeout
+Initial FAE finding:
 
-结果：
-
-通信正常。
-
----
-
-## Step 2
-
-重新采集 Offset。
-
-结果：
-
-异常仍存在。
+- fixed-column artifact;
+- Column Readout path considered a candidate mechanism requiring further confirmation.
 
 ---
 
-## Step 3
+# 5. Evidence Classification
 
-重新加载：
+| Evidence | Observation | Supported Finding |
+|---|---|---|
+| Detector communication | Online; no Image Loss; no Timeout recorded | Communication failure was not supported by the recorded event |
+| Offset reacquisition | No improvement | Simple Offset reacquisition did not remove the artifact |
+| Template reload | No improvement | Reloading Offset/Gain/Defect templates did not remove the artifact |
+| Dark image | Same column-position anomaly remained | Artifact was not dependent on normal exposure content |
+| Multiple RAW images | Anomaly remained at the same column coordinate | Persistent fixed-column pattern supported |
+| Hardware repair | Symptom disappeared after repair | Hardware intervention was associated with recovery |
+| Repair analysis | Not preserved | Exact failed hardware mechanism not verified |
 
-- Offset Template
-- Gain Template
-- Defect Template
+Important boundary:
 
-结果：
-
-无改善。
-
----
-
-## Step 4
-
-采集暗场图。
-
-观察：
-
-亮线仍然存在。
-
-排除曝光因素。
+The evidence supports a persistent detector-side or readout-related candidate path, but does not identify a specific component solely from image morphology.
 
 ---
 
-## Step 5
+# 6. Troubleshooting Timeline
 
-比较多张 RAW 图像。
+## Step 1 — Check Communication State
 
-发现：
+Observed:
 
-异常始终位于相同列坐标。
+- Detector Online;
+- no Image Loss recorded;
+- no Timeout recorded.
 
-判断：
+Result:
 
-属于固定列异常。
-
----
-
-## Step 6
-
-结合读出结构分析。
-
-怀疑：
-
-列读出通道异常。
-
-建议进一步进行硬件检测。
+The recorded event did not support communication interruption as the primary explanation.
 
 ---
 
-# 5. Root Cause
+## Step 2 — Reacquire Offset
 
-固定列读出异常导致整列像素输出异常。
+Action:
 
-详细形成机理请参见：
+- reacquire Offset according to the applicable calibration procedure.
 
-- ../../07_FailureKnowledge/ImageFailure/ColumnFailure.md
+Result:
 
----
+- vertical line remained.
 
-# 6. Solution
+Finding:
 
-处理措施：
-
-- 导出 RAW 图像
-- 记录异常列位置
-- 检查 Defect Template 是否可修正
-- 若无法修正，提交硬件检测
-
-必要时返厂维修。
+Simple Offset reacquisition did not resolve the artifact.
 
 ---
 
-# 7. Verification
+## Step 3 — Reload Existing Correction Templates
 
-维修后验证：
+Reloaded:
 
-- 连续采图正常
-- 固定亮线消失
-- 图像均匀
-- 多次曝光结果一致
+- Offset Template;
+- Gain Template;
+- Defect Template.
 
-问题解决。
+Result:
 
----
+- no visible improvement.
 
-# 8. Lessons Learned
+Finding:
 
-- 固定位置且贯穿整幅图像的竖线，应优先怀疑列读出异常。
-- 若暗场图中同样存在该异常，可基本排除曝光因素。
-- 不建议反复重新校准，应先确认异常是否属于硬件读出问题。
+The recorded template reload path did not remove the artifact.
 
 ---
 
-# 9. Related Documents
+## Step 4 — Acquire Dark Image
 
-Image Diagnosis：
+Observation:
 
-- VerticalLineArtifact
+- the anomaly remained at the same column position.
 
-Failure Knowledge：
+Finding:
 
-- ColumnFailure.md
+The event evidence did not support normal exposure content as the direct source of the fixed-column artifact.
 
-Decision Tree：
-
-- VerticalLine.md
-
-Principles：
-
-- TFTReadout
-- GateDriver
+This does not, by itself, prove a specific readout component failure.
 
 ---
 
-# 10. Revision History
+## Step 5 — Compare Multiple RAW Images
+
+Observation:
+
+- the anomaly remained at the same column coordinate across multiple RAW images.
+
+Finding:
+
+- persistent fixed-column abnormality confirmed.
+
+Required record for future Cases:
+
+- affected RAW files;
+- column coordinate;
+- image dimensions / binning / ROI;
+- acquisition mode;
+- timestamp and detector/software version.
+
+---
+
+## Step 6 — Failure Mechanism Assessment
+
+Based on the fixed-column pattern, dark-image persistence, and RAW consistency:
+
+- suspected mechanism: Column Readout Path or related detector-side hardware;
+- confidence: diagnostic candidate, not independently verified root cause.
+
+Recommended next action:
+
+- preserve RAW and corrected images;
+- record abnormal column coordinate;
+- verify whether an applicable defect-correction mechanism can safely compensate for the defect;
+- submit the evidence package for hardware/R&D analysis when the artifact cannot be corrected within product requirements.
+
+---
+
+# 7. Current Conclusion
+
+## Verified Findings
+
+The following findings are supported by the Case record:
+
+- a vertical artifact occurred at a fixed column position;
+- the artifact persisted across repeated exposures;
+- the artifact persisted after Offset reacquisition and template reload;
+- the artifact was visible in a dark image at the same column position;
+- the artifact was visible in multiple RAW images at the same column coordinate;
+- the symptom disappeared after hardware repair and controlled post-repair verification.
+
+## Root Cause
+
+Not Fully Confirmed.
+
+## Suspected Failure Mechanism
+
+Column Readout Path abnormality or related detector-side hardware abnormality.
+
+This mechanism must remain explicitly marked as suspected until supported by:
+
+- hardware diagnostic result;
+- return/factory analysis;
+- component-level repair record;
+- or equivalent technical confirmation.
+
+For general mechanism reference, see [ColumnFailure](../../07_FailureKnowledge/ImageFailure/ColumnFailure.md).
+
+---
+
+# 8. Resolution
+
+Field handling:
+
+- preserve RAW images;
+- record the abnormal column coordinate;
+- verify whether the applicable Defect Template path can correct the artifact within product requirements;
+- if correction is ineffective or outside the supported compensation boundary, submit the detector for further hardware/R&D analysis;
+- complete hardware repair through the approved service path.
+
+The Case does not establish that every fixed-column artifact requires the same repair action.
+
+---
+
+# 9. Verification
+
+After repair, the following were recorded:
+
+- continuous image acquisition was normal;
+- fixed vertical line disappeared;
+- image uniformity returned to normal appearance;
+- repeated exposure results were consistent.
+
+Current Case result:
+
+`Resolved`.
+
+Additional verification required for future similar Cases:
+
+- preserve before/after images;
+- record test count and acquisition conditions;
+- confirm whether the same detector configuration and correction templates were used;
+- attach repair analysis where available.
+
+---
+
+# 10. Diagnostic Lessons
+
+- A fixed-position vertical line should first be classified as a phenomenon, not immediately as a root cause.
+- Persistence in dark images and RAW images is strong evidence for a detector/readout-side candidate path.
+- Failure of Offset reacquisition or template reload does not by itself prove hardware failure, but it is useful branch evidence.
+- Repeated calibration should not replace evidence collection.
+- Record the abnormal column coordinate to support later R&D/hardware correlation.
+- Do not generalize this Case to periodic vertical stripes or transfer corruption without checking the appropriate DecisionTree branches.
+
+---
+
+# 11. Knowledge Feedback Review
+
+| Layer | Checked Entry | Result | Action / Reason |
+|---|---|---|---|
+| FailureKnowledge | [ColumnFailure](../../07_FailureKnowledge/ImageFailure/ColumnFailure.md) | No update required | Existing mechanism reference already covers the candidate path; this Case does not add a verified component-level mechanism |
+| DecisionTree | [VerticalLine](../../09_DecisionTree/Image/VerticalLine.md) | No update required | Existing DecisionTree remains the correct entry; this Case reinforces fixed-position / dark / RAW evidence usage |
+| SOP | [ImageTroubleshooting](../../10_SOP/ImageTroubleshooting.md) | No update required | No new universal step was verified |
+| Calibration SOP | [Calibration](../../10_SOP/Calibration.md) | No update required | Offset/template failure is Case evidence, not a new calibration procedure |
+| Tools | Existing image/RAW evidence tools | Additional evidence recommended | Future Case should preserve RAW and coordinate metadata |
+| ErrorCode | Not applicable | No update required | No error-code event established |
+| Index | Case retained | Update not required | Existing VerticalLine search entry remains valid; status is now Resolved |
+
+---
+
+# 12. Evidence Gap for Promotion to Verified
+
+The following evidence is missing from the current record:
+
+- detector SN;
+- software / SDK / firmware version;
+- original RAW and dark images;
+- abnormal column coordinate;
+- repair report;
+- confirmed failed component or circuit;
+- before/after configuration record.
+
+Without this evidence, the Case remains `Resolved` rather than `Verified`.
+
+---
+
+# 13. Related Documents
+
+- [VerticalLineArtifact](../../08_ImageDiagnosis/VerticalLineArtifact/)
+- [ColumnFailure](../../07_FailureKnowledge/ImageFailure/ColumnFailure.md)
+- [VerticalLine DecisionTree](../../09_DecisionTree/Image/VerticalLine.md)
+- [ImageTroubleshooting SOP](../../10_SOP/ImageTroubleshooting.md)
+- [Calibration SOP](../../10_SOP/Calibration.md)
+- [TFTReadout](../../13_Principles/TFTReadout/)
+- [GateDriver](../../13_Principles/GateDriver/)
+- [Case Admission Checklist](../CaseAdmissionChecklist.md)
+- [Knowledge Feedback Record](../KnowledgeFeedbackRecord.md)
+
+---
+
+# 14. Revision History
 
 | Version | Date | Description |
-|----------|------|-------------|
-| V1.0 | 2026-08 | 建立 Vertical Line 图像异常现场案例。 |
+|---|---|---|
+| V1.1 | 2026-08-10 | Batch 5 admission audit: retained as field Case, changed status to Resolved, separated verified findings from suspected Column Readout mechanism, added evidence gaps and knowledge feedback |
+| V1.0 | 2026-08 | Initial vertical-line field case |

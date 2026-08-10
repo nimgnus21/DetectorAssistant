@@ -4,7 +4,7 @@
 >
 > Category: Decision Tree
 >
-> Version: v1.1
+> Version: v1.2
 >
 > Last Updated: 2026-08-10
 
@@ -138,11 +138,7 @@ Escalate when:
 ## Tools
 
 - [FirmwareUpgrade](../../17_Tools/SDKTool/FirmwareUpgrade.md)
-- [LogExport](../../17_Tools/SDKTool/LogExport.md)
-
-## Reference
-
-- [SDKReference](../../15_Reference/SDKReference.md)
+- [LogExport](../../17_Tools/Log/LogExport.md)
 
 ## Failure Knowledge
 
@@ -156,5 +152,6 @@ Escalate when:
 
 | Version | Date | Description |
 |---------|------|-------------|
+| v1.2 | 2026-08-10 | P0 Markdown link audit: repaired LogExport path and removed nonexistent SDKReference target |
 | v1.1 | 2026-08-10 | Replaced obsolete FirmwareUpgradeWorkflow and FirmwareFailure links with existing workflow and generic FailureKnowledge nodes |
 | v1.0 | 2026-08-06 | Initial release |

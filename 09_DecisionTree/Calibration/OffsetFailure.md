@@ -4,9 +4,9 @@
 >
 > Category: Decision Tree
 >
-> Version: v1.0
+> Version: v1.1
 >
-> Last Updated: 2026-08-06
+> Last Updated: 2026-08-10
 
 ---
 
@@ -124,22 +124,16 @@ Collect before escalation:
 - Detector communication abnormal
 - Detector internal status error
 
----
-
 ## Firmware
 
 - Firmware version mismatch
 - Calibration interface abnormal
-
----
 
 ## Environment
 
 - Detector exposed during Offset
 - Unstable power supply
 - Detector temperature abnormal
-
----
 
 ## Software
 
@@ -190,23 +184,24 @@ Escalate when:
 
 ## Workflow
 
-- 06_Workflow/CalibrationWorkflow.md
+- [Calibration Workflow](../../06_Workflow/CalibrationWorkflow.md)
+
+## Decision Trees
+
+- [Version Mismatch](../Firmware/VersionMismatch.md)
 
 ## Case
 
-- 11_Case/Calibration/OffsetGenerationFailed.md
+- [Calibration Case Directory](../../11_Case/Calibration/)
 
 ## Tools
 
-- 17_Tools/CalibrationTools.md
-
-## Reference
-
-- 15_Reference/CalibrationReference.md
+- [Calibration Tools](../../17_Tools/SDKTool/CalibrationTools.md)
 
 ## Failure Knowledge
 
-- 07_FailureKnowledge/Calibration/Offset.md
+- [Failure Analysis Method](../../07_FailureKnowledge/FailureAnalysisMethod.md)
+- [Failure Classification](../../07_FailureKnowledge/FailureClassification.md)
 
 ---
 
@@ -214,4 +209,5 @@ Escalate when:
 
 | Version | Date | Description |
 |---------|------|-------------|
+| v1.1 | 2026-08-10 | Repaired obsolete Case, Tool, Reference and FailureKnowledge paths |
 | v1.0 | 2026-08-06 | Initial release |

@@ -1,6 +1,6 @@
 # SDKTool
 
-Version: V1.0
+Version: V1.1
 
 Module: 17_Tools
 
@@ -17,10 +17,11 @@ Applicable Products:
 
 Related Documents:
 
-- ../../06_Workflow/ConfigurationWorkflow.md
-- ../../06_Workflow/CalibrationWorkflow.md
-- ../../06_Workflow/ModeWorkflow.md
-- ../../06_Workflow/DynamicAcquisitionWorkflow.md
+- [Configuration Workflow](../../06_Workflow/ConfigurationWorkflow.md)
+- [Calibration Workflow](../../06_Workflow/CalibrationWorkflow.md)
+- [Mode Workflow](../../06_Workflow/ModeWorkflow.md)
+- [Dynamic Acquisition Workflow](../../06_Workflow/DynamicAcquisitionWorkflow.md)
+- [Workflow Troubleshooting](../../06_Workflow/WorkflowTroubleshooting.md)
 
 ---
 
@@ -35,7 +36,7 @@ SDKTool 模块用于介绍 Flat Panel Detector（FPD）开发、调试、校准�
 - License 管理
 - Detector 校准
 - 动态图像处理
-- 日志分析
+- 日志导出
 - 工程经验沉淀
 
 本文档作为 SDKTool 模块的导航入口，不详细介绍工具的具体操作，各工具的使用方法请参考对应文档。
@@ -47,14 +48,16 @@ SDKTool 模块用于介绍 Flat Panel Detector（FPD）开发、调试、校准�
 ```text
 SDKTool
 
-├── DTDITool
-├── FirmwareUpgrade
-├── LicenseManagement
-├── ModeConfiguration
-├── CalibrationTools
-├── LogExport
-└── FAQ（规划中）
+├── DTDITool.md
+├── FirmwareUpgrade.md
+├── LicenseManagement.md
+├── ModeConfiguration.md
+├── CalibrationTools.md
+├── LogExport.md
+└── iDetectorQuickTroubleshooting.md
 ```
+
+SDKTool 不保留独立 FAQ 作为第二入口。具体问题应进入对应工具文件、DecisionTree 或 SOP，避免重复结论和版本漂移。
 
 ---
 
@@ -62,11 +65,7 @@ SDKTool
 
 ## DTDITool
 
-文件：
-
-```text
-DTDITool.md
-```
+文件：`DTDITool.md`
 
 功能：
 
@@ -82,21 +81,14 @@ DTDITool.md
 - TDI 数据分析
 - 图像异常分析
 
----
-
 ## FirmwareUpgrade
 
-文件：
-
-```text
-FirmwareUpgrade.md
-```
+文件：`FirmwareUpgrade.md`
 
 功能：
 
 - Firmware 升级
 - Firmware 验证
-- Firmware 回退（规划中）
 - 升级记录管理
 
 重点内容：
@@ -106,15 +98,9 @@ FirmwareUpgrade.md
 - OQC 版本确认
 - 现场升级经验
 
----
-
 ## LicenseManagement
 
-文件：
-
-```text
-LicenseManagement.md
-```
+文件：`LicenseManagement.md`
 
 功能：
 
@@ -129,15 +115,9 @@ LicenseManagement.md
 - License 更换
 - License 验证
 
----
-
 ## ModeConfiguration
 
-文件：
-
-```text
-ModeConfiguration.md
-```
+文件：`ModeConfiguration.md`
 
 功能：
 
@@ -147,24 +127,9 @@ ModeConfiguration.md
 - Trigger 配置
 - Dynamic Mode 配置
 
-重点内容：
-
-- Mode128
-- Mode129
-- Mode131
-- Mode132
-- ROI
-- Frame Rate
-
----
-
 ## CalibrationTools
 
-文件：
-
-```text
-CalibrationTools.md
-```
+文件：`CalibrationTools.md`
 
 功能：
 
@@ -174,24 +139,9 @@ CalibrationTools.md
 - Dynamic Calibration
 - Template 管理
 
-重点内容：
-
-- Offset
-- Gain
-- Defect
-- Ghost
-- Lag
-- Swap
-
----
-
 ## LogExport
 
-文件：
-
-```text
-LogExport.md
-```
+文件：`LogExport.md`
 
 功能：
 
@@ -200,17 +150,15 @@ LogExport.md
 - Firmware Log 收集
 - 故障信息整理
 
-重点内容：
+## iDetectorQuickTroubleshooting
 
-- 日志收集
-- 故障定位
-- 提交研发规范
+文件：`iDetectorQuickTroubleshooting.md`
+
+用于 SDK 初始化、连接、采图和基础异常的快速排查入口，并与相关 SOP 和 DecisionTree 配合使用。
 
 ---
 
 # 4. Typical Engineering Workflow
-
-现场工程师常见工作流程如下：
 
 ```text
 Detector Connection
@@ -270,12 +218,12 @@ SDKTool
 │      ├── SoftwareFailure
 │      └── SystemFailure
 │
-├── ImageDiagnosis
+├── DecisionTree
 │
-└── Principles
+└── SOP
 ```
 
-SDKTool 更关注**工具使用方法**，而 Workflow、FailureKnowledge 和 Principles 更关注**工作流程、故障分析及原理知识**。
+SDKTool 更关注工具使用方法；Workflow、FailureKnowledge、DecisionTree 和 SOP 分别承担流程、故障知识、诊断分流和标准执行职责。
 
 ---
 
@@ -354,23 +302,18 @@ Documentation
 
 ---
 
-# 9. Development Plan
+# 9. Future Expansion Rule
 
-SDKTool 模块后续计划增加：
+后续仅在存在明确真实需求、工具来源和技术支持调用关系时新增工具文档，例如：
 
-```text
-SDKTool
+- ParameterReference
+- ReleaseNotes
+- CompatibilityMatrix
+- NetworkConfiguration
+- PerformanceOptimization
+- VersionHistory
 
-├── FAQ.md
-├── ParameterReference.md
-├── ReleaseNotes.md
-├── CompatibilityMatrix.md
-├── NetworkConfiguration.md
-├── PerformanceOptimization.md
-└── VersionHistory.md
-```
-
-进一步完善工具使用说明及版本管理。
+不得为预留目录或规划功能创建空文件。
 
 ---
 
@@ -389,23 +332,5 @@ SDKTool
 
 | Version | Date | Description |
 |----------|------|-------------|
-| V1.0 | 2026-08 | 建立 SDKTool 模块导航文档，整合 DTDITool、FirmwareUpgrade、LicenseManagement、ModeConfiguration、CalibrationTools 及 LogExport。 |
-
----
-
-## Common SDK Runtime Issues
-
-### SDK DLL Load Failure
-
-Typical Symptoms
-
-- SDK cannot start.
-- Detector initialization fails.
-- Image acquisition is unavailable.
-
-Checklist
-
-- Verify SDK DLL files exist.
-- Verify DLL version matches the SDK release.
-- Confirm executable and DLLs originate from the same release package.
-- Restart the application after replacing DLLs.
+| V1.1 | 2026-08-10 | Removed empty FAQ entry, converted related workflow paths to verified links, and clarified tool-module boundaries. |
+| V1.0 | 2026-08 | Established SDKTool module navigation. |

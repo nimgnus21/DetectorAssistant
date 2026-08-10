@@ -1,10 +1,16 @@
 # ImageLoss
 
-Version: V1.0
+Version: V1.1
 
 Module: 11_Case / Communication
 
-Status: Released
+Status: Reference Candidate
+
+Case Classification: Mixed Field Experience / Diagnostic Reference
+
+Evidence Level: Candidate Evidence — this file does not currently contain a single event-level evidence package sufficient for `Verified` Case status.
+
+Promotion Rule: Promote an individual scenario to `Verified` only after model/version/environment, actual diagnostic sequence, preserved evidence, corrective action, and objective retest result are recorded.
 
 Severity: ★★★★★
 
@@ -19,18 +25,32 @@ Applicable Products:
 
 Related Documents:
 
-- ../../06_Workflow/ImageTransmissionWorkflow.md
-- ../../07_FailureKnowledge/SystemFailure/CommunicationFailure.md
-- ../../08_ImageDiagnosis/NoiseArtifact/
-- ../../09_DecisionTree/Communication/ImageLoss.md
-- ../../17_Tools/Wireshark/
-- ../../17_Tools/Ping/
+- [ImageGenerationWorkflow](../../06_Workflow/ImageGenerationWorkflow.md)
+- [CommunicationFailure](../../07_FailureKnowledge/SystemFailure/CommunicationFailure.md)
+- [ImageLoss DecisionTree](../../09_DecisionTree/Image/ImageLoss.md)
+- [Ping](../../17_Tools/Ping/README.md)
+- [Wireshark](../../17_Tools/Wireshark/README.md)
+- [Case Admission Checklist](../CaseAdmissionChecklist.md)
+- [Knowledge Feedback Record](../KnowledgeFeedbackRecord.md)
 
 ---
 
-# 1. Case Summary
+# 1. Admission Audit Result
 
-## Case Name
+This file contains general diagnostic knowledge and several typical field-experience summaries. It does not currently identify one specific customer/field/laboratory event with a complete event-level evidence package.
+
+Therefore:
+
+- it remains in `11_Case` as a search and reference node;
+- its status is `Reference Candidate`, not `Verified` or equivalent;
+- the listed causes are diagnostic candidates, not universally confirmed root causes;
+- future real events may be linked here or promoted into independent Case records.
+
+---
+
+# 2. Reference Summary
+
+## Reference Name
 
 Image Loss
 
@@ -38,373 +58,118 @@ Image Loss
 
 探测器能够正常连接，但图像采集过程中发生图像丢失。
 
-SDK 或采集软件通常提示：
+SDK 或采集软件可能提示：
 
 - Image Loss
 - Lost Frame
 - Frame Missing
 - Acquisition Failed
-- Offset Generation Failed（由丢帧引起）
-
-Image Loss 是动态平板、高帧率模式及校准过程中最常见的问题之一。
+- Offset Generation Failed（当丢帧影响校准输入时）
 
 ---
 
-# 2. Applicable Products
+# 3. Diagnostic Candidates
 
-适用于：
+The following are candidate branches that must be verified against the actual event:
 
-- Gigabit Ethernet Detector
-- Pluto 系列
-- 动态平板
-- 静态平板（网络传输）
+- Jumbo Frame / MTU configuration mismatch where applicable;
+- Packet Size or adapter receive configuration mismatch;
+- network adapter driver or compatibility issue;
+- acquisition rate exceeding validated PC/network capacity;
+- adapter or PCIe power-saving features;
+- cable, connector, or switch-path instability.
 
----
-
-# 3. Environment
-
-典型连接方式：
-
-```text
-PC
-    │
-Gigabit Ethernet
-    │
-Detector
-```
-
-或
-
-```text
-PC
-    │
-Switch
-    │
-Detector
-```
+Do not mark any candidate as the root cause without event evidence.
 
 ---
 
-# 4. Fault Phenomenon
+# 4. Reference Diagnostic Path
 
-现场常见表现：
-
-- SDK 提示 Image Loss
-- 图像连续性中断
-- 图像播放卡顿
-- 丢失部分 Frame
-- Offset 模板生成失败
-- Gain 校准失败
-- Defect 校准失败
-
----
-
-# 5. Root Cause Analysis
-
-根据现场经验，Image Loss 主要来源于数据传输异常，而非探测器成像异常。
-
-主要原因包括：
-
-## 5.1 Jumbo Frame 未开启
-
-Gigabit Detector 推荐开启 Jumbo Frame。
-
-若关闭：
-
-可能导致大数据包分片。
-
-产生丢包。
+1. Confirm whether the symptom is reproducible and record the acquisition condition.
+2. Preserve affected image/RAW, SDK event, and timestamp.
+3. Verify the product-specific network configuration rather than assuming one universal Jumbo Frame or Packet Size value.
+4. Record adapter driver and power-saving configuration.
+5. Compare the symptom under the intended acquisition rate.
+6. Use [Ping](../../17_Tools/Ping/README.md) for reachability/stability and [Wireshark](../../17_Tools/Wireshark/README.md) when packet-level evidence is required.
+7. Enter [ImageLoss DecisionTree](../../09_DecisionTree/Image/ImageLoss.md).
+8. Preserve `Detector.log` and perform a controlled retest after one documented change.
 
 ---
 
-## 5.2 Packet Size 设置错误
+# 5. Candidate Field Experiences
 
-Packet Size 不符合产品要求。
+## Candidate A — Jumbo Frame / Adapter Configuration
 
-导致：
+Observed pattern:
 
-- Frame Loss
-- Receive Error
+- image loss or incomplete frame transfer;
+- symptom improves after restoring the validated network-adapter configuration.
 
----
+Evidence required for promotion:
 
-## 5.3 网卡驱动异常
+- product/model and software scope;
+- before/after adapter parameters;
+- affected acquisition condition;
+- logs or network evidence;
+- controlled continuous-acquisition retest.
 
-驱动版本过旧。
+## Candidate B — Image Loss Affecting Calibration
 
-驱动兼容性问题。
+Observed pattern:
 
----
+- image acquisition interruption;
+- calibration generation fails because the required input image set is incomplete.
 
-## 5.4 Frame Rate 设置过高
+Diagnostic boundary:
 
-超过 PC 数据处理能力。
+The calibration error is not by itself proof that network loss is the root cause. Preserve image count/selection state and use the applicable calibration DecisionTree.
 
-超过网络带宽。
+## Candidate C — Acquisition Rate / System Capacity
 
-导致持续丢帧。
+Observed pattern:
 
----
+- continuous acquisition loses frames under a higher rate;
+- symptom changes after returning to a validated acquisition rate.
 
-## 5.5 节能模式
+Evidence required:
 
-Windows 网卡节能。
-
-PCIe 节能。
-
-绿色以太网。
-
-均可能影响实时数据传输。
-
----
-
-## 5.6 网络硬件问题
-
-包括：
-
-- 网线质量差
-- 网口接触不良
-- 交换机性能不足
+- configured rate;
+- PC/network configuration;
+- repeatability;
+- before/after controlled test.
 
 ---
 
-# 6. Diagnostic Process
+# 6. Verification Rule
 
-建议按以下顺序排查。
+A future event may be closed only when:
 
----
-
-## Step 1
-
-确认是否稳定复现。
-
-记录：
-
-- 是否每次都发生
-- 是否固定位置发生
-- 是否高帧率发生
+- the exact symptom is identified;
+- the failed stage is distinguished from detector connection, acquisition timeout, and image corruption;
+- the corrective action is documented;
+- the original symptom is absent or changes as predicted during a controlled retest;
+- evidence is preserved or explicitly unavailable.
 
 ---
 
-## Step 2
+# 7. Knowledge Feedback Review
 
-检查 Jumbo Frame。
+Current audit decision:
 
-确认：
-
-已开启 Jumbo Frame。
-
----
-
-## Step 3
-
-检查网卡配置。
-
-确认：
-
-- Packet Size
-- Receive Buffer
-- Interrupt Moderation
-- 节能模式
-
-符合产品要求。
+| Layer | Result | Reason |
+|---|---|---|
+| FailureKnowledge | No update required | Existing communication/image-loss knowledge already provides the generic diagnostic layer |
+| DecisionTree | No update required | Existing ImageLoss routing is the primary diagnostic entry |
+| SOP | No update required | No new verified procedural step was extracted from this mixed evidence |
+| Tools | No update required | Ping/Wireshark are already linked as evidence tools |
+| ErrorCode | No update required | No new verified error/event mapping was established |
+| Index | Update required | This file remains a Reference Candidate rather than a Verified Case |
 
 ---
 
-## Step 4
-
-检查网卡驱动。
-
-建议：
-
-升级至验证版本。
-
----
-
-## Step 5
-
-降低 Frame Rate。
-
-现场经验：
-
-若降低帧率后恢复正常。
-
-通常说明：
-
-PC 或网络带宽不足。
-
----
-
-## Step 6
-
-使用 Wireshark。
-
-观察：
-
-- Packet Loss
-- Retransmission
-- Receive Error
-
-确认是否存在网络异常。
-
----
-
-# 7. Typical Field Experience
-
-## Case 1
-
-### Phenomenon
-
-Image Loss。
-
-### Cause
-
-Jumbo Frame 未开启。
-
-### Solution
-
-开启 Jumbo Frame。
-
-恢复正常。
-
----
-
-## Case 2
-
-### Phenomenon
-
-Offset Generation Failed。
-
-### Cause
-
-采集过程中发生丢帧。
-
-### Solution
-
-调整网络配置。
-
-重新生成 Offset。
-
-恢复正常。
-
----
-
-## Case 3
-
-### Phenomenon
-
-动态图像连续丢帧。
-
-### Cause
-
-Frame Rate 设置过高。
-
-### Solution
-
-降低采集帧率。
-
-恢复正常。
-
----
-
-# 8. Verification
-
-满足以下条件：
-
-- 无 Image Loss 提示
-- 连续采集正常
-- 校准成功
-- 图像完整
-- 无连续丢帧
-
-即可判定恢复。
-
----
-
-# 9. Engineering Experience
-
-## Experience 1
-
-Image Loss 时：
-
-优先检查：
-
-- Jumbo Frame
-- 网卡驱动
-- Packet Size
-
-不要立即怀疑 Detector。
-
----
-
-## Experience 2
-
-若同时出现：
-
-- Image Loss
-- Offset Generation Failed
-
-通常首先排查网络配置。
-
----
-
-## Experience 3
-
-降低 Frame Rate 后恢复正常。
-
-多数情况下说明：
-
-PC 配置或网络性能不足。
-
----
-
-## Experience 4
-
-若网络配置全部正常。
-
-建议进一步抓包分析。
-
-不要仅凭软件提示判断 Detector 故障。
-
----
-
-# 10. Prevention
-
-建议：
-
-- 使用千兆以上网卡
-- 开启 Jumbo Frame
-- 使用验证版本驱动
-- 禁用网卡节能
-- 使用高质量网线
-- 校准前确认网络稳定
-
----
-
-# 11. Related Documents
-
-Workflow：
-
-- ImageTransmissionWorkflow.md
-
-Failure Knowledge：
-
-- CommunicationFailure.md
-
-Decision Tree：
-
-- ImageLoss.md
-
-Tools：
-
-- Wireshark
-- Ping
-
----
-
-# 12. Revision History
+# 8. Revision History
 
 | Version | Date | Description |
 |----------|------|-------------|
-| V1.0 | 2026-08 | 初版建立，整理 Image Loss 现场案例及排查经验。 |
-
+| V1.1 | 2026-08-10 | Case admission audit: reclassified as Reference Candidate, separated candidate causes from verified conclusions, added promotion and feedback rules |
+| V1.0 | 2026-08 | Initial field-experience summary |

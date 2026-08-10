@@ -1,10 +1,16 @@
 # Ghost
 
-Version: V1.0
+Version: V1.1
 
 Module: 11_Case / Image
 
-Status: Released
+Status: Reference Candidate
+
+Case Classification: Mixed Field Experience / Diagnostic Reference
+
+Evidence Level: Mixed Candidate Evidence — this file summarizes the Ghost phenomenon, multiple candidate mechanisms, a generic diagnostic sequence, and several anonymous field experiences. It is not a single event-level Case and must not be treated as a universally verified root-cause record.
+
+Promotion Rule: Any individual Ghost scenario may be promoted to a `Verified` Case only after the product/mode/version scope, preserved before/after evidence, actual diagnostic sequence, corrective action, and controlled dynamic retest are recorded.
 
 Severity: ★★★★☆
 
@@ -19,401 +25,341 @@ Applicable Products:
 
 Related Documents:
 
-- ../../08_ImageDiagnosis/GhostArtifact/
-- ../../05_Calibration/DynamicCalibration.md
-- ../../06_Workflow/DynamicCorrectionWorkflow.md
-- ../../07_FailureKnowledge/CalibrationFailure/GhostFailure.md
-- ../../09_DecisionTree/Image/Ghost.md
-- ../../13_Principles/DynamicDetector/
-- ../../17_Tools/SDKTool/CalibrationTools.md
+- [GhostArtifact](../../08_ImageDiagnosis/GhostArtifact/)
+- [DynamicCalibration](../../05_Calibration/DynamicCalibration.md)
+- [DynamicCorrectionWorkflow](../../06_Workflow/DynamicCorrectionWorkflow.md)
+- [GhostFailure](../../07_FailureKnowledge/CalibrationFailure/GhostFailure.md)
+- [Ghost DecisionTree](../../09_DecisionTree/Image/Ghost.md)
+- [DynamicDetector Principles](../../13_Principles/DynamicDetector/)
+- [CalibrationTools](../../17_Tools/SDKTool/CalibrationTools.md)
+- [Case Admission Checklist](../CaseAdmissionChecklist.md)
+- [Knowledge Feedback Record](../KnowledgeFeedbackRecord.md)
 
 ---
 
-# 1. Case Summary
+# 1. Admission Audit Result
 
-## Case Name
+This file previously used `Status: Released`, but its content combines:
 
-Ghost Artifact
+- a general Ghost phenomenon description;
+- multiple possible mechanisms;
+- a generic diagnostic process;
+- four anonymous field experiences;
+- engineering recommendations and prevention guidance.
 
-## Description
+Those elements do not describe one independently evidenced event. The file is therefore retained as a `Reference Candidate` rather than a `Verified` or single-event Case.
 
-Ghost（残影）是动态平板连续采集过程中最典型的图像异常之一。
+Important boundary:
 
-表现为上一帧或前几帧曝光区域，在后续图像中仍然保留部分轮廓或灰度信息，即使新的曝光条件已经发生变化，图像仍可观察到历史影像。
+> Ghost symptom confirmed does not automatically mean Ghost Template, Mode132, ROI, network, or detector lag is the root cause.
 
-Ghost 多发生于动态采集、高频曝光及连续透视等应用场景。
-
----
-
-# 2. Applicable Products
-
-适用于：
-
-- Dynamic Flat Panel Detector
-- Pluto 系列动态探测器
-- 支持连续采集的动态 DR
-
-一般静态 DR 不会出现典型 Ghost Artifact。
+Each candidate branch requires event evidence.
 
 ---
 
-# 3. Environment
+# 2. Reference Phenomenon
 
-典型工作流程：
+Ghost（残影）可表现为连续动态采集中前一帧或前几帧的高对比结构、轮廓或灰度信息在后续图像中仍可见。
 
-```text
-连续曝光
+Typical observations:
 
-↓
+- 上一帧人体轮廓残留；
+- 高吸收区域残留；
+- 图像拖尾；
+- 曝光目标移动后仍保留旧位置轮廓；
+- 连续图像存在历史影像。
 
-连续采集
-
-↓
-
-Ghost Correction
-
-↓
-
-动态图像输出
-```
-
-Ghost 通常发生于：
-
-- 连续曝光
-- 高频采集
-- 动态透视
-- 长时间连续工作
+This file is primarily applicable to dynamic/continuous acquisition scenarios. It must not be used to exclude all residual-image phenomena in other products without checking the actual product behavior.
 
 ---
 
-# 4. Fault Phenomenon
+# 3. Ghost vs Similar Phenomena
 
-现场常见现象：
+Before selecting a cause, distinguish the phenomenon from similar image behavior:
 
-- 上一帧人体轮廓仍然可见
-- 高吸收区域残留
-- 图像拖尾
-- 曝光目标移动后仍保留旧位置轮廓
-- 连续图像存在历史影像
+| Phenomenon | Key Observation | Primary Next Step |
+|---|---|---|
+| Ghost | Residual structure correlates with a previous image/history | Check temporal sequence and Ghost correction path |
+| Lag | Pixel response or recovery appears slow and may not map cleanly to one previous frame | Enter [Lag](../../09_DecisionTree/Image/Lag.md) |
+| Fixed line/dot | Artifact remains at the same detector coordinate | Enter the relevant spatial-artifact DecisionTree |
+| Image transfer corruption | Artifact changes with transfer/acquisition behavior | Check Image Loss / communication evidence |
+| Periodic interference | Repeating pattern not necessarily related to previous frame content | Check interference/calibration path |
 
-特点：
-
-- 静止观察更容易发现
-- 高对比区域最明显
-- 连续播放时表现为残留阴影
+Do not classify a phenomenon as Ghost solely because it appears as a shadow or trail.
 
 ---
 
-# 5. Root Cause Analysis
+# 4. Candidate Diagnostic Branches
 
-## 5.1 Ghost Correction 未执行
+The following are candidate branches, not universal root causes.
 
-未建立 Ghost Template。
+## 4.1 Ghost Correction Not Active or Not Applied
 
-导致动态图像未经 Ghost Correction。
+Candidate conditions may include:
 
----
+- required correction/template not generated;
+- correction/template not loaded;
+- correction path not enabled for the actual mode.
 
-## 5.2 Ghost Template 异常
+Required evidence:
 
-包括：
+- mode configuration;
+- correction/template load state;
+- before/after output under the same acquisition condition.
 
-- Template 未生成
-- Template 损坏
-- Template 未加载
-- Template 与当前 Mode 不匹配
+## 4.2 Template Scope or Compatibility Mismatch
 
----
+Candidate conditions may include:
 
-## 5.3 Mode 配置错误
+- template generated for a different mode or acquisition configuration;
+- template no longer applicable after a relevant configuration change;
+- template file/load error.
 
-Ghost Correction 与当前 Mode 配置相关。
+Do not assume every ROI, Frame Rate, or Mode change invalidates every template; verify the applicable product rule.
 
-包括：
+## 4.3 Dynamic Mode / Configuration Change
 
-- ROI 修改
-- Exposure Mode 修改
-- Dynamic Mode 修改
+Record the actual before/after configuration, including where applicable:
 
----
+- ROI;
+- Exposure Mode;
+- Dynamic Mode;
+- Frame Rate;
+- correction-related parameters.
 
-## 5.4 Swap Mode 配置异常
+The change itself is evidence only after controlled comparison.
 
-根据培训资料：
+## 4.4 Calibration Data Quality / Acquisition Interruption
 
-Ghost Correction 通常结合 **Mode132（Swap Mode）** 使用。
+Candidate condition:
 
-若：
+- calibration input was incomplete or abnormal because acquisition experienced image loss, timeout, or other interruption.
 
-- Pre-offset
-- Post-offset
+Boundary:
 
-采集异常，
+An interrupted calibration process is not proof that network instability is the ultimate Ghost mechanism. Preserve acquisition evidence and verify the generated correction result.
 
-Ghost 校正效果将明显下降。
+## 4.5 Detector Temporal Response / Long Continuous Exposure
 
----
+Observed Ghost severity may increase under sustained or high-load dynamic operation.
 
-## 5.5 长时间连续曝光
-
-连续高剂量曝光后，
-
-Ghost 现象可能更加明显。
-
----
-
-# 6. Diagnostic Process
-
-建议按照以下顺序排查：
+This pattern requires controlled evidence before being classified as an intrinsic detector temporal-response limitation.
 
 ---
 
-## Step 1
+# 5. Reference Diagnostic Process
 
-确认是否为动态模式。
+## Step 1 — Confirm Product and Acquisition Mode
 
-Ghost 主要发生于：
+Record:
 
-- Dynamic Detector
-- 连续采集模式
+- product/model;
+- dynamic/static mode;
+- acquisition mode;
+- frame rate where applicable;
+- software/SDK/firmware version.
 
----
+Do not start by regenerating calibration data before preserving the original configuration.
 
-## Step 2
+## Step 2 — Confirm Temporal Correlation
 
-确认 Ghost Artifact。
+Check whether the residual structure corresponds to a previous frame or earlier high-contrast exposure.
 
-观察：
+Preserve a short image sequence showing:
 
-残影是否来自上一帧。
+- source frame;
+- subsequent affected frame(s);
+- frame order/timestamp where available.
 
-若上一帧轮廓能够对应当前残留图像，
+## Step 3 — Check Correction State
 
-则可初步判断 Ghost。
+Verify the actual Ghost correction/template state for the active mode:
 
----
+- generated;
+- loaded;
+- enabled/applied;
+- compatible with the active configuration according to product requirements.
 
-## Step 3
+## Step 4 — Check Configuration Change History
 
-检查 Ghost Template。
+Compare the current configuration with the configuration under which the correction/template was created.
 
-确认：
+Focus on changes that the applicable product documentation identifies as relevant to correction validity.
 
-- 已生成
-- 已加载
-- 与当前 Mode 匹配
+## Step 5 — Check Calibration Evidence
 
----
+If regeneration is required:
 
-## Step 4
+- preserve the existing state first;
+- record the calibration input and completion result;
+- record Image Loss/Timeout or other interruptions;
+- do not overwrite the original evidence without backup.
 
-检查 Mode Configuration。
+## Step 6 — Controlled Retest
 
-确认：
+Repeat a representative dynamic sequence and compare:
 
-- ROI
-- Exposure Mode
-- Frame Rate
+- before/after residual severity;
+- frame-to-frame persistence;
+- reproducibility under the same operating condition.
 
-是否发生修改。
-
----
-
-## Step 5
-
-检查 Ghost Calibration。
-
-必要时：
-
-重新执行 Ghost Calibration。
-
----
-
-## Step 6
-
-检查采集过程。
-
-确认：
-
-- 无 Image Loss
-- 无 Timeout
-- 网络稳定
-
-避免 Ghost Calibration 数据异常。
+Use [Ghost DecisionTree](../../09_DecisionTree/Image/Ghost.md) for branch routing and [DynamicCorrectionWorkflow](../../06_Workflow/DynamicCorrectionWorkflow.md) for the applicable correction workflow.
 
 ---
 
-# 7. Typical Field Experience
+# 6. Candidate Field Experiences
 
-## Case 1
+## Candidate A — Correction/Template Not Loaded
 
-### Phenomenon
+Observed pattern:
 
-动态图像存在人体轮廓残留。
+- dynamic images show residual structure consistent with earlier frames;
+- correction/template state is found not to be loaded or applied;
+- symptom improves after restoring the intended correction state.
 
-### Cause
+Promotion evidence:
 
-Ghost Template 未加载。
+- product/mode/version;
+- correction state before/after;
+- source and affected frame sequence;
+- controlled retest.
 
-### Solution
+## Candidate B — Configuration Changed After Template Creation
 
-重新加载 Ghost Template。
+Observed pattern:
 
-恢复正常。
+- correction effectiveness is reduced after a relevant acquisition configuration change;
+- a new or product-approved correction procedure restores expected output.
 
----
+Promotion evidence:
 
-## Case 2
+- exact changed parameter;
+- template generation scope;
+- before/after image sequence;
+- repeatability.
 
-### Phenomenon
+## Candidate C — Mode/Swap Configuration Candidate
 
-Ghost Correction 无明显效果。
+Observed pattern:
 
-### Cause
+- dynamic residual behavior is associated with a specific mode configuration;
+- the original record references Mode132 / Swap Mode and related acquisition behavior.
 
-修改 ROI 后继续使用旧 Template。
+Evidence boundary:
 
-### Solution
+The current record does not provide sufficient event-level evidence to state that Mode132 is a universal Ghost root cause. Verify product-specific configuration requirements before modification.
 
-重新执行 Ghost Calibration。
+## Candidate D — Calibration Acquisition Interruption
 
----
+Observed pattern:
 
-## Case 3
+- correction/calibration input is affected by acquisition interruption;
+- regenerating valid calibration data after resolving the interruption improves the output.
 
-### Phenomenon
+Promotion evidence:
 
-动态图像持续出现拖尾。
-
-### Cause
-
-Swap Mode 配置异常。
-
-### Solution
-
-检查 Mode132 配置。
-
-重新建立 Ghost Template。
-
----
-
-## Case 4
-
-### Phenomenon
-
-Ghost 偶尔出现。
-
-### Cause
-
-Ghost Calibration 采集过程中发生 Image Loss。
-
-### Solution
-
-恢复网络通信。
-
-重新执行 Ghost Calibration。
+- interruption log/evidence;
+- calibration result;
+- before/after image sequence;
+- controlled verification.
 
 ---
 
-# 8. Verification
+# 7. Resolution Boundary
 
-确认：
+A corrective action may be considered effective only when the affected dynamic sequence is retested under the relevant original operating condition.
 
-- 连续动态图像无明显残影
-- Ghost Template 正常加载
-- 连续采集稳定
-- 图像质量恢复
+Recommended verification includes:
 
-即可确认问题解决。
+- continuous multi-frame acquisition;
+- comparison with the original source/residual pattern;
+- confirmation that the intended correction state is active;
+- repeatability over a documented number of sequences.
 
----
-
-# 9. Engineering Experience
-
-## Experience 1
-
-Ghost 主要发生于动态平板。
-
-静态 DR 一般无需怀疑 Ghost。
+A single visually acceptable frame is insufficient to prove a Ghost mechanism is resolved.
 
 ---
 
-## Experience 2
+# 8. Current Knowledge Conclusions
 
-Ghost 与 Lag 极易混淆。
+## Supported Reference Findings
 
-Ghost 通常表现为：
+- Ghost-like residual artifacts are primarily investigated through temporal frame relationships.
+- Dynamic acquisition mode and correction state are relevant diagnostic dimensions.
+- Correction/template state and configuration compatibility should be checked before concluding detector hardware failure.
+- Ghost and Lag require separate diagnostic paths.
+- Interrupted calibration/acquisition can affect correction data quality and requires evidence review.
 
-**上一帧图像残留。**
+## Root Cause Status
 
-Lag 更多表现为：
+Not Applicable at file level.
 
-**像素响应恢复较慢。**
-
-两者不可混为一类。
-
----
-
-## Experience 3
-
-Ghost Calibration 后，
-
-建议连续采集多帧动态图像进行验证。
-
-不要仅观察单帧图像。
+This document contains multiple candidate mechanisms and does not represent one event-level root cause.
 
 ---
 
-## Experience 4
+# 9. Knowledge Feedback Review
 
-若修改：
-
-- ROI
-- Frame Rate
-- Dynamic Mode
-
-建议重新验证 Ghost Template 是否仍适用。
-
----
-
-# 10. Prevention
-
-建议：
-
-- 动态模式首次部署完成 Ghost Calibration
-- 修改关键采集参数后重新验证 Ghost Template
-- 定期检查 Ghost 校正效果
-- 保持网络通信稳定
-- 建立 Ghost Template 版本管理
+| Layer | Result | Action / Reason |
+|---|---|---|
+| FailureKnowledge | No direct update required | [GhostFailure](../../07_FailureKnowledge/CalibrationFailure/GhostFailure.md) remains the generic mechanism layer |
+| DecisionTree | No direct update required | Existing Ghost routing remains the primary diagnostic entry |
+| Workflow | No direct update required | [DynamicCorrectionWorkflow](../../06_Workflow/DynamicCorrectionWorkflow.md) remains the execution path |
+| Calibration | No direct update required | No new verified calibration rule was established from mixed evidence |
+| Tools | No direct update required | [CalibrationTools](../../17_Tools/SDKTool/CalibrationTools.md) remains the relevant tool entry |
+| Case | Reclassified | Retained as Reference Candidate; future verified events should be independent Case records |
 
 ---
 
-# 11. Related Documents
+# 10. Promotion Requirements for a Verified Ghost Case
 
-Image Diagnosis：
+A future event should contain at minimum:
 
-- GhostArtifact
-
-Workflow：
-
-- DynamicCorrectionWorkflow.md
-
-Failure Knowledge：
-
-- GhostFailure.md
-
-Decision Tree：
-
-- Ghost.md
-
-Tools：
-
-- CalibrationTools.md
+- Case ID;
+- customer/project identifier where permitted;
+- detector model and SN or anonymized unique identifier;
+- software/SDK/firmware version;
+- dynamic mode and key acquisition parameters;
+- before/after image sequence;
+- correction/template status;
+- actual diagnostic sequence;
+- corrective action;
+- controlled multi-frame verification;
+- root-cause evidence or explicit unresolved status.
 
 ---
 
-# 12. Revision History
+# 11. Prevention Guidance
+
+Use only product-approved procedures.
+
+Recommended operational controls:
+
+- preserve correction/template version information where supported;
+- verify correction applicability after relevant approved configuration changes;
+- validate Ghost behavior with multi-frame sequences rather than a single image;
+- preserve acquisition interruption evidence during calibration;
+- do not overwrite the only copy of a known-good template during investigation.
+
+---
+
+# 12. Related Documents
+
+- [GhostArtifact](../../08_ImageDiagnosis/GhostArtifact/)
+- [DynamicCalibration](../../05_Calibration/DynamicCalibration.md)
+- [DynamicCorrectionWorkflow](../../06_Workflow/DynamicCorrectionWorkflow.md)
+- [GhostFailure](../../07_FailureKnowledge/CalibrationFailure/GhostFailure.md)
+- [Ghost DecisionTree](../../09_DecisionTree/Image/Ghost.md)
+- [DynamicDetector Principles](../../13_Principles/DynamicDetector/)
+- [CalibrationTools](../../17_Tools/SDKTool/CalibrationTools.md)
+- [Case Admission Checklist](../CaseAdmissionChecklist.md)
+- [Knowledge Feedback Record](../KnowledgeFeedbackRecord.md)
+
+---
+
+# 13. Revision History
 
 | Version | Date | Description |
-|----------|------|-------------|
-| V1.0 | 2026-08 | 初版建立，整理 Ghost Artifact 现场案例及处理经验。 |
+|---|---|---|
+| V1.1 | 2026-08-10 | Batch 5 admission audit: reclassified as Reference Candidate, separated Ghost phenomenon from candidate mechanisms, added evidence boundaries and promotion rules |
+| V1.0 | 2026-08 | Initial Ghost field-experience and diagnostic summary |

@@ -1,6 +1,6 @@
 # FirmwareUpgrade
 
-Version: V1.0
+Version: V1.1
 
 Module: 17_Tools / SDKTool
 
@@ -18,8 +18,19 @@ Related Documents:
 - README.md
 - LicenseManagement.md
 - ModeConfiguration.md
-- ../../06_Workflow/InitializationWorkflow.md
-- ../../06_Workflow/ConfigurationWorkflow.md
+- CalibrationTools.md
+- [Firmware Upgrade SOP](../../10_SOP/FirmwareUpgrade.md)
+- [Firmware Upgrade ErrorCode](../../12_ErrorCode/Firmware/Upgrade.md)
+- [Boot Failure DecisionTree](../../09_DecisionTree/Firmware/BootFailure.md)
+- [Upgrade Failed DecisionTree](../../09_DecisionTree/Firmware/UpgradeFailed.md)
+- [Version Mismatch DecisionTree](../../09_DecisionTree/Firmware/VersionMismatch.md)
+- [Initialization Workflow](../../06_Workflow/InitializationWorkflow.md)
+- [Configuration Workflow](../../06_Workflow/ConfigurationWorkflow.md)
+- [LogExport](../Log/LogExport.md)
+- [FirmwareUpgradeFailed Case](../../11_Case/Firmware/FirmwareUpgradeFailed.md)
+- [BootFailed Case](../../11_Case/Firmware/BootFailed.md)
+- [ParameterRecovery Case](../../11_Case/Firmware/ParameterRecovery.md)
+- [VersionMismatch Case](../../11_Case/Firmware/VersionMismatch.md)
 
 ---
 
@@ -451,4 +462,5 @@ Firmware 写入过程中断电可能导致 Firmware 损坏，使 Detector 无法
 
 | Version | Date | Author | Description |
 |----------|------|--------|-------------|
+| V1.1 | 2026-08-10 | Link audit | Repaired Firmware knowledge-loop Related Documents and removed dependence on obsolete workflow/failure paths. |
 | V1.0 | 2026-08 | Initial Release | 建立 Firmware Upgrade 工具文档，包含升级流程、验证方法、工程经验及常见问题。 |

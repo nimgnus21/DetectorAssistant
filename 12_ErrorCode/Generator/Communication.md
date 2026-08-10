@@ -8,88 +8,73 @@
 
 # Overview
 
-This document describes communication-related failures between the detector and the X-ray generator.
+This document describes communication and interface failures between the detector system and the X-ray generator.
 
-Although the SDK does not define dedicated generator error codes, communication failures between the detector and generator are common in field applications and can prevent normal exposure or image acquisition.
-
----
-
-# Typical Symptoms
-
-- Exposure cannot be triggered.
-- Detector remains in waiting state.
-- Generator exposure completed but no image received.
-- Exposure signal not detected.
-- Exposure delay is abnormal.
-- Image acquisition timeout.
+The current SDK reference does not define dedicated generator communication error codes. This document therefore routes observed symptoms and related SDK events into a reproducible diagnostic path without treating the detector-side timeout as proof of a generator fault.
 
 ---
 
-# Possible Causes
+# Diagnostic Entry
 
-## Physical Connection
+Typical entries:
 
-- Trigger cable disconnected.
-- Trigger cable damaged.
-- Incorrect interface wiring.
-- Loose connector.
-
----
-
-## Configuration
-
-- Incorrect trigger mode.
-- Generator output disabled.
-- Detector trigger mode mismatch.
-- Incorrect application mode.
-
----
-
-## Timing
-
-- Trigger pulse width too short.
-- Exposure timing mismatch.
-- Detector not ready before exposure.
-
----
-
-## SDK Related
-
-Associated SDK events:
-
-- Evt_WaitImage_Timeout
-- Evt_TaskResult_Failed
-- Err_DetectorRespTimeout
+- exposure cannot be triggered;
+- detector waits for exposure;
+- generator exposure completed but no image is received;
+- exposure signal is not detected;
+- abnormal exposure delay;
+- `Evt_WaitImage_Timeout`;
+- `Evt_TaskResult_Failed`;
+- `Err_DetectorRespTimeout` where applicable.
 
 ---
 
 # Diagnostic Procedure
 
-1. Verify detector is Ready.
-2. Verify generator is Ready.
-3. Verify trigger cable.
-4. Verify trigger voltage.
-5. Verify trigger mode.
-6. Verify exposure timing.
-7. Check Detector.log.
-8. Capture trigger waveform if necessary.
+1. Record detector state and generator state.
+2. Verify the physical trigger/interface connection and connector seating.
+3. Verify detector and generator trigger configuration match.
+4. Confirm acquisition was started before the exposure sequence.
+5. Confirm whether exposure actually occurred.
+6. Capture trigger/timing evidence where available.
+7. If the detector communication path is also suspected, run [NetworkConfiguration](../../10_SOP/NetworkConfiguration.md) and preserve relevant logs.
+8. Enter [NoExposure](../../09_DecisionTree/Connection/NoExposure.md) for missing exposure, or [ImageLoss](../../09_DecisionTree/Image/ImageLoss.md) when exposure occurred but image delivery failed.
+9. Perform one controlled retest and record the result.
 
 ---
 
-# Related DecisionTree
+# Evidence Package
 
-- 09_DecisionTree/Connection/NoExposure.md
-- 09_DecisionTree/Image/ImageLoss.md
+- SDK event/error and timestamp;
+- detector state;
+- generator Ready/Fault indication if available;
+- trigger mode and interface configuration;
+- physical connection evidence;
+- proof of exposure;
+- trigger waveform/timing if available;
+- `Detector.log`;
+- generator log/fault indication if available;
+- controlled retest result.
+
+Use [LogExport](../../17_Tools/SDKTool/LogExport.md) for log preservation.
 
 ---
 
-# Related Workflow
+# Related DecisionTree / Workflow / Tool
 
-- 06_Workflow/ConfigurationWorkflow.md
-- 06_Workflow/ImageGenerationWorkflow.md
+- [NoExposure](../../09_DecisionTree/Connection/NoExposure.md)
+- [ImageLoss](../../09_DecisionTree/Image/ImageLoss.md)
+- [ConnectionTimeout](../../09_DecisionTree/Connection/ConnectionTimeout.md)
+- [ConfigurationWorkflow](../../06_Workflow/ConfigurationWorkflow.md)
+- [ImageGenerationWorkflow](../../06_Workflow/ImageGenerationWorkflow.md)
+- [LogExport](../../17_Tools/SDKTool/LogExport.md)
+- [Log Viewer](../../17_Tools/Log%20Viewer/README.md)
 
 ---
 
-# Related Case
+# Revision History
 
-- 11_Case/Communication
+| Version | Date | Description |
+|---------|------|-------------|
+| v1.1 | 2026-08-10 | Added routing, evidence package and controlled verification |
+| v1.0 | 2026-08-07 | Initial release |

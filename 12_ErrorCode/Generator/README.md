@@ -2,326 +2,102 @@
 
 > Module: Generator
 >
-> Category: Error Code Reference
+> Category: Generator-related Diagnostic Entry
 
 ---
 
 # Overview
 
-This module describes common generator-related abnormalities that may affect detector operation.
+This module describes generator-related abnormalities that may affect detector operation.
 
-Unlike SDK or detector firmware errors, generator-related problems usually originate from generator configuration, trigger synchronization, exposure control, safety interlock, communication, or generator hardware faults.
-
-Although most generators do not return standardized SDK error codes, these failures frequently manifest as detector acquisition timeout, missing images, exposure failure, or synchronization abnormalities.
-
-This module provides engineering-oriented troubleshooting guidance for generator-related issues encountered during detector installation, integration, and field service.
+The current SDK reference does not define a dedicated generator error-code family. Generator problems commonly appear through detector-side events, acquisition timeout, missing images, exposure prohibition, or synchronization abnormalities. Therefore, these files are diagnostic entry documents and must not invent vendor-specific generator fault codes.
 
 ---
 
-# Scope
-
-This module applies to:
-
-- Generator communication
-- Exposure control
-- Trigger synchronization
-- Safety interlock
-- Generator operating state
-- Generator hardware fault
-- Generator configuration
-
----
-
-# Directory Structure
+# Diagnostic Chain
 
 ```text
-Generator
-├── README.md
-├── Communication.md
-├── Exposure.md
-├── Trigger.md
-├── Interlock.md
-├── GeneratorState.md
-├── GeneratorFault.md
-└── Configuration.md
+Generator Symptom / SDK Event
+        ↓
+Generator State / Interlock / Exposure / Trigger / Communication / Configuration
+        ↓
+Primary DecisionTree
+        ↓
+SOP / Workflow
+        ↓
+Tool + Evidence
+        ↓
+Controlled Exposure / Acquisition Verification
 ```
 
 ---
 
-# Module Description
+# Directory Map
 
-## Communication
-
-Communication between the detector and the generator.
-
-Typical topics include:
-
-- Communication interruption
-- Trigger cable problems
-- Network or interface failures
-- Generator connectivity
+- `Communication.md` — interface and trigger communication failures
+- `Exposure.md` — exposure execution and image reception
+- `Trigger.md` — trigger mode, polarity, timing and synchronization
+- `Interlock.md` — exposure permission/prohibition and safety conditions
+- `GeneratorState.md` — Ready/Busy/Standby/Fault state interpretation
+- `GeneratorFault.md` — generator fault evidence and escalation boundary
+- `Configuration.md` — detector/generator configuration consistency
 
 ---
 
-## Exposure
+# Primary Routing
 
-Exposure execution and detector synchronization.
-
-Typical topics include:
-
-- Exposure timeout
-- No exposure
-- Exposure interruption
-- Image acquisition timeout
-
----
-
-## Trigger
-
-Trigger signal generation and synchronization.
-
-Typical topics include:
-
-- Trigger mode mismatch
-- Trigger polarity
-- Trigger timing
-- Missing trigger signal
+| Symptom / Event | Entry | Primary DecisionTree | Evidence |
+|---|---|---|---|
+| `Evt_Exp_Prohibit` / cannot expose | Interlock | [NoExposure](../../09_DecisionTree/Connection/NoExposure.md) | Generator state, interlock state, logs |
+| `Evt_WaitImage_Timeout` | Exposure / Trigger | [AcquisitionTimeout](../../09_DecisionTree/Software/AcquisitionTimeout.md) | Acquisition state, trigger, exposure, log |
+| Exposure completed, no image | Exposure | [ImageLoss](../../09_DecisionTree/Image/ImageLoss.md) | Exposure proof, trigger, image/RAW, network/log |
+| Trigger mismatch | Trigger / Configuration | [NoExposure](../../09_DecisionTree/Connection/NoExposure.md) | Trigger mode, timing, waveform if available |
+| Generator communication abnormal | Communication | [ConnectionTimeout](../../09_DecisionTree/Connection/ConnectionTimeout.md) | Physical interface, configuration, log |
+| Calibration image trigger mismatch | Trigger | [DefectFailure](../../09_DecisionTree/Calibration/DefectFailure.md) | Calibration mode, trigger, image set |
 
 ---
 
-## Interlock
+# Evidence Package
 
-Safety mechanisms that prevent exposure.
+Collect before changing configuration or replacing hardware:
 
-Typical topics include:
-
-- Exposure prohibited
-- Door interlock
-- Emergency stop
-- Safety input
-- Exposure permission
-
----
-
-## GeneratorState
-
-Operating status of the generator.
-
-Typical topics include:
-
-- Ready
-- Busy
-- Standby
-- Warming Up
-- Exposure Enabled
-- Exposure Prohibited
-- Offline
-- Fault
+- exact SDK event/error and timestamp;
+- detector state;
+- generator state/fault indication if available;
+- trigger and synchronization configuration;
+- exposure parameters;
+- evidence that exposure actually occurred;
+- trigger waveform/timing where available;
+- original image/RAW when relevant;
+- `Detector.log`;
+- generator fault log where available;
+- controlled retest result.
 
 ---
 
-## GeneratorFault
+# Related Workflow / SOP / Tool
 
-Generator hardware or internal system faults.
-
-Typical topics include:
-
-- High Voltage Fault
-- Tube Fault
-- Exposure Fault
-- Communication Fault
-- Trigger Output Fault
-- Interlock Fault
-- Emergency Stop
-- Generator Not Ready
+- [ConfigurationWorkflow](../../06_Workflow/ConfigurationWorkflow.md)
+- [ImageGenerationWorkflow](../../06_Workflow/ImageGenerationWorkflow.md)
+- [Calibration](../../10_SOP/Calibration.md)
+- [LogExport](../../17_Tools/SDKTool/LogExport.md)
+- [Log Viewer](../../17_Tools/Log%20Viewer/README.md)
 
 ---
 
-## Configuration
+# Engineering Boundary
 
-Generator and detector configuration consistency.
+Follow this order before declaring a generator hardware fault:
 
-Typical topics include:
+1. generator state;
+2. detector state;
+3. interlock/exposure permission;
+4. trigger configuration and timing;
+5. communication/interface;
+6. controlled exposure evidence;
+7. generator hardware fault evidence.
 
-- Trigger mode
-- Synchronization mode
-- Exposure parameters
-- Application Mode
-- Dynamic configuration
-- Calibration configuration
-
----
-
-# Typical Troubleshooting Workflow
-
-```text
-Problem Observed
-
-↓
-
-Generator Ready?
-
-↓
-
-Detector Ready?
-
-↓
-
-Exposure Enabled?
-
-↓
-
-Trigger Generated?
-
-↓
-
-Image Received?
-
-↓
-
-Detector.log Analysis
-
-↓
-
-Generator Fault Check
-
-↓
-
-Resolve or Escalate
-```
-
----
-
-# Common Symptoms
-
-| Symptom | Possible Module |
-|----------|-----------------|
-| Cannot expose | Interlock / GeneratorFault |
-| No trigger signal | Trigger / Communication |
-| Exposure timeout | Exposure / Communication |
-| Detector waits indefinitely | GeneratorState / Trigger |
-| No image received | Exposure / Communication |
-| Generator reports fault | GeneratorFault |
-| Exposure prohibited | Interlock |
-| Acquisition abnormal | Configuration |
-
----
-
-# Related SDK Events
-
-Generator-related issues commonly result in one or more of the following SDK events:
-
-- Evt_Exp_Enable
-- Evt_Exp_Prohibit
-- Evt_WaitImage_Timeout
-- Evt_TaskResult_Failed
-- Evt_Image
-
----
-
-# Related SDK Error Codes
-
-Although the SDK does not define dedicated generator error codes, the following errors are frequently associated with generator-related problems:
-
-- Err_TaskTimeOut
-- Err_DetectorRespTimeout
-- Err_StateErr
-- Err_Cali_UnexpectImage_MistakeTrigger
-
----
-
-# Recommended Troubleshooting Procedure
-
-When generator-related abnormalities occur:
-
-1. Verify the generator status is **Ready**.
-2. Verify the detector status is **Ready**.
-3. Confirm acquisition has started successfully.
-4. Verify exposure permission (`Evt_Exp_Enable`).
-5. Check trigger mode and synchronization.
-6. Verify trigger cable and communication interface.
-7. Perform a test exposure.
-8. Confirm `Evt_Image` is received.
-9. Review `Detector.log`.
-10. Review the generator fault log if available.
-11. Follow the corresponding DecisionTree.
-
----
-
-# Related Modules
-
-## DecisionTree
-
-```text
-09_DecisionTree
-```
-
----
-
-## Workflow
-
-```text
-06_Workflow
-```
-
-Especially:
-
-- PowerOnWorkflow.md
-- ConfigurationWorkflow.md
-- ImageGenerationWorkflow.md
-
----
-
-## FailureKnowledge
-
-```text
-07_FailureKnowledge
-```
-
----
-
-## Case
-
-```text
-11_Case
-```
-
----
-
-# Related Log
-
-```text
-Detector.log
-```
-
-For generator-related issues, it is recommended to collect:
-
-- Detector.log
-- Generator fault log (if available)
-- Detector Model
-- Detector Serial Number
-- Generator Model
-- SDK Version
-- Firmware Version
-- Trigger Configuration
-- Exposure Parameters
-- Communication Configuration
-- Reproduction Procedure
-
----
-
-# Engineering Notes
-
-Generator-related issues are often caused by configuration mismatches rather than hardware failures. During troubleshooting, always verify the following in order:
-
-1. Generator status
-2. Detector status
-3. Trigger configuration
-4. Exposure synchronization
-5. Communication
-6. Hardware faults
-
-Following this sequence can significantly improve troubleshooting efficiency and reduce unnecessary hardware replacement.
+A detector timeout is not by itself proof of a generator hardware failure.
 
 ---
 
@@ -329,4 +105,5 @@ Following this sequence can significantly improve troubleshooting efficiency and
 
 | Version | Date | Description |
 |---------|------|-------------|
+| v1.1 | 2026-08-10 | Added generator diagnostic routing, evidence boundary and verification chain |
 | v1.0 | 2026-08-07 | Initial release |

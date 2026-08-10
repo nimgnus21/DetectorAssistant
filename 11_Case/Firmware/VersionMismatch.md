@@ -27,11 +27,11 @@ Applicable Products:
 Related Documents:
 
 - [FirmwareUpgrade Tool](../../17_Tools/SDKTool/FirmwareUpgrade.md)
-- [FirmwareUpgrade Workflow](../../06_Workflow/FirmwareUpgradeWorkflow.md)
-- [VersionMismatch FailureKnowledge](../../07_FailureKnowledge/FirmwareFailure/VersionMismatch.md)
+- [Configuration Workflow](../../06_Workflow/ConfigurationWorkflow.md)
+- [Failure Classification](../../07_FailureKnowledge/FailureClassification.md)
 - [VersionMismatch DecisionTree](../../09_DecisionTree/Firmware/VersionMismatch.md)
 - [Firmware Upgrade SOP](../../10_SOP/FirmwareUpgrade.md)
-- [OQC / Sample Evidence Requirements](../../11_Case/Customer/OQC.md)
+- [OQC / Sample Evidence Requirements](../Customer/OQC.md)
 - [Case Admission Checklist](../CaseAdmissionChecklist.md)
 - [Knowledge Feedback Record](../KnowledgeFeedbackRecord.md)
 

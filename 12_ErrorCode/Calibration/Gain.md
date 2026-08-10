@@ -10,201 +10,125 @@
 
 This document describes error codes that may occur during Gain calibration.
 
-Gain calibration compensates for pixel sensitivity differences and ensures detector output uniformity.
-
-An abnormal Gain template may result in image non-uniformity, brightness inconsistency, vertical or horizontal banding, and calibration failure.
+Gain calibration compensates for pixel sensitivity differences and supports detector output uniformity. An abnormal Gain template may contribute to non-uniformity or banding, but the image symptom alone does not prove Gain as the root cause.
 
 ---
 
 # Related Commands
 
-- Cmd_GainInit
-- Cmd_GainSelectCurrent
-- Cmd_GainSelectAll
-- Cmd_GainGeneration
-- Cmd_FinishGenerationProcess
-- Cmd_DownloadCaliFile
-- Cmd_SelectCaliFile
-
----
+- `Cmd_GainInit`
+- `Cmd_GainSelectCurrent`
+- `Cmd_GainSelectAll`
+- `Cmd_GainGeneration`
+- `Cmd_FinishGenerationProcess`
+- `Cmd_DownloadCaliFile`
+- `Cmd_SelectCaliFile`
 
 # Related Events
 
-- Evt_TaskResult_Succeed
-- Evt_TaskResult_Failed
-- Evt_GeneralError
+- `Evt_TaskResult_Succeed`
+- `Evt_TaskResult_Failed`
+- `Evt_GeneralError`
+
+---
+
+# Error Code → Diagnostic Entry
+
+| Error | Primary Path | Tool / Evidence |
+|---|---|---|
+| `Err_Cali_GeneralError` | [GainFailure](../../09_DecisionTree/Calibration/GainFailure.md) | Detector state, exposure parameters, `Detector.log` |
+| `Err_Cali_DataNotReadyForGen` | [GainFailure](../../09_DecisionTree/Calibration/GainFailure.md) | Complete image set, selection state, acquisition evidence |
 
 ---
 
 # Error Codes
 
----
-
 ## Err_Cali_GeneralError
-
-### Description
 
 A general error occurred during Gain calibration.
 
-### Possible Causes
+### Diagnostic Procedure
 
-- Calibration process interrupted.
-- Detector communication abnormal.
-- Detector disconnected during acquisition.
-- Internal calibration algorithm failed.
-
-### Recommended Actions
-
-1. Verify detector status is **Ready**.
-2. Restart Gain calibration.
-3. Check Detector.log.
-4. Verify detector communication.
+1. Preserve current Gain input evidence and `Detector.log`.
+2. Verify detector state is `Ready`.
+3. Verify exposure parameters and image acquisition completed as required.
+4. Check communication or task errors at the same timestamp.
+5. Enter [GainFailure](../../09_DecisionTree/Calibration/GainFailure.md).
+6. Follow [Calibration](../../10_SOP/Calibration.md) rather than repeatedly restarting generation without evidence.
 
 ---
 
 ## Err_Cali_DataNotReadyForGen
 
-### Description
+The SDK has not received enough valid images to generate the Gain template.
 
-The SDK has not received enough images to generate the Gain template.
+### Diagnostic Procedure
 
-### Possible Causes
-
-- Gain image acquisition incomplete.
-- Some images were lost.
-- Selected images are insufficient.
-- Calibration process interrupted.
-
-### Recommended Actions
-
-1. Verify all Gain images have been acquired.
-2. Reacquire missing images.
-3. Execute `Cmd_GainGeneration` again.
-4. Complete the calibration process.
+1. Verify the required image count and sequence.
+2. Verify `Cmd_GainSelectCurrent` or `Cmd_GainSelectAll` selected the intended images.
+3. Check for image loss or acquisition interruption.
+4. Preserve the selection state and log before reacquisition.
+5. Reacquire missing or invalid images, then regenerate only after the full dataset is confirmed.
 
 ---
 
-# Field Experience
+# Hardware Calibration Boundary
 
-## Image Completeness
+When hardware Gain is used:
 
-Gain calibration requires a complete image set.
+1. Generate the intended template.
+2. Download the template with `Cmd_DownloadCaliFile`.
+3. Select it with `Cmd_SelectCaliFile`.
+4. Verify the selected hardware template before controlled acquisition.
 
-If even a small number of images are missing:
-
-- GainGeneration may fail.
-- The generated template may be inaccurate.
-- Brightness correction may become unstable.
-
-Always verify that all required images have been received before template generation.
+Do not treat software-template generation success as proof that the detector is using the intended hardware template.
 
 ---
 
-## Image Selection
+# Verification Rule
 
-Before generating the Gain template, images must be selected using:
+Closure requires:
 
-- Cmd_GainSelectCurrent
-- Cmd_GainSelectAll
+- successful generation;
+- correct image selection;
+- correct template download/selection where hardware Gain is used;
+- controlled image acquisition;
+- comparison against the original symptom or baseline.
 
-Selecting incorrect images or an incomplete image set may lead to template generation failure.
-
----
-
-## Hardware Gain
-
-When **HW_Gain** is used:
-
-- Gain templates must first be downloaded to the detector.
-- The hardware Gain template must be selected before image acquisition.
-
-Required commands:
-
-```
-Cmd_DownloadCaliFile
-
-↓
-
-Cmd_SelectCaliFile
-```
-
-If HW_Gain is enabled, **PreOffset must also use hardware calibration**.
-
-Mixing software Offset with hardware Gain is not recommended and may result in incorrect correction.
+If non-uniformity or banding remains after a verified Gain workflow, return to the image diagnostic path rather than declaring calibration failure resolved.
 
 ---
 
-## Calibration Workflow
+# Evidence Package
 
-```
-Cmd_GainInit
+Collect:
 
-↓
-
-Acquire Gain Images
-
-↓
-
-Cmd_GainSelectAll
-
-↓
-
-Cmd_GainGeneration
-
-↓
-
-Cmd_FinishGenerationProcess
-```
-
-Do not interrupt the workflow before `Cmd_FinishGenerationProcess` completes.
+- exact error/event and timestamp;
+- detector state;
+- exposure parameters;
+- required/received image count;
+- selected image state;
+- hardware/software calibration mode;
+- template identity where applicable;
+- original image/RAW evidence when image quality is affected;
+- `Detector.log`;
+- controlled verification result.
 
 ---
 
-# Diagnostic Checklist
+# Related DecisionTree / SOP / Tool
 
-Verify the following items before generating the Gain template:
+- [GainFailure](../../09_DecisionTree/Calibration/GainFailure.md)
+- [Calibration](../../10_SOP/Calibration.md)
+- [CalibrationTools](../../17_Tools/SDKTool/CalibrationTools.md)
+- [DTDITool](../../17_Tools/SDKTool/DTDITool.md)
+- [ImageJ](../../17_Tools/ImageJ/README.md)
+- [LogExport](../../17_Tools/SDKTool/LogExport.md)
 
-- Detector status is **Ready**.
-- Exposure parameters are correct.
-- All Gain images have been acquired.
-- Image sequence is complete.
-- Detector communication is stable.
-- Detector.log contains no calibration exceptions.
+# Related Case / Knowledge
 
----
-
-# Related DecisionTree
-
-- 09_DecisionTree/Calibration/GainFailure.md
-
----
-
-# Related Case
-
-- 11_Case/Calibration/GainGenerationFailed.md
-
----
-
-# Related Workflow
-
-- 05_Calibration/GainCalibration.md
-- 06_Workflow/CalibrationWorkflow.md
-
----
-
-# Related FailureKnowledge
-
-- 07_FailureKnowledge/CalibrationFailure/GainFailure.md
-
----
-
-# Related Log
-
-```
-Detector.log
-```
-
-Gain calibration failures should always be analyzed together with Detector.log, exposure parameters, image completeness, and hardware calibration configuration.
+- [GainGenerationFailed](../../11_Case/Calibration/GainGenerationFailed.md)
+- [GainFailure](../../07_FailureKnowledge/CalibrationFailure/GainFailure.md)
 
 ---
 
@@ -212,4 +136,5 @@ Gain calibration failures should always be analyzed together with Detector.log, 
 
 | Version | Date | Description |
 |---------|------|-------------|
+| v1.1 | 2026-08-10 | Added diagnostic mapping, hardware template verification, evidence and closure rules |
 | v1.0 | 2026-08-07 | Initial release |

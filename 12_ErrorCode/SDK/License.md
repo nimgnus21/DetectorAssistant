@@ -2,58 +2,73 @@
 
 > Module: SDK
 >
-> Category: License Error Codes
+> Category: License-related Error Interpretation
 
 ---
 
 # Overview
 
-This document describes SDK license-related error codes.
+This document records SDK error codes that may appear during license verification, authorization loading, or license-dependent operations.
 
-The current SDK Programming Reference does **not** define dedicated License error codes.
+> **Evidence boundary:** the current SDK Programming Reference does **not** define a dedicated License command, event, or error-code family. Therefore, this document must not be used to infer that a generic SDK error uniquely proves a license failure.
 
-However, several existing SDK error codes may occur during license verification, authorization loading, or license-dependent operations.
+License diagnosis requires the error code to be evaluated together with the installed license file, detector identity, SDK version, firmware version, `Detector.log`, and the actual operation being executed.
 
 ---
 
 # Related Commands
 
-No dedicated License commands are defined in the current SDK Programming Reference.
+No dedicated License command is defined in the current SDK Programming Reference.
 
 ---
 
 # Related Events
 
-- Evt_GeneralError
-- Evt_TaskResult_Failed
+- `Evt_GeneralError`
+- `Evt_TaskResult_Failed`
+
+---
+
+# Diagnostic Entry Rule
+
+```text
+Generic SDK Error / Image Locked / Licensed Function Unavailable
+        ↓
+Collect error code + operation + license file + Detector.log
+        ↓
+Is authorization evidence present?
+   ├── Yes → LicenseManagement → LicenseFailure DecisionTree
+   └── No  → Follow the native error-code DecisionTree first
+```
+
+The generic error code is the **entry condition**, not the root-cause conclusion.
 
 ---
 
 # Applicable Error Codes
 
----
-
 ## Err_AccessDenied
 
 ### Description
 
-The requested operation is not permitted.
+The requested operation is not permitted. During a license-dependent operation, this may indicate that the current operation is not authorized.
 
-During license verification, this error may indicate that the current operation is not authorized.
+### Evidence Required
 
-### Possible Causes
+- Operation that returned the error
+- Installed license file identity/version
+- Detector model/SN relationship where applicable
+- SDK version
+- Firmware version
+- `Detector.log` around the failure time
 
-- License authorization failed.
-- Current feature is not licensed.
-- Permission denied.
-- SDK authorization is invalid.
+### Diagnostic Path
 
-### Recommended Actions
-
-1. Verify the installed license.
-2. Confirm the license has not expired.
-3. Verify the current detector supports the requested function.
-4. Restart the application after updating the license.
+1. Verify whether the operation is actually license-dependent.
+2. Verify the installed license using [LicenseManagement](../../17_Tools/SDKTool/LicenseManagement.md).
+3. Check [LicenseFailure](../../09_DecisionTree/Software/LicenseFailure.md).
+4. If authorization cannot be verified, do not conclude that `Err_AccessDenied` is caused by the license; continue with the operation-specific diagnosis.
+5. After correction, restart the SDK, reconnect the detector, and verify acquisition or the affected function.
 
 ---
 
@@ -61,22 +76,14 @@ During license verification, this error may indicate that the current operation 
 
 ### Description
 
-The requested function is not implemented.
+The requested function is not implemented. A license restriction is only one possible interpretation; SDK, firmware, detector model, or feature support must also be checked.
 
-Some advanced SDK functions require firmware or license support.
+### Diagnostic Path
 
-### Possible Causes
-
-- Current SDK version does not support the feature.
-- Detector firmware does not support the feature.
-- Licensed function unavailable.
-
-### Recommended Actions
-
-1. Verify SDK version.
-2. Verify firmware version.
-3. Confirm feature availability.
-4. Contact the supplier if feature licensing is required.
+1. Verify SDK version and supported API.
+2. Verify detector firmware and model support.
+3. If the feature is documented as license-dependent, verify the license using [LicenseManagement](../../17_Tools/SDKTool/LicenseManagement.md).
+4. If version compatibility is the primary issue, enter [VersionMismatch](../../09_DecisionTree/Firmware/VersionMismatch.md).
 
 ---
 
@@ -84,83 +91,64 @@ Some advanced SDK functions require firmware or license support.
 
 ### Description
 
-The required preconditions have not been satisfied.
+The required preconditions have not been satisfied. A license-related initialization dependency is possible, but detector initialization and runtime state must be checked first.
 
-Some licensed functions may require successful detector initialization or specific runtime conditions before execution.
+### Diagnostic Path
 
-### Possible Causes
-
-- Detector not initialized.
-- License-dependent initialization not completed.
-- Required configuration missing.
-
-### Recommended Actions
-
-1. Complete SDK initialization.
-2. Verify detector status.
-3. Retry after initialization.
+1. Verify SDK initialization through [SDKInitializationFailed](../../09_DecisionTree/Software/SDKInitializationFailed.md).
+2. Verify detector state and required configuration.
+3. If the operation is license-dependent, continue with [LicenseFailure](../../09_DecisionTree/Software/LicenseFailure.md) and [LicenseManagement](../../17_Tools/SDKTool/LicenseManagement.md).
+4. Retry only after the required initialization and configuration conditions are satisfied.
 
 ---
 
-# License Related Notes
+# Field Experience Boundary
 
-According to the current SDK Programming Reference:
+In field service, image locking or unavailable acquisition functions may be related to a license problem. This is a field-experience entry point, not a dedicated SDK error-code definition.
 
-- No dedicated License command is defined.
-- No dedicated License event is defined.
-- No dedicated License error code is defined.
+Typical verified workflow:
 
-If future SDK versions introduce license management APIs or authorization error codes, this document should be updated accordingly.
-
----
-
-# Field Experience
-
-In field service, image locking or unavailable acquisition functions may be related to license problems.
-
-Typical troubleshooting steps include:
-
-1. Verify the current license file.
-2. Replace the license file if necessary.
-3. Restart the SDK.
-4. Reconnect the detector.
-5. Verify normal image acquisition.
+1. Preserve the current license file and relevant logs.
+2. Verify the current license file.
+3. Replace the license file only when the replacement is authorized and applicable.
+4. Restart the SDK.
+5. Reconnect the detector.
+6. Verify normal image acquisition or the affected function.
 
 ---
 
-# Diagnostic Checklist
+# Evidence Package
 
-Verify the following items:
+Before escalation, collect:
 
-- Correct license file installed.
-- License file not corrupted.
-- License file matches the detector.
-- Detector initialized successfully.
-- SDK version is compatible.
-- Detector.log contains no authorization-related exceptions.
+- Exact SDK error code/event
+- API or operation that triggered the error
+- Installed license file information
+- Detector model and applicable detector identity
+- SDK version
+- Firmware version
+- `Detector.log`
+- Screenshot or original symptom evidence
+- Result after restart/reconnect or authorized license replacement
+
+For log export, use [LogExport](../../17_Tools/SDKTool/LogExport.md).
 
 ---
 
 # Related DecisionTree
 
-- 09_DecisionTree/Software/LicenseFailure.md
-- 09_DecisionTree/Software/SDKInitializationFailed.md
+- [LicenseFailure](../../09_DecisionTree/Software/LicenseFailure.md)
+- [SDKInitializationFailed](../../09_DecisionTree/Software/SDKInitializationFailed.md)
+- [VersionMismatch](../../09_DecisionTree/Firmware/VersionMismatch.md)
 
----
+# Related Tool
+
+- [LicenseManagement](../../17_Tools/SDKTool/LicenseManagement.md)
+- [LogExport](../../17_Tools/SDKTool/LogExport.md)
 
 # Related Case
 
-- 11_Case/Firmware/ParameterRecovery.md
-
----
-
-# Related Log
-
-```
-Detector.log
-```
-
-License-related problems should always be analyzed together with Detector.log, SDK version, detector firmware version, and the installed license file.
+- [ParameterRecovery](../../11_Case/Firmware/ParameterRecovery.md)
 
 ---
 
@@ -168,4 +156,5 @@ License-related problems should always be analyzed together with Detector.log, S
 
 | Version | Date | Description |
 |---------|------|-------------|
+| v1.1 | 2026-08-10 | Added evidence boundary and direct diagnostic/tool links without inventing dedicated license errors |
 | v1.0 | 2026-08-07 | Initial release |

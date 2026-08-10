@@ -32,10 +32,10 @@ Firmware errors must be interpreted with detector model, current/target firmware
 
 | Error | Primary Entry | Tool / Evidence |
 |---|---|---|
-| `Err_ApplyFirmwareFailed` | [FirmwareUpgradeFailed](../../09_DecisionTree/Firmware/FirmwareUpgradeFailed.md) | Package identity, `Detector.log`, upgrade record |
+| `Err_ApplyFirmwareFailed` | [UpgradeFailed](../../09_DecisionTree/Firmware/UpgradeFailed.md) | Package identity, `Detector.log`, upgrade record |
 | `Err_FirmwareUpdated` | [FirmwareUpgrade](../../10_SOP/FirmwareUpgrade.md) post-upgrade verification | Reboot/reconnect/version/acquisition evidence |
-| `Err_FPD_FirmwareFallback` | [FirmwareUpgradeFailed](../../09_DecisionTree/Firmware/FirmwareUpgradeFailed.md) + [VersionMismatch](../../09_DecisionTree/Firmware/VersionMismatch.md) | Rollback evidence, version comparison, log |
-| `Err_FPD_General_FirmwareUpgrade_Error` | [FirmwareUpgradeFailed](../../09_DecisionTree/Firmware/FirmwareUpgradeFailed.md) | Communication/power/package/log evidence |
+| `Err_FPD_FirmwareFallback` | [UpgradeFailed](../../09_DecisionTree/Firmware/UpgradeFailed.md) + [VersionMismatch](../../09_DecisionTree/Firmware/VersionMismatch.md) | Rollback evidence, version comparison, log |
+| `Err_FPD_General_FirmwareUpgrade_Error` | [UpgradeFailed](../../09_DecisionTree/Firmware/UpgradeFailed.md) | Communication/power/package/log evidence |
 
 ---
 
@@ -49,7 +49,7 @@ The firmware package was downloaded, but the detector failed to apply or activat
 
 1. Stop repeated upgrade attempts and preserve the failure evidence.
 2. Record detector model, current firmware, target firmware, SDK version, and package identity.
-3. Enter [FirmwareUpgradeFailed](../../09_DecisionTree/Firmware/FirmwareUpgradeFailed.md).
+3. Enter [UpgradeFailed](../../09_DecisionTree/Firmware/UpgradeFailed.md).
 4. Verify package/model/version compatibility through [VersionMismatch](../../09_DecisionTree/Firmware/VersionMismatch.md).
 5. Review the upgrade procedure in [FirmwareUpgrade](../../10_SOP/FirmwareUpgrade.md).
 6. Export logs with [LogExport](../../17_Tools/SDKTool/LogExport.md).
@@ -82,7 +82,7 @@ The detector automatically rolled back to the previous firmware version, reporte
 
 1. Preserve the rollback event and log before another upgrade.
 2. Record the current version and attempted target version.
-3. Follow [FirmwareUpgradeFailed](../../09_DecisionTree/Firmware/FirmwareUpgradeFailed.md).
+3. Follow [UpgradeFailed](../../09_DecisionTree/Firmware/UpgradeFailed.md).
 4. Compare compatibility through [VersionMismatch](../../09_DecisionTree/Firmware/VersionMismatch.md).
 5. Do not repeatedly force the same package until package/version compatibility and failure evidence are reviewed.
 
@@ -97,7 +97,7 @@ General detector-side firmware upgrade failure.
 1. Preserve the exact error, command result, and timestamp.
 2. Verify stable power and communication.
 3. Verify package identity and detector model before retry.
-4. Follow [FirmwareUpgradeFailed](../../09_DecisionTree/Firmware/FirmwareUpgradeFailed.md).
+4. Follow [UpgradeFailed](../../09_DecisionTree/Firmware/UpgradeFailed.md).
 5. If communication evidence is abnormal, enter [NetworkFailure](../../09_DecisionTree/Connection/NetworkFailure.md).
 6. Export `Detector.log` and upgrade evidence with [LogExport](../../17_Tools/SDKTool/LogExport.md).
 
@@ -139,12 +139,13 @@ Collect:
 
 # Related DecisionTree / SOP / Tool / Case
 
-- [FirmwareUpgradeFailed](../../09_DecisionTree/Firmware/FirmwareUpgradeFailed.md)
+- [UpgradeFailed](../../09_DecisionTree/Firmware/UpgradeFailed.md)
 - [VersionMismatch](../../09_DecisionTree/Firmware/VersionMismatch.md)
 - [NetworkFailure](../../09_DecisionTree/Connection/NetworkFailure.md)
 - [FirmwareUpgrade](../../10_SOP/FirmwareUpgrade.md)
 - [Firmware Upgrade Tool](../../17_Tools/SDKTool/FirmwareUpgrade.md)
 - [LogExport](../../17_Tools/SDKTool/LogExport.md)
+- [FirmwareUpgradeFailed Case](../../11_Case/Firmware/FirmwareUpgradeFailed.md)
 - [VersionMismatch Case](../../11_Case/Firmware/VersionMismatch.md)
 - [ParameterRecovery Case](../../11_Case/Firmware/ParameterRecovery.md)
 
@@ -154,5 +155,6 @@ Collect:
 
 | Version | Date | Description |
 |---|---|---|
+| v1.2 | 2026-08-10 | Repaired Firmware DecisionTree references and aligned the Case/DecisionTree naming boundary |
 | v1.1 | 2026-08-10 | Added direct upgrade failure mapping, evidence package, and post-upgrade verification chain |
 | v1.0 | 2026-08-07 | Initial release |

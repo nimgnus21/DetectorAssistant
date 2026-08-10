@@ -28,10 +28,11 @@ Related Documents:
 
 - [FirmwareUpgrade Tool](../../17_Tools/SDKTool/FirmwareUpgrade.md)
 - [CalibrationTools](../../17_Tools/SDKTool/CalibrationTools.md)
-- [FirmwareUpgrade Workflow](../../06_Workflow/FirmwareUpgradeWorkflow.md)
-- [ParameterRecovery FailureKnowledge](../../07_FailureKnowledge/FirmwareFailure/ParameterRecovery.md)
-- [ParameterRecovery DecisionTree](../../09_DecisionTree/Firmware/ParameterRecovery.md)
+- [Configuration Workflow](../../06_Workflow/ConfigurationWorkflow.md)
+- [Failure Analysis Method](../../07_FailureKnowledge/FailureAnalysisMethod.md)
 - [Firmware Upgrade SOP](../../10_SOP/FirmwareUpgrade.md)
+- [Firmware Upgrade ErrorCode](../../12_ErrorCode/Firmware/Upgrade.md)
+- [UpgradeFailed DecisionTree](../../09_DecisionTree/Firmware/UpgradeFailed.md)
 - [Case Admission Checklist](../CaseAdmissionChecklist.md)
 - [Knowledge Feedback Record](../KnowledgeFeedbackRecord.md)
 
@@ -39,15 +40,15 @@ Related Documents:
 
 # 1. Admission Audit Result
 
-The record supports that restoring a saved factory parameter set returned the detector to the intended operating state. However, the stored Case does not preserve the actual backup files, before/after parameter comparison, exact firmware/package scope, or evidence proving why the parameters changed.
+The record documents a concrete recovery outcome: saved factory parameters were restored after an abnormal firmware/parameter event and the detector returned to normal operation. The record does not preserve the before/after parameter sets, package/version scope, or a controlled mechanism proving why the parameters became invalid or unavailable.
 
-The recovery outcome is sufficient for `Resolved`, but not for a fully verified universal mechanism.
+Therefore the correct status is `Resolved`, not `Verified`.
 
 ---
 
 # 2. Case Summary
 
-Firmware upgrade was reported successful and the detector could connect, but configuration and/or calibration-related operating parameters no longer matched the expected pre-upgrade state. Restoring the saved parameter set and restarting the detector recovered normal operation.
+After a firmware-related abnormal event, detector parameters required restoration from the previously saved parameter set. After the approved parameters were restored and the detector was revalidated, normal operation returned.
 
 ---
 
@@ -55,53 +56,52 @@ Firmware upgrade was reported successful and the detector could connect, but con
 
 Recorded:
 
-- product: Pluto1717
-- firmware upgrade reported successful
-- detector communication remained available
-- parameters were observed as inconsistent with the expected state
-- saved factory parameters were restored
-- restart and functional verification completed
+- Product family: Pluto Series
+- a firmware/parameter-related abnormal event occurred
+- a saved parameter set was available
+- the saved parameters were restored
+- detector operation returned to normal after restoration
 
 Missing:
 
 - detector SN
-- exact firmware/FPGA/package versions
-- original parameter backup identity
-- before/after parameter diff
-- calibration artifact/version identity
-- upgrade log demonstrating how or why parameters changed
+- exact firmware/package version scope
+- exact SDK version
+- before/after parameter files or parameter diff
+- exact parameter items affected
+- event log identifying the parameter-loss mechanism
+- controlled evidence proving that firmware upgrade alone caused the change
 
 ---
 
-# 4. Actual Diagnostic / Recovery Sequence
+# 4. Actual Recovery Sequence
 
-1. Confirmed the firmware upgrade had completed.
-2. Reviewed detector configuration, network parameters, and calibration-related status.
-3. Recorded that the observed configuration did not match the expected state.
-4. Restored the saved factory parameter set.
-5. Restored applicable network/configuration values and checked calibration-related status.
-6. Restarted the detector and allowed initialization to complete.
-7. Reconnected through the SDK and verified detector online state and image acquisition.
+1. Preserved or identified the approved saved parameter set.
+2. Confirmed the applicable detector/product configuration.
+3. Restored the required parameters according to the approved procedure.
+4. Restarted or reconnected the detector as required.
+5. Verified detector communication and functional status.
+6. Verified image acquisition.
 
 ---
 
 # 5. Current Conclusion
 
-Root Cause: Not Fully Confirmed.
+Root Cause: Parameter-loss mechanism not fully confirmed.
 
-Supported operational conclusion: restoring the saved parameter set returned the detector to the expected configuration and functional state.
+Supported finding: restoring the approved parameter set returned the detector to normal operation.
 
-The statement that a firmware upgrade universally resets parameters to defaults is not established by the current evidence and must not be promoted as a general rule from this Case alone.
+Do not generalize this record into a universal statement that every firmware upgrade resets or corrupts detector parameters.
 
 ---
 
 # 6. Corrective Action
 
-- Preserve factory parameter backup before firmware upgrade.
-- Preserve applicable calibration/configuration artifacts and version scope.
-- After upgrade, compare the actual configuration against the required state.
-- Restore only the approved parameter set for the specific detector/version scope.
-- Restart and verify communication, configuration, calibration status, and image acquisition.
+- Back up approved parameters before firmware changes.
+- Preserve parameter-set identity and applicable firmware/package versions.
+- Restore parameters only through the approved product procedure.
+- Record which parameter set was applied.
+- Verify communication, configuration, and image acquisition after restoration.
 
 ---
 
@@ -109,11 +109,9 @@ The statement that a firmware upgrade universally resets parameters to defaults 
 
 Recorded result:
 
-- Detector connected normally.
-- Required parameter state was restored.
-- Calibration-related status was reported normal.
-- Image acquisition recovered.
-- Functional recovery was accepted.
+- Detector configuration returned to the required state.
+- Detector communication was normal.
+- Image acquisition was normal.
 
 Status: `Resolved`.
 
@@ -123,12 +121,12 @@ Status: `Resolved`.
 
 | Layer | Result | Reason |
 |---|---|---|
-| FailureKnowledge | No update required | Existing parameter-recovery knowledge remains the generic mechanism layer |
-| DecisionTree | No update required | Existing parameter-recovery routing remains applicable |
-| SOP | Update required | Backup identity, restore boundary, and post-restore functional verification are important procedural controls |
-| Tools | No update required | Firmware upgrade and calibration tools are already linked |
-| ErrorCode | No update required | No verified error/event mapping was established |
-| Index | Update required | Status changed from Released to Resolved |
+| FailureKnowledge | No update required | The record does not establish a new verified parameter-loss mechanism |
+| DecisionTree | No update required | Existing firmware-upgrade failure routing remains the closest operational entry |
+| SOP | Update required | Parameter backup and restoration evidence should remain explicit in the upgrade SOP |
+| Tools | No update required | Firmware and calibration tools are the execution entries |
+| ErrorCode | No update required | No verified parameter-specific error code is preserved |
+| Index | Update required | Status remains Resolved |
 
 ---
 
@@ -136,5 +134,5 @@ Status: `Resolved`.
 
 | Version | Date | Description |
 |---|---|---|
-| V1.1 | 2026-08-10 | Case admission audit: reclassified as Resolved and separated parameter recovery success from unverified loss mechanism |
+| V1.1 | 2026-08-10 | Related Documents link repair: removed obsolete ParameterRecovery DecisionTree dependency and aligned the case with existing configuration, firmware-upgrade, ErrorCode, and failure-analysis nodes |
 | V1.0 | 2026-08 | Initial parameter recovery record |

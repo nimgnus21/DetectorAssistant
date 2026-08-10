@@ -1,10 +1,16 @@
 # Timeout
 
-Version: V1.0
+Version: V1.1
 
 Module: 11_Case / Communication
 
-Status: Released
+Status: Reference Candidate
+
+Case Classification: Mixed Diagnostic Reference
+
+Evidence Level: Candidate Evidence — multiple timeout mechanisms are summarized, but the file does not represent one complete event-level Case.
+
+Promotion Rule: A timeout scenario may be promoted only after the timeout stage, model/version, actual evidence, corrective action, and controlled verification are recorded.
 
 Severity: ★★★★☆
 
@@ -20,322 +26,118 @@ Applicable Products:
 
 Related Documents:
 
-- ../../06_Workflow/ConnectionWorkflow.md
-- ../../07_FailureKnowledge/SystemFailure/CommunicationFailure.md
-- ../../09_DecisionTree/Communication/
-- ../../17_Tools/Ping/
-- ../../17_Tools/Wireshark/
+- [ConnectionWorkflow](../../06_Workflow/ConnectionWorkflow.md)
+- [CommunicationFailure](../../07_FailureKnowledge/SystemFailure/CommunicationFailure.md)
+- [ConnectionTimeout](../../09_DecisionTree/Connection/ConnectionTimeout.md)
+- [AcquisitionTimeout](../../09_DecisionTree/Software/AcquisitionTimeout.md)
+- [Ping](../../17_Tools/Ping/README.md)
+- [Wireshark](../../17_Tools/Wireshark/README.md)
+- [LogExport](../../17_Tools/SDKTool/LogExport.md)
+- [Case Admission Checklist](../CaseAdmissionChecklist.md)
+- [Knowledge Feedback Record](../KnowledgeFeedbackRecord.md)
 
 ---
 
-# 1. Case Summary
+# 1. Admission Audit Result
 
-## Case Name
+The previous document grouped Connection Timeout, Acquisition Timeout, response timeout, and missing-image symptoms into one generic Case. These stages have different diagnostic boundaries and cannot share one automatically confirmed root cause.
 
-Communication Timeout
-
-## Description
-
-SDK 或上位机在规定时间内未收到探测器响应，导致通信超时。
-
-Timeout 并不一定表示探测器损坏，而是表示一次正常通信流程未能在规定时间内完成。
+The file is retained as a `Reference Candidate` for search and routing, not as a released event-level Case.
 
 ---
 
-# 2. Applicable Products
+# 2. Stage Classification
 
-适用于：
+Before troubleshooting, identify the timeout stage:
 
-- Gigabit Ethernet Detector
-- Pluto 系列
-- 动态平板
-- 静态平板
+| Stage | Primary Meaning | Diagnostic Entry |
+|---|---|---|
+| Connection | Detector/SDK communication did not complete | [ConnectionTimeout](../../09_DecisionTree/Connection/ConnectionTimeout.md) |
+| Acquisition | Acquisition started but expected response/image did not arrive | [AcquisitionTimeout](../../09_DecisionTree/Software/AcquisitionTimeout.md) |
+| Image Transfer | Exposure/acquisition evidence exists but image delivery is incomplete | [ImageLoss](../../09_DecisionTree/Image/ImageLoss.md) |
+| Device State | Detector remains Busy/abnormal or cannot progress | Relevant device-state DecisionTree / log review |
 
----
-
-# 3. Fault Phenomenon
-
-现场常见现象：
-
-- Connection Timeout
-- Acquisition Timeout
-- Detector No Response
-- Wait Response Timeout
-- SDK 长时间等待
-- 图像无法返回
+A timeout event does not by itself prove detector hardware, generator, network, SDK, or PC failure.
 
 ---
 
-# 4. Root Cause Analysis
+# 3. Candidate Diagnostic Branches
 
-## 4.1 网络通信异常
+Depending on the identified stage, candidates may include:
 
-包括：
+- network interruption, loss, or configuration mismatch;
+- detector state, initialization, or firmware abnormality;
+- SDK/application timeout or configuration boundary;
+- trigger/exposure sequence mismatch;
+- acquisition rate or host resource limitation.
 
-- 网络延迟
-- 丢包
-- 网络中断
-
----
-
-## 4.2 Detector 未正常响应
-
-包括：
-
-- Firmware 卡死
-- Detector 初始化失败
-- Detector Busy
+Each branch requires event evidence before being recorded as the root cause.
 
 ---
 
-## 4.3 SDK 配置异常
+# 4. Reference Diagnostic Path
 
-例如：
-
-- Timeout 参数过短
-- SDK 配置错误
-- Detector 配置错误
-
----
-
-## 4.4 PC 性能不足
-
-包括：
-
-- CPU 占用过高
-- 内存不足
-- 系统资源不足
+1. Preserve the exact error/event and timestamp.
+2. Record detector state and acquisition/application mode.
+3. Identify the timeout stage.
+4. Run [Ping](../../17_Tools/Ping/README.md) only as a network reachability check; do not treat a successful Ping as proof that acquisition is normal.
+5. Export and correlate `Detector.log` using [LogExport](../../17_Tools/SDKTool/LogExport.md).
+6. Verify product-specific network, SDK, firmware, trigger, and operating conditions according to the identified branch.
+7. Use [Wireshark](../../17_Tools/Wireshark/README.md) when packet-level evidence is needed.
+8. Change one controlled variable and retest.
 
 ---
 
-## 4.5 网络配置错误
+# 5. Candidate Field Experiences
 
-包括：
+### Candidate A — Address/Network Configuration
 
-- IP 配置错误
-- Jumbo Frame
-- Packet Size
-- 网卡驱动异常
+Pattern: connection timeout changes after correcting the active network interface configuration.
 
----
+Required evidence: before/after configuration and repeatable reconnection.
 
-# 5. Diagnostic Process
+### Candidate B — Detector State
 
-## Step 1
+Pattern: acquisition timeout occurs while the detector remains in an abnormal or Busy state; recovery follows the applicable state reset/reinitialization path.
 
-确认：
+Required evidence: state/log before and after recovery.
 
-Detector 是否 Online。
+### Candidate C — Acquisition Rate / Host Capacity
 
----
+Pattern: timeout occurs at a specific acquisition load and changes after returning to a validated operating condition.
 
-## Step 2
-
-Ping Detector。
-
-观察：
-
-- 是否超时
-- 是否丢包
-- 延迟是否稳定
+Required evidence: rate, system environment, repeatability, and controlled before/after result.
 
 ---
 
-## Step 3
+# 6. Verification Rule
 
-检查：
+Closure of a future Case requires:
 
-- 网卡配置
-- Jumbo Frame
-- Packet Size
-
----
-
-## Step 4
-
-检查：
-
-SDK 日志。
-
-确认：
-
-Timeout 发生阶段：
-
-- Connection
-- Acquisition
-- Image Transfer
+- timeout stage identified;
+- suspected condition recorded before change;
+- one corrective action or controlled change documented;
+- retest under the relevant original condition;
+- objective evidence that the timeout no longer occurs or changes as predicted.
 
 ---
 
-## Step 5
+# 7. Knowledge Feedback Review
 
-重新启动：
-
-- SDK
-- Detector
-
-再次验证。
-
----
-
-## Step 6
-
-若仍失败：
-
-抓取网络数据包进行分析。
+| Layer | Result | Reason |
+|---|---|---|
+| FailureKnowledge | No update required | Existing timeout/communication mechanisms remain broader than this mixed record |
+| DecisionTree | No update required | Stage-specific routing already exists |
+| SOP | No update required | No new verified universal procedure was extracted |
+| Tools | No update required | Ping, Wireshark and LogExport are existing evidence tools |
+| ErrorCode | No update required | No new verified timeout mapping |
+| Index | Update required | Classification changed to Reference Candidate |
 
 ---
 
-# 6. Typical Field Experience
-
-## Case 1
-
-### Phenomenon
-
-Connection Timeout。
-
-### Cause
-
-IP 配置错误。
-
-### Solution
-
-重新配置网络。
-
-恢复正常。
-
----
-
-## Case 2
-
-### Phenomenon
-
-Acquisition Timeout。
-
-### Cause
-
-Detector Busy。
-
-### Solution
-
-重新启动 Detector。
-
-恢复正常。
-
----
-
-## Case 3
-
-### Phenomenon
-
-动态采集频繁 Timeout。
-
-### Cause
-
-Frame Rate 设置过高。
-
-### Solution
-
-降低 Frame Rate。
-
-恢复正常。
-
----
-
-# 7. Verification
-
-满足以下条件：
-
-- 无 Timeout 提示
-- Detector 响应正常
-- 图像采集正常
-- 连续运行稳定
-
-即可确认故障解决。
-
----
-
-# 8. Engineering Experience
-
-## Experience 1
-
-Timeout 不等于 Detector 故障。
-
-首先确认：
-
-- 网络
-- SDK
-- Detector 状态
-
----
-
-## Experience 2
-
-若 Ping 正常：
-
-优先检查：
-
-- SDK
-- Firmware
-- License
-
----
-
-## Experience 3
-
-动态模式 Timeout：
-
-应重点检查：
-
-- Frame Rate
-- 网络带宽
-- PC 性能
-
----
-
-## Experience 4
-
-Timeout 与 Image Loss 经常同时出现。
-
-建议联合排查网络配置。
-
----
-
-# 9. Prevention
-
-建议：
-
-- 固定网络配置
-- 使用稳定版本 Firmware
-- 定期升级网卡驱动
-- 保证 PC 性能满足要求
-- 连续运行验证稳定性
-
----
-
-# 10. Related Documents
-
-Workflow：
-
-- ConnectionWorkflow.md
-
-Failure Knowledge：
-
-- CommunicationFailure.md
-
-Decision Tree：
-
-- Communication/
-
-Tools：
-
-- Ping
-- Wireshark
-
----
-
-# 11. Revision History
+# 8. Revision History
 
 | Version | Date | Description |
 |----------|------|-------------|
-| V1.0 | 2026-08 | 初版建立，整理 Timeout 通信故障案例。 |
+| V1.1 | 2026-08-10 | Case admission audit: separated timeout stages and reclassified as Reference Candidate |
+| V1.0 | 2026-08 | Initial timeout field-experience summary |

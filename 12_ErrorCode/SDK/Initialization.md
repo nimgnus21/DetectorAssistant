@@ -1,6 +1,7 @@
 # SDK Error Code - Initialization
 
-> Module: SDK  
+> Module: SDK
+>
 > Category: Initialization Error Codes
 
 ---
@@ -20,8 +21,6 @@ These errors typically occur during SDK startup, detector object creation, envir
 - Cmd_Disconnect
 - Cmd_Reset
 
----
-
 # Related Events
 
 - Evt_GeneralError
@@ -30,20 +29,19 @@ These errors typically occur during SDK startup, detector object creation, envir
 
 ---
 
-# Error Codes
+# Diagnostic Rule
+
+For every initialization error, first record the exact command, detector state, SDK version, firmware version and Detector.log timestamp. The error code indicates the failing condition; it does not by itself prove a unique root cause.
 
 ---
+
+# Error Codes
 
 ## Err_OK
 
 ### Description
 
 Operation completed successfully.
-
-### Possible Causes
-
-- The command was executed successfully.
-- No error occurred.
 
 ### Recommended Actions
 
@@ -69,6 +67,13 @@ A previous task is still executing.
 - Wait for **Evt_TaskResult_Succeed** or **Evt_TaskResult_Failed**.
 - Avoid sending duplicate commands.
 
+### Diagnostic Chain
+
+- DecisionTree: [DetectorBusy](../../09_DecisionTree/Software/DetectorBusy.md)
+- SOP: [Workflow Troubleshooting](../../06_Workflow/WorkflowTroubleshooting.md)
+- Tool: [iDetector Quick Troubleshooting](../../17_Tools/SDKTool/iDetectorQuickTroubleshooting.md)
+- Evidence: Detector.log, triggering command, detector state and task timing.
+
 ---
 
 ## Err_Unknown
@@ -85,10 +90,17 @@ Unknown internal error.
 
 ### Recommended Actions
 
-- Check **Detector.log**.
+- Preserve Detector.log before restart.
 - Restart the application.
 - Reconnect the detector.
-- Contact technical support if the issue persists.
+- Escalate with version information if the issue persists.
+
+### Diagnostic Chain
+
+- DecisionTree: [SDK Exception](../../09_DecisionTree/Software/SDKException.md)
+- SOP: [Workflow Troubleshooting](../../06_Workflow/WorkflowTroubleshooting.md)
+- Tool: [Log Viewer](../../17_Tools/Log%20Viewer/README.md)
+- Evidence: Detector.log and exact reproduction steps.
 
 ---
 
@@ -110,6 +122,12 @@ Failed to create the detector object or working directory because it already exi
 - Release the previous detector object before creating a new one.
 - Verify application initialization logic.
 
+### Diagnostic Chain
+
+- DecisionTree: [SDK Initialization Failed](../../09_DecisionTree/Software/SDKInitializationFailed.md)
+- SOP: [Workflow Troubleshooting](../../06_Workflow/WorkflowTroubleshooting.md)
+- Tool: [iDetector Quick Troubleshooting](../../17_Tools/SDKTool/iDetectorQuickTroubleshooting.md)
+
 ---
 
 ## Err_StateErr
@@ -128,7 +146,13 @@ Current detector state does not allow the requested operation.
 
 - Verify current detector state.
 - Wait until the detector returns to **Ready**.
-- Retry the operation.
+- Retry the operation only after state recovery.
+
+### Diagnostic Chain
+
+- DecisionTree: [DetectorBusy](../../09_DecisionTree/Software/DetectorBusy.md)
+- Tool: [iDetector Quick Troubleshooting](../../17_Tools/SDKTool/iDetectorQuickTroubleshooting.md)
+- Evidence: state before command and preceding command sequence.
 
 ---
 
@@ -148,7 +172,13 @@ SDK or detector has not been initialized.
 
 - Initialize the SDK.
 - Create the detector object.
-- Execute Cmd_Connect before other commands.
+- Execute Cmd_Connect before dependent commands.
+
+### Diagnostic Chain
+
+- DecisionTree: [SDK Initialization Failed](../../09_DecisionTree/Software/SDKInitializationFailed.md)
+- Workflow: [Communication Workflow](../../06_Workflow/CommunicationWorkflow.md)
+- Tool: [iDetector Quick Troubleshooting](../../17_Tools/SDKTool/iDetectorQuickTroubleshooting.md)
 
 ---
 
@@ -169,6 +199,13 @@ The requested function is not implemented.
 - Verify firmware version.
 - Use supported APIs only.
 
+### Evidence
+
+- Exact API or command.
+- SDK version.
+- Firmware version.
+- Detector model.
+
 ---
 
 ## Err_AccessDenied
@@ -187,7 +224,12 @@ Interface operation is not permitted.
 
 - Verify detector status.
 - Wait until current task completes.
-- Retry the operation.
+- Retry only after the blocking condition is removed.
+
+### Diagnostic Chain
+
+- DecisionTree: [DetectorBusy](../../09_DecisionTree/Software/DetectorBusy.md)
+- Tool: [iDetector Quick Troubleshooting](../../17_Tools/SDKTool/iDetectorQuickTroubleshooting.md)
 
 ---
 
@@ -197,15 +239,16 @@ Interface operation is not permitted.
 
 Invalid number of parameters.
 
-### Possible Causes
-
-- Missing required parameters.
-- Too many parameters supplied.
-
 ### Recommended Actions
 
 - Verify API parameter count.
 - Follow the SDK Programming Guide.
+
+### Evidence
+
+- API name.
+- Parameter list.
+- SDK version.
 
 ---
 
@@ -215,15 +258,17 @@ Invalid number of parameters.
 
 Invalid parameter type.
 
-### Possible Causes
-
-- Incorrect data type supplied.
-- Unsupported parameter type.
-
 ### Recommended Actions
 
 - Verify parameter type definition.
 - Use the correct SDK data type.
+
+### Evidence
+
+- API name.
+- Expected type.
+- Actual type.
+- SDK version.
 
 ---
 
@@ -245,6 +290,12 @@ Invalid parameter value.
 - Use valid enumeration values.
 - Check SDK Programming Guide.
 
+### Evidence
+
+- API name.
+- Parameter name and value.
+- Expected valid range.
+
 ---
 
 ## Err_PreCondition
@@ -263,13 +314,17 @@ The command precondition has not been satisfied.
 
 - Complete prerequisite operations.
 - Verify command execution sequence.
-- Retry after initialization.
+- Retry after initialization and state verification.
+
+### Diagnostic Chain
+
+- DecisionTree: [SDK Initialization Failed](../../09_DecisionTree/Software/SDKInitializationFailed.md)
+- Tool: [iDetector Quick Troubleshooting](../../17_Tools/SDKTool/iDetectorQuickTroubleshooting.md)
+- Evidence: complete command sequence and detector state transition.
 
 ---
 
 # Diagnostic Checklist
-
-When initialization-related errors occur, verify the following:
 
 - SDK initialized successfully.
 - Detector object created successfully.
@@ -280,27 +335,10 @@ When initialization-related errors occur, verify the following:
 
 ---
 
-# Related DecisionTree
-
-- 09_DecisionTree/Software/SDKInitializationFailed.md
-- 09_DecisionTree/Software/SDKException.md
-- 09_DecisionTree/Software/DetectorBusy.md
-
----
-
 # Related Case
 
-- 11_Case/Communication/ConnectionFailed.md
-
----
-
-# Related Log
-
-```
-Detector.log
-```
-
-Initialization-related problems should always be analyzed together with the SDK runtime log.
+- [Connection Failed](../../11_Case/Communication/ConnectionFailed.md)
+- No verified initialization-specific case should be inferred from this document if no matching case exists.
 
 ---
 
@@ -308,4 +346,5 @@ Initialization-related problems should always be analyzed together with the SDK 
 
 | Version | Date | Description |
 |---------|------|-------------|
+| v1.1 | 2026-08-10 | Added concrete diagnostic-chain links and evidence requirements |
 | v1.0 | 2026-08-07 | Initial release |

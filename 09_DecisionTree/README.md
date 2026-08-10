@@ -20,14 +20,8 @@
 
 1. **固定横线、每张图重复出现**
    - [HorizontalLine](Image/HorizontalLine.md)
-2. **暗场也有横纹，且移动探测器后状态变化**
-   - [InterferenceStripe](../07_FailureKnowledge/ImageFailure/InterferenceStripe.md)
-3. **多段数据缺失、条带宽度一致**
-   - [PacketLoss](../07_FailureKnowledge/ImageFailure/PacketLoss.md)
-4. **等宽、亮暗相间的规则条纹**
-   - [CalibrationStripe](../07_FailureKnowledge/ImageFailure/CalibrationStripe.md)
-5. **Mercu0606X1 异常条状区域**
-   - [DefectiveBar](../07_FailureKnowledge/ImageFailure/DefectiveBar.md)
+2. **其他图像异常**
+   - 从 [Image DecisionTree](Image/) 按具体现象进入对应分支。
 
 Execution:
 - [Image Troubleshooting SOP](../10_SOP/ImageTroubleshooting.md)
@@ -38,7 +32,6 @@ Execution:
 # Connection Entry
 
 - [Connection DecisionTree](Connection/)
-- [UnableToConnect Knowledge](../07_FailureKnowledge/ConnectionFailure/UnableToConnect.md)
 - [Network Configuration SOP](../10_SOP/NetworkConfiguration.md)
 - [Ping / Wireshark Tools](../17_Tools/README.md)
 
@@ -48,7 +41,7 @@ Execution:
 
 Use the existing calibration branch together with:
 
-- [Calibration Module](../05_Calibration/)
+- [Calibration DecisionTree](Calibration/)
 - [Calibration SOP](../10_SOP/Calibration.md)
 - [SDK Tools](../17_Tools/SDKTool/)
 - [FailureKnowledge](../07_FailureKnowledge/README.md)
@@ -67,9 +60,8 @@ Use the existing calibration branch together with:
 # Software Entry
 
 - [Software DecisionTree](Software/)
-- [Software Index](../00_Project/Index/SoftwareIndex.md)
 - [Log Collection](../04_Software/Log/LogCollection.md)
-- [iDetector Quick Troubleshooting](../17_Tools/SDKTool/iDetectorQuickTroubleshooting.md)
+- [SDK Tool Guidance](../17_Tools/SDKTool/README.md)
 - [Error Code Module](../12_ErrorCode/)
 
 ---
@@ -87,8 +79,7 @@ Collect when applicable:
 - Network / Wireless Mode Information
 - Steps already tried
 
-Use the field collection template:
-- [LogCollection Template](../13_Template/Work/LogCollection.md)
+Use the available evidence and case templates under [13_Template](../13_Template/).
 
 ---
 
@@ -98,7 +89,7 @@ DecisionTree is for field branching and does not replace a verified Case.
 
 After resolution:
 
-1. Search [Case Index](../00_Project/Index/CaseIndex.md).
+1. Search the relevant case category under [11_Case](../11_Case/).
 2. Reuse an existing verified case when applicable.
 3. Create a new Case only after phenomenon, investigation, final cause or treatment, and verification are recorded.
 4. Feed verified reusable knowledge back to FailureKnowledge, DecisionTree, SOP, Tools, ErrorCode or Index as needed.

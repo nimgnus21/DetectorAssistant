@@ -1,6 +1,6 @@
 # Case
 
-Version: V1.0
+Version: V1.1
 
 Module: 11_Case
 
@@ -19,28 +19,30 @@ Applicable Products:
 
 Related Documents:
 
-- ../06_Workflow/
-- ../07_FailureKnowledge/
-- ../08_ImageDiagnosis/
-- ../09_DecisionTree/
-- ../12_ErrorCode/
-- ../17_Tools/
+- [Case Template](../00_Project/Templates/CaseTemplate.md)
+- [Case Index](../00_Project/Index/CaseIndex.md)
+- [Failure Knowledge](../07_FailureKnowledge/README.md)
+- [DecisionTree](../09_DecisionTree/README.md)
+- [SOP](../10_SOP/README.md)
+- [ErrorCode](../12_ErrorCode/)
+- [Tools](../17_Tools/README.md)
 
 ---
 
 # 1. Overview
 
-Case 模块用于沉淀 FAE（Field Application Engineer）在现场安装、调试、维修、培训及客户支持过程中积累的真实案例。
+Case 模块用于沉淀 FAE（Field Application Engineer）在现场安装、调试、维修、培训及客户支持过程中积累的**真实案例**。
 
-与 Workflow 不同：
+与其他模块不同：
 
 - Workflow 描述标准操作流程。
-- FailureKnowledge 介绍故障原理。
-- ImageDiagnosis 分析图像异常特征。
+- FailureKnowledge 介绍故障现象、机理和排查方向。
 - DecisionTree 提供故障定位路径。
-- **Case 记录真实现场案例及最终解决方案。**
+- SOP 规定标准执行步骤。
+- Tools 提供具体执行工具。
+- **Case 记录经过验证的现场/实验室问题、处理过程与结果。**
 
-Case 是整个知识库中最贴近现场工作的模块，也是持续更新频率最高的模块。
+Case 是技术支持知识库的反馈层：已有知识用于处理问题，处理完成后将新的、经过验证的经验反向沉淀到知识库。
 
 ---
 
@@ -48,12 +50,13 @@ Case 是整个知识库中最贴近现场工作的模块，也是持续更新频
 
 Case 模块目标：
 
-- 沉淀现场经验
+- 沉淀真实现场经验
 - 提高故障定位效率
 - 避免重复踩坑
 - 建立标准案例库
 - 为新人培训提供参考
 - 为研发提供现场反馈依据
+- 识别 FailureKnowledge / DecisionTree / SOP 的知识缺口
 
 ---
 
@@ -65,18 +68,11 @@ Case 模块目标：
 ├── README.md
 │
 ├── Communication
-│
 ├── Calibration
-│
 ├── Image
-│
 ├── Firmware
-│
 ├── Software
-│
-├── Customer
-│
-└── EngineeringExperience（规划中）
+└── Customer
 ```
 
 说明：
@@ -87,158 +83,133 @@ Case 模块目标：
 - **Firmware**：固件升级、版本管理及兼容性案例。
 - **Software**：SDK、License、软件配置案例。
 - **Customer**：送样、OQC、客户支持及现场服务案例。
-- **EngineeringExperience**：长期积累的工程经验（规划中）。
+
+未建立真实案例前，不为填充目录而创建虚构 Case。
 
 ---
 
 # 4. Case Classification
 
-建议所有案例按以下类型分类：
+所有 Case 按实际问题归入最主要的故障域。一个 Case 可以关联多个知识模块，但只保留一个主分类目录，避免同一案例重复复制。
 
-## 4.1 Communication
-
-例如：
-
-- Detector Connection Failed
-- Detector Offline
-- Ping Failed
-- Image Loss
-- Timeout
-- Network Configuration Error
+- Communication：连接、网络、通信、超时、图像传输问题
+- Calibration：Offset、Gain、Defect、Ghost、Dynamic Calibration
+- Image：横纹、坏点/坏线、噪点、Lag、Ghost、Image Shift 等
+- Firmware：升级、版本不匹配、启动或恢复问题
+- Software：SDK、License、配置、Mode、API/Exception
+- Customer：Sample、OQC、培训、RMA、现场服务
 
 ---
 
-## 4.2 Calibration
+# 5. Case Admission Rules
 
-例如：
+## 5.1 Required Evidence
 
-- Offset Generation Failed
-- Gain Generation Failed
-- Defect Generation Failed
-- Ghost Correction
-- Dynamic Calibration
-- Pluto0900X Color Calibration
+正式 Case 必须至少具备：
 
----
+1. **现象**：客户或实验室观察到的实际问题。
+2. **环境**：产品型号、关键版本、必要配置。
+3. **排查过程**：实际执行过的步骤，而不是理论建议。
+4. **最终处理或已验证根因**：至少其中一项经过验证。
+5. **验证结果**：恢复、未恢复或现象变化的客观结果。
 
-## 4.3 Image
+缺少以上信息时，不应标记为“已解决真实 Case”。
 
-例如：
+## 5.2 Case Status
 
-- Vertical Line
-- Horizontal Line
-- White Pixel
-- Black Pixel
-- Noise
-- Lag
-- Ghost
-- Mosaic
-- Image Shift
+每个新 Case 应使用以下状态之一：
 
----
+| Status | Definition |
+|---|---|
+| `Verified` | 根因或处理措施已通过现场/实验室验证 |
+| `Resolved` | 问题恢复，但根因未完全确认 |
+| `Unresolved` | 已完成排查但尚未解决 |
+| `Hypothesis` | 仅存在推断，不得作为正式技术结论 |
+| `Archived` | 已过期，仅供历史追溯 |
 
-## 4.4 Firmware
-
-例如：
-
-- Firmware Upgrade Failed
-- Firmware Version Mismatch
-- Boot Failure
-- FPGA Upgrade Failure
+`Hypothesis` 可以保存为排查记录，但不得作为 FailureKnowledge、DecisionTree 或 SOP 的正式结论来源。
 
 ---
 
-## 4.5 Software
+# 6. Standard Case Template
 
-例如：
+新 Case 必须优先使用：[Case Template](../00_Project/Templates/CaseTemplate.md)。
 
-- License Locked
-- SDK Exception
-- Configuration Error
-- Mode Configuration Error
-
----
-
-## 4.6 Customer
-
-例如：
-
-- Sample Test
-- OQC Inspection
-- Customer Training
-- Warranty Processing
-- RMA Analysis
-
----
-
-# 5. Standard Case Template
-
-所有案例建议统一采用以下结构：
+核心结构：
 
 ```text
-Case Name
-
-↓
-
+Case ID / Status
+    ↓
 Problem Description
-
-↓
-
-Applicable Products
-
-↓
-
-Environment
-
-↓
-
+    ↓
+Applicable Product / Environment
+    ↓
 Fault Phenomenon
-
-↓
-
-Root Cause Analysis
-
-↓
-
+    ↓
 Diagnostic Process
-
-↓
-
-Solution
-
-↓
-
-Verification
-
-↓
-
-Engineering Experience
-
-↓
-
-Related Documents
+    ↓
+Verified Root Cause / Treatment
+    ↓
+Verification Result
+    ↓
+Related Knowledge
+    ↓
+Feedback Required?
 ```
-
-统一结构有利于案例检索和后期维护。
 
 ---
 
-# 6. Case Writing Principles
+# 7. Case Feedback Mechanism
 
-建议遵循以下原则：
+Case 完成后必须检查是否需要反向更新知识库。
+
+```text
+Customer / Lab Problem
+        ↓
+Search Existing Knowledge
+        ↓
+FailureKnowledge / DecisionTree / SOP / Tools
+        ↓
+Execute and Verify
+        ↓
+Create or Update Case
+        ↓
+Knowledge Gap Review
+   ┌────┼────┬────┐
+   ↓    ↓    ↓    ↓
+Failure Tree SOP Tool/ErrorCode
+        ↓
+Update Index and Related Links
+```
+
+## 7.1 Mandatory Feedback Check
+
+每个 `Verified` 或 `Resolved` Case 完成后检查：
+
+- 是否发现新的故障现象？ → `07_FailureKnowledge`
+- 是否存在新的诊断分流条件？ → `09_DecisionTree`
+- 是否需要修改标准执行步骤？ → `10_SOP`
+- 是否需要新增工具使用场景？ → `17_Tools`
+- 是否发现错误码或版本相关信息？ → `12_ErrorCode`
+- 是否需要统一新术语？ → `14_Glossary`
+- 是否需要增加检索入口？ → `00_Project/Index`
+
+如果无需更新，也应在 Case 中记录“Knowledge Feedback: No update required”，避免后续重复审查。
+
+---
+
+# 8. Case Writing Principles
 
 ## 真实性
 
-所有案例应来源于：
+案例来源应为：
 
 - 客户现场
 - 公司实验室
 - 培训记录
 - 内部验证
 
-避免记录未经验证的推测。
-
----
+不得把通用排查文档改写为虚构 Case。
 
 ## 可复现
 
@@ -250,21 +221,15 @@ Related Documents
 - Firmware 版本
 - Detector 型号
 
-保证其他工程师能够复现问题。
-
----
-
 ## 可验证
 
-解决方案应具有明确验证方式，例如：
+解决方案必须具有明确验证方式，例如：
 
 - 图像恢复正常
 - 校准成功
 - 通信恢复
 - 日志无异常
 - 连续运行稳定
-
----
 
 ## 可追溯
 
@@ -278,177 +243,87 @@ Related Documents
 - 作者
 - 来源
 
-便于后续更新。
-
 ---
 
-# 7. Recommended Information
+# 9. Relationship with Other Modules
 
-每个案例建议包含：
-
-基础信息：
-
-- Product Model
-- Detector Model
-- Firmware Version
-- FPGA Version
-- SDK Version
-- Operating System
-
-现场信息：
-
-- Customer
-- Project
-- Environment
-- Network Topology
-
-故障信息：
-
-- Fault Description
-- Fault Frequency
-- Reproduction Method
-
-解决过程：
-
-- Diagnostic Steps
-- Root Cause
-- Solution
-
-最终结果：
-
-- Verification
-- Preventive Actions
-
----
-
-# 8. Relationship with Other Modules
-
-Case 不独立存在，应与其它模块建立关联。
+Case 不独立存在，应形成可追溯闭环：
 
 ```text
-Case
-
-↓
-
-DecisionTree
-（快速定位）
-
-↓
-
 FailureKnowledge
-（故障原理）
-
-↓
-
-Workflow
-（标准流程）
-
-↓
-
+        ↓
+DecisionTree
+        ↓
+SOP
+        ↓
 Tools
-（执行工具）
-
-↓
-
-ImageDiagnosis
-（图像分析）
-
-↓
-
-ErrorCode
-（错误信息）
+        ↓
+Field Verification
+        ↓
+Case
+        ↓
+Knowledge Feedback
+        ├── FailureKnowledge
+        ├── DecisionTree
+        ├── SOP
+        ├── Tools
+        ├── ErrorCode
+        └── Index
 ```
 
-例如：
-
-```
-Case：
-Image Loss
-
-↓
-
-DecisionTree：
-Image Loss Decision Tree
-
-↓
-
-FailureKnowledge：
-Network Failure
-
-↓
-
-Workflow：
-Connection Workflow
-
-↓
-
-Tools：
-LogExport
-Wireshark
-
-↓
-
-ImageDiagnosis：
-Noise
-```
-
-通过交叉引用形成完整的故障处理链路。
+Case 中的 `Related Documents` 应优先链接到具体文件，而不是只写目录名称。
 
 ---
 
-# 9. Engineering Experience
+# 10. Engineering Experience
 
-Case 模块重点记录官方文档中通常不会涉及，但经过现场验证的工程经验。
+经过验证的工程经验可以记录在 Case 中，但必须注明：
 
-例如：
+- 适用产品/型号
+- 适用版本
+- 验证环境
+- 验证结果
 
-- Pluto0900X 彩图校准过程中，第 63 张图像后不要提前停止曝光，应等待 SDK 自动完成第 64 张采集。
-- Detector 连接失败时，仅修改当前连接探测器的网卡 IP，其余网络配置保持不变。
-- Image Loss 排查时，应优先检查 Jumbo Frame、网卡驱动、Packet Size 及 Frame Rate。
-- Firmware 升级完成后建议断电等待 10～20 秒，再重新上电。
-
-工程经验应注明适用平台及版本，避免不同产品间直接套用。
+例如，产品专属校正步骤不能自动推广到其他型号。
 
 ---
 
-# 10. Continuous Maintenance
+# 11. Continuous Maintenance
 
-Case 模块属于持续更新模块。
+Case 属于持续更新模块。
 
-建议：
-
-新增案例：
+新增 Case：
 
 - 新产品问题
-- 新 Firmware
-- 新 SDK
+- 新 Firmware / SDK 问题
 - 新客户现场问题
+- 已验证的新故障模式
 
-更新已有案例：
+更新已有 Case：
 
 - 新版本解决方案
-- 新增排查方法
-- 增加注意事项
+- 新增验证结果
+- 新的预防措施
+- 关联知识更新
 
-定期复审：
-
-建议每季度或重大版本发布后，对案例进行检查和更新。
-
----
-
-# 11. References
-
-- Workflow Module
-- FailureKnowledge Module
-- ImageDiagnosis Module
-- SDK Tool Documents
-- Internal Training Materials
-- FAE Engineering Experience
+建议每季度或重大版本发布后复审 Case 状态和关联链接。
 
 ---
 
-# 12. Revision History
+# 12. References
+
+- [Case Template](../00_Project/Templates/CaseTemplate.md)
+- [Case Index](../00_Project/Index/CaseIndex.md)
+- [FailureKnowledge](../07_FailureKnowledge/README.md)
+- [DecisionTree](../09_DecisionTree/README.md)
+- [SOP](../10_SOP/README.md)
+- [Tools](../17_Tools/README.md)
+
+---
+
+# 13. Revision History
 
 | Version | Date | Description |
 |----------|------|-------------|
-| V1.0 | 2026-08 | 建立 Case 模块导航文档，定义案例分类、编写规范及与知识库其它模块的关联关系。 |
+| V1.1 | 2026-08-10 | Added case admission status and mandatory knowledge feedback mechanism |
+| V1.0 | 2026-08 | Established Case module navigation and writing principles |

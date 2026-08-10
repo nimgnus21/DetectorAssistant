@@ -6,332 +6,175 @@
 
 # 1. Purpose
 
-The **Firmware Upgrade** function is used to update the detector firmware stored inside the Flat Panel Detector (FPD).
+The **Firmware Upgrade** function is used to update detector firmware using the applicable released firmware package and upgrade workflow.
 
-Firmware upgrades are performed to:
+Firmware upgrades may be performed for version compatibility, approved defect correction, supported function changes, maintenance or project delivery requirements.
 
-- Fix known software defects
-- Improve detector stability
-- Support new detector functions
-- Improve communication compatibility
-- Match SDK and detector versions
-- Meet project delivery requirements
-
-Firmware upgrades should only be performed using officially released firmware packages.
+Firmware upgrades should only be performed using the correct package for the applicable detector model and supported software environment.
 
 ---
 
 # 2. Scope
 
-This document describes the firmware upgrade function provided by the **Upgrade** module of iDetector.
+This document describes the standard firmware upgrade workflow used by the iDetector software environment.
 
-It includes:
+It covers:
 
-- Firmware selection
-- Upgrade process
-- Version verification
-- Upgrade precautions
-- Recovery recommendations
-
----
-
-# 3. Applicable Scenarios
-
-Firmware Upgrade is typically performed during:
-
-- Factory production
-- Detector maintenance
-- Customer deployment
-- Firmware bug fixing
-- Detector replacement
-- Version compatibility adjustment
-- R&D verification
-
-Firmware should **not** be upgraded during normal image acquisition.
+- Package selection
+- Pre-upgrade verification
+- Upgrade execution
+- Interruption prevention
+- Post-upgrade verification
+- Failure evidence collection
 
 ---
 
-# 4. Upgrade Prerequisites
+# 3. Preconditions
 
-Before upgrading firmware, verify the following items.
+Before upgrading, confirm:
 
-## Detector Status
+- Detector model and SN
+- Current firmware version
+- Target firmware version
+- Applicable SDK/software version
+- Correct upgrade package
+- Stable detector communication
+- Stable power supply
+- Sufficient battery for applicable wireless products
+- Upgrade environment is ready
 
-- Detector connected successfully
-- Detector communication normal
-- Detector power supply stable
-- Detector battery sufficient (Wireless Detector)
-- Detector status is Ready
-
----
-
-## Software Environment
-
-- Correct firmware package
-- Compatible SDK version
-- Compatible detector model
-- Stable network connection (Ethernet detector)
+If any version or package compatibility is uncertain, stop and obtain the required technical confirmation before starting.
 
 ---
 
-## Engineering Preparation
-
-Record:
-
-- Detector Model
-- Detector Serial Number
-- Current Firmware Version
-- Target Firmware Version
-- SDK Version
-
-Backup detector configuration if required.
-
----
-
-# 5. Typical Upgrade Workflow
+# 4. Standard Workflow
 
 ```text
-Connect Detector
-
-↓
-
-Read Detector Information
-
-↓
-
-Verify Current Firmware Version
-
-↓
-
-Select Firmware Package
-
-↓
-
+Identify Detector
+        ↓
+Record Current Versions
+        ↓
+Verify Model / Package / SDK Compatibility
+        ↓
+Verify Power and Communication Stability
+        ↓
 Start Upgrade
-
-↓
-
-Firmware Download
-
-↓
-
-Firmware Programming
-
-↓
-
-Upgrade Completed
-
-↓
-
-Restart Detector
-
-↓
-
+        ↓
+Do Not Interrupt Upgrade
+        ↓
+Upgrade Completion
+        ↓
+Restart / Reconnect as Required
+        ↓
 Verify Firmware Version
-
-↓
-
-Functional Verification
+        ↓
+Verify Communication
+        ↓
+Acquire Test Image
+        ↓
+Record Result
 ```
 
 ---
 
-# 6. Operating Procedure
+# 5. Execution Rules
 
-## Step 1
+## Before Upgrade
 
-Connect the detector.
-
-Verify:
-
-- Communication normal
-- Detector Ready
-
----
-
-## Step 2
-
-Open
-
-Upgrade
-
-↓
-
-Firmware Upgrade
-
----
-
-## Step 3
-
-Select the correct firmware package.
-
-Verify:
+Record:
 
 - Detector model
+- Detector SN
+- Current firmware version
+- Target firmware version
+- SDK version
+- Upgrade package name
+
+Confirm the detector is connected and communication is normal.
+
+## During Upgrade
+
+Do not:
+
+- Disconnect the detector
+- Power off the detector
+- Close the upgrade software
+- Interrupt the communication path
+
+Preserve the displayed upgrade status if an abnormality occurs.
+
+## After Upgrade
+
+Verify:
+
 - Firmware version
-- Firmware compatibility
-
----
-
-## Step 4
-
-Start firmware upgrade.
-
-The software downloads the firmware to the detector.
-
----
-
-## Step 5
-
-Wait until programming finishes.
-
-**Do NOT**
-
-- Disconnect detector
-- Close iDetector
-- Power off detector
-- Disconnect network cable
-
----
-
-## Step 6
-
-Upgrade completed.
-
-Restart detector if required.
-
----
-
-## Step 7
-
-Reconnect detector.
-
-Verify:
-
-- Firmware Version
-- Detector Status
-- Image Acquisition
-- Detector Communication
-
----
-
-# 7. Upgrade Verification
-
-After firmware upgrade, verify:
-
-## Basic Verification
-
-- Detector can connect.
-- Detector status is normal.
-- Detector firmware version is correct.
-- Detector information is readable.
-
----
-
-## Functional Verification
-
-Verify:
-
+- Detector status
+- Detector reconnection
+- Communication stability
 - Image acquisition
-- Image transfer
-- Offset Calibration
-- Gain Calibration
-- Defect Correction
-- Image display
+
+Perform additional functional verification required by the applicable product or project.
 
 ---
 
-## Engineering Verification
+# 6. Failure Handling
 
-Acquire several images.
+If the upgrade fails, record the failure before repeated attempts whenever possible.
 
-Confirm:
+Collect:
 
-- Communication stable
-- No abnormal artifacts
-- Image quality normal
-- Detector operates normally
+- Detector.log
+- Detector model and SN
+- Current/target firmware version
+- SDK and upgrade tool version
+- Upgrade package name
+- Error code/message
+- Screenshot
+- Failure stage
+- Post-failure detector connection status
 
----
-
-# 8. Engineering Recommendations
-
-Before upgrade:
-
-- Verify firmware package.
-- Record original firmware version.
-- Ensure stable power supply.
-- Close unnecessary software.
-
-During upgrade:
-
-- Do not disconnect detector.
-- Do not restart computer.
-- Do not interrupt network communication.
-- Wait until upgrade completes.
-
-After upgrade:
-
-- Verify firmware version.
-- Verify detector communication.
-- Perform functional testing.
-- Archive upgrade records.
+Do not describe an incomplete upgrade as successful solely because the software process ended.
 
 ---
 
-# 9. Common Issues
+# 7. Post-Upgrade Acceptance
 
-| Problem | Possible Cause | Recommended Action |
-|----------|----------------|--------------------|
-| Upgrade cannot start | Detector not connected | Verify communication |
-| Firmware package invalid | Wrong firmware package | Select correct firmware |
-| Upgrade interrupted | Network disconnected | Reconnect and retry |
-| Detector cannot reconnect | Firmware incomplete | Retry upgrade or contact R&D |
-| Version mismatch | Incorrect firmware version | Upgrade compatible firmware |
-| Image acquisition abnormal | Parameter mismatch | Verify detector configuration |
+The upgrade is accepted only after the required checks are complete:
 
----
+- Firmware version matches the intended target
+- Detector reconnects successfully
+- Detector status is normal
+- Image acquisition completes normally
+- No new abnormal communication or image phenomenon is observed
 
-# 10. Best Practices
-
-For every firmware upgrade:
-
-✓ Record firmware version before upgrade.
-
-✓ Record firmware version after upgrade.
-
-✓ Record detector serial number.
-
-✓ Verify SDK compatibility.
-
-✓ Verify image acquisition.
-
-✓ Save upgrade logs.
-
-✓ Record abnormal phenomena.
+When calibration data or product-specific configuration must be restored or verified after an upgrade, follow the applicable product procedure.
 
 ---
 
-# 11. Related Documents
+# 8. Common Failure Directions
 
-## Upgrade Module
+| Symptom | Primary Check |
+|---|---|
+| Upgrade cannot start | Detector connection and package applicability |
+| Package rejected | Model/version compatibility |
+| Upgrade interrupted | Power and communication stability |
+| Detector cannot reconnect | Upgrade state and recovery path |
+| Version does not match target | Correct package and version verification |
+| Image abnormal after upgrade | Product configuration and required functional verification |
 
-- README.md
+---
+
+# 9. Related Documents
+
 - UpgradeWorkflow.md
 - VersionVerification.md
 - UpgradeFailure.md
-- FAQ.md
-
-## Related Knowledge Base
-
-- ../../03_Hardware/Firmware.md
-- ../../06_Workflow
+- ../../04_Software/Log
+- ../../05_Calibration
 - ../../07_FailureKnowledge
-- ../../09_DecisionTree
 - ../../10_SOP
-- ../../11_Case
 - ../../12_ErrorCode
-- ../../17_Tools/FirmwareUpgrade.md
+- ../../13_Template/Work/LogCollection.md
 
 ---
 
@@ -339,4 +182,5 @@ For every firmware upgrade:
 
 | Version | Date | Description |
 |---------|------|-------------|
+| v1.1 | 2026-08-10 | Added preconditions, failure evidence and acceptance criteria |
 | v1.0 | 2026-08-07 | Initial Firmware Upgrade documentation |

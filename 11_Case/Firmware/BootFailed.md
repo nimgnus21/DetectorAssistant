@@ -1,12 +1,18 @@
 # BootFailed
 
-Version: V1.0
+Version: V1.1
 
 Case ID: CASE-FW-003
 
 Module: 11_Case / Firmware
 
-Status: Released
+Status: Resolved
+
+Case Classification: Recovery Record / Root Cause Not Fully Confirmed
+
+Evidence Level: Partial event evidence. Recovery and functional verification are recorded, but the stored record does not contain sufficient upgrade-log analysis to identify the firmware/boot failure mechanism.
+
+Promotion Rule: Upgrade to `Verified` only when the specific failure mechanism is supported by preserved upgrade/boot evidence or reproducible controlled verification.
 
 Severity: ★★★★★
 
@@ -20,281 +26,123 @@ Applicable Products:
 
 Related Documents:
 
-- ../../17_Tools/SDKTool/FirmwareUpgrade.md
-- ../../06_Workflow/FirmwareUpgradeWorkflow.md
-- ../../07_FailureKnowledge/FirmwareFailure/BootFailed.md
-- ../../09_DecisionTree/Firmware/BootFailed.md
+- [FirmwareUpgrade Tool](../../17_Tools/SDKTool/FirmwareUpgrade.md)
+- [FirmwareUpgrade Workflow](../../06_Workflow/FirmwareUpgradeWorkflow.md)
+- [BootFailed FailureKnowledge](../../07_FailureKnowledge/FirmwareFailure/BootFailed.md)
+- [BootFailed DecisionTree](../../09_DecisionTree/Firmware/BootFailed.md)
+- [Firmware Upgrade SOP](../../10_SOP/FirmwareUpgrade.md)
+- [Case Admission Checklist](../CaseAdmissionChecklist.md)
+- [Knowledge Feedback Record](../KnowledgeFeedbackRecord.md)
 
 ---
 
-# 1. Case Summary
+# 1. Admission Audit Result
 
-## Case Name
+This record describes a specific upgrade-related recovery sequence, but its event evidence is incomplete: SN, upgrade package identity, before/after firmware version, SDK version, and upgrade log analysis are not preserved in the record.
 
-Detector Failed to Boot After Firmware Upgrade
-
----
-
-# 2. Customer Information
-
-Customer Type：
-
-OEM Customer
-
-Product：
-
-Pluto1717
-
-Operation：
-
-Firmware Upgrade
+The documented outcome supports `Resolved`: the detector recovered and passed functional checks. It does not support a verified statement about why the boot process failed.
 
 ---
 
-# 3. Fault Description
+# 2. Case Summary
 
-客户反馈：
-
-Firmware 升级完成后，探测器无法正常启动。
-
-现场表现：
-
-- Detector Offline
-- SDK 无法发现设备
-- Ping 不通
-- 无法采图
-- 指示灯状态异常（如适用）
-
-升级前设备工作正常。
+Detector failed to boot or reconnect after a firmware upgrade. After power-state checks, controlled restart, package/version review, network verification, log export, and R&D-guided firmware recovery, the detector returned to normal operation.
 
 ---
 
-# 4. Initial Customer Judgment
+# 3. Event Evidence Boundary
 
-Customer Judgment：
+Known from the record:
 
-- Firmware 已损坏（√）
-- Detector 主板损坏（？）
+- Product: Pluto1717
+- Operation: Firmware upgrade
+- Pre-upgrade operation: reported normal
+- Post-upgrade symptom: offline / SDK not discoverable / Ping unavailable / acquisition unavailable
+- Recovery: firmware recovery performed according to R&D analysis
+- Verification: boot, SDK connection, firmware version, and image acquisition returned to normal
 
-FAE Initial Assessment：
+Missing or not preserved:
 
-先确认启动状态及升级过程，再判断是否属于 Firmware 损坏。
-
----
-
-# 5. Evidence Collection
-
-## Detector Information
-
-- [ ] Detector SN
-- [ ] Detector Model
-- [ ] Firmware Version（升级前）
-
-## Upgrade Information
-
-- [ ] Upgrade Package
-- [ ] SDK Version
-- [ ] Upgrade Log
-
-## Logs
-
-- [ ] SDK Log
-- [ ] Detector Log
-
-## Environment
-
-- [ ] 电源状态
-- [ ] 网线连接
-- [ ] 网卡配置
+- Detector SN
+- exact pre/post firmware versions
+- upgrade package identity
+- SDK version
+- upgrade log content
+- R&D failure-mechanism conclusion
 
 ---
 
-# 6. FAE Investigation
+# 4. Actual Diagnostic Sequence
 
-## Step 1
-
-确认 Detector 是否正常供电。
-
-检查：
-
-- 电源
-- 指示灯
-- 网口状态
-
-结果：
-
-供电正常。
+1. Confirmed detector power, indicators, and network-link condition; recorded as normal.
+2. Performed complete power-off and restart; connection did not recover.
+3. Reviewed firmware package/release and SDK version consistency; recorded as consistent.
+4. Checked network configuration; recorded as normal.
+5. Exported upgrade information/logs and submitted the event for R&D analysis.
+6. Performed firmware recovery according to the resulting guidance.
+7. Retested boot, SDK connection, firmware version, and image acquisition.
 
 ---
 
-## Step 2
+# 5. Current Conclusion
 
-重新断电。
+Root Cause: Not Fully Confirmed.
 
-等待 20 秒。
+Supported conclusion: an upgrade-related boot/initialization failure occurred and the detector recovered after the R&D-guided firmware recovery path.
 
-重新上电。
-
-结果：
-
-仍无法连接。
+The statement "firmware upgrade completed but boot initialization was abnormal" is an event description, not a verified failure mechanism.
 
 ---
 
-## Step 3
+# 6. Corrective Action
 
-确认 Firmware Upgrade 使用的软件包。
-
-检查：
-
-- Firmware Version
-- Release Package
-- SDK Version
-
-结果：
-
-版本一致。
+- Preserve upgrade and version information.
+- Do not repeatedly re-upgrade without identifying the failed stage.
+- Export upgrade/SDK/detector logs.
+- Follow the approved recovery path for the applicable product and package.
+- Perform complete functional verification after recovery.
 
 ---
 
-## Step 4
+# 7. Verification
 
-检查网络配置。
+Recorded result:
 
-确认：
+- Detector booted normally.
+- SDK connection succeeded.
+- Firmware version was reported correct.
+- Image acquisition returned to normal.
 
-- IP
-- Jumbo Frame
-- 网卡状态
-
-结果：
-
-网络正常。
+Status: `Resolved`, not `Verified`, because the recovery result is documented but the failure mechanism is not independently established.
 
 ---
 
-## Step 5
+# 8. Preventive Action
 
-导出升级日志。
-
-提交研发分析。
-
-根据分析结果重新恢复 Firmware。
-
-设备恢复正常。
+- Use the approved release package.
+- Preserve pre/post upgrade versions and package identity.
+- Prevent power interruption during upgrade.
+- Save upgrade logs.
+- Verify boot, communication, and acquisition after upgrade rather than relying only on a success indication.
 
 ---
 
-# 7. Root Cause
+# 9. Knowledge Feedback Review
 
-Firmware 升级完成后启动过程异常，导致 Detector 无法正常初始化。
-
-详细分析请参见：
-
-- ../../07_FailureKnowledge/FirmwareFailure/BootFailed.md
-
----
-
-# 8. Corrective Action
-
-现场采取：
-
-① 检查供电状态。
-
-② 完整断电后重新启动。
-
-③ 检查升级包版本。
-
-④ 检查网络配置。
-
-⑤ 导出 Upgrade Log。
-
-⑥ 根据研发建议恢复 Firmware。
+| Layer | Result | Reason |
+|---|---|---|
+| FailureKnowledge | No update required | Existing boot-failure knowledge already covers the generic mechanism layer; this record adds no verified new mechanism |
+| DecisionTree | No update required | Existing boot-failure routing remains applicable |
+| SOP | Update required | Post-upgrade functional verification and evidence preservation should remain explicit in the firmware upgrade SOP |
+| Tools | No update required | Firmware upgrade tooling and log handling are already the operational entry |
+| ErrorCode | No update required | No specific verified error/event code is preserved |
+| Index | Update required | Status changed from Released to Resolved |
 
 ---
 
-# 9. Verification
-
-验证结果：
-
-- Detector 正常启动。
-- SDK 可正常连接。
-- Firmware Version 正确。
-- 图像采集恢复正常。
-
----
-
-# 10. Preventive Action（CAPA）
-
-建议：
-
-① 使用正式 Release Package。
-
-② 升级过程中禁止断电。
-
-③ 升级完成后执行完整重启。
-
-④ 保存升级日志。
-
-⑤ 升级完成立即验证 Detector Online 状态。
-
----
-
-# 11. Lessons Learned
-
-## Technical
-
-Boot Failed 不一定意味着 Firmware 已损坏，也可能是初始化过程异常。
-
-## Diagnostic
-
-优先确认供电、网络和启动状态，再分析 Firmware。
-
-## Operation
-
-升级后应立即验证 Detector 是否能够正常启动，而不是仅确认升级成功提示。
-
-## Maintenance
-
-建立 Firmware 升级记录，便于后续问题追溯。
-
----
-
-# 12. Field Experience
-
-> **FAE 现场经验**
->
-> 若 Firmware 升级完成后无法连接 Detector：
->
-> 1. 先执行完整断电重启。
-> 2. 检查 Firmware 与 SDK 是否匹配。
-> 3. 导出 Upgrade Log。
-> 4. 不要立即重复升级，应先定位失败原因。
-
----
-
-# 13. Related Documents
-
-Workflow：
-
-- FirmwareUpgradeWorkflow.md
-
-Failure Knowledge：
-
-- BootFailed.md
-
-Tools：
-
-- FirmwareUpgrade.md
-
-Decision Tree：
-
-- BootFailed.md
-
----
-
-# 14. Revision History
+# 10. Revision History
 
 | Version | Date | Description |
-|----------|------|-------------|
-| V1.0 | 2026-08 | 建立 Boot Failed 现场案例，整理 Firmware 升级后无法启动的排查流程。 |
+|---|---|---|
+| V1.1 | 2026-08-10 | Case admission audit: downgraded to Resolved, separated recovery result from unverified failure mechanism, and added evidence/feedback boundaries |
+| V1.0 | 2026-08 | Initial firmware boot failure record |

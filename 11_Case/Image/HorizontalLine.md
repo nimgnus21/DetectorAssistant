@@ -1,10 +1,16 @@
 # HorizontalLine
 
-Version: V1.0
+Version: V1.1
 
 Module: 11_Case / Image
 
-Status: Released
+Status: Resolved
+
+Case Classification: Field Case Record
+
+Evidence Level: Resolved — the event-level symptom, diagnostic observations, corrective path, and post-repair verification are recorded. The exact failed Row Readout hardware mechanism is not independently documented.
+
+Promotion Rule: Promote the root-cause conclusion to `Verified` only when hardware/return analysis, component diagnosis, or equivalent technical evidence confirms the specific failed mechanism.
 
 Severity: ★★★★★
 
@@ -18,219 +24,350 @@ Applicable Products:
 
 Related Documents:
 
-- ../../08_ImageDiagnosis/HorizontalLineArtifact/
-- ../../07_FailureKnowledge/ImageFailure/RowFailure.md
-- ../../09_DecisionTree/Image/HorizontalLine.md
-- ../../13_Principles/TFTReadout/
-- ../../13_Principles/GateDriver/
+- [HorizontalLineArtifact](../../08_ImageDiagnosis/HorizontalLineArtifact/)
+- [RowFailure](../../07_FailureKnowledge/ImageFailure/RowFailure.md)
+- [HorizontalLine DecisionTree](../../09_DecisionTree/Image/HorizontalLine.md)
+- [TFTReadout](../../13_Principles/TFTReadout/)
+- [GateDriver](../../13_Principles/GateDriver/)
+- [ImageTroubleshooting SOP](../../10_SOP/ImageTroubleshooting.md)
+- [Offset Calibration](../../10_SOP/Calibration.md)
+- [Case Admission Checklist](../CaseAdmissionChecklist.md)
+- [Knowledge Feedback Record](../KnowledgeFeedbackRecord.md)
 
 ---
 
-# 1. Case Summary
+# 1. Admission Audit Result
+
+This record contains a concrete product, operating scenario, observed symptom, actual diagnostic sequence, corrective disposition, and post-repair verification. It therefore remains a Case record.
+
+However, the available evidence supports the following conclusion:
+
+> A persistent fixed-row artifact was observed in corrected images, dark images, and multiple RAW images, and the symptom was resolved after hardware repair.
+
+The available record does **not** independently document the exact failed electronic component or Row Readout channel. Therefore:
+
+- `Status: Resolved`
+- `Verified Root Cause: Not Fully Confirmed`
+- `Suspected Failure Mechanism: Row Readout Path / related hardware`
+
+The symptom evidence is stronger than the mechanism evidence.
+
+---
+
+# 2. Case Summary
 
 ## Case Name
 
-Horizontal Line Appears Across the Entire Image
+Persistent Horizontal Line Appears Across the Entire Image
+
+## Case Boundary
+
+This Case describes a persistent fixed-position horizontal line. It must not be used as a universal root-cause template for all horizontal stripe artifacts.
+
+For other horizontal-line patterns, first distinguish:
+
+- fixed row artifact;
+- repeating periodic stripe;
+- calibration-related stripe;
+- communication/image-transfer corruption;
+- exposure/generator-related artifact;
+- transient or environment-dependent interference.
+
+Primary routing: [HorizontalLine DecisionTree](../../09_DecisionTree/Image/HorizontalLine.md).
 
 ---
 
-# 2. Customer Environment
+# 3. Customer Environment
 
-Customer：
+Customer:
 
 - Orthopedic Hospital
 
-Product：
+Product:
 
 - Pluto1717
 
-Operation：
+Operation:
 
 - Static Radiography
 
-Detector：
+Detector:
 
 - Wired Ethernet Detector
 
----
+Recorded environment limitation:
 
-# 3. Fault Description
+- exact detector SN not preserved in the current Case;
+- software / SDK / firmware versions are not recorded;
+- repair report or hardware analysis result is not attached.
 
-客户反馈：
-
-图像中持续出现一条横贯整个图像宽度的亮线。
-
-异常特点：
-
-- 每次曝光均出现
-- 行位置固定
-- 更换曝光参数无变化
-- 更换被摄体无变化
-- 软件重启后仍存在
+These missing records prevent promotion of the failure mechanism to `Verified`.
 
 ---
 
-# 4. Initial Customer Judgment
+# 4. Fault Description
 
-客户初步判断：
+Customer reported a persistent bright horizontal line extending across the image width.
 
-- Detector 硬件损坏（√）
-- Offset 校准异常（？）
-- 网络问题（×）
+Observed characteristics:
 
-FAE 初步判断：
+- present on every exposure;
+- fixed row position;
+- no visible change after exposure-parameter change;
+- no visible change after changing the imaged object;
+- remained after application restart.
 
-- 固定行异常，需要进一步确认是否属于 Row Readout 问题。
+Initial FAE finding:
 
----
-
-# 5. Troubleshooting Timeline
-
-## Step 1
-
-检查 Detector 通信状态。
-
-结果：
-
-- Detector Online
-- 无 Image Loss
-- 无 Timeout
-
-通信正常。
+- fixed-row artifact;
+- Row Readout path considered a candidate mechanism requiring further confirmation.
 
 ---
 
-## Step 2
+# 5. Evidence Classification
 
-重新采集 Offset。
+| Evidence | Observation | Supported Finding |
+|---|---|---|
+| Detector communication | Online; no Image Loss; no Timeout recorded | Communication failure was not supported by the recorded event |
+| Offset reacquisition | No improvement | Simple Offset reacquisition did not remove the artifact |
+| Template reload | No improvement | Reloading Offset/Gain/Defect templates did not remove the artifact |
+| Dark image | Same row-position anomaly remained | Artifact was not dependent on normal exposure content |
+| Multiple RAW images | Anomaly remained at the same row coordinate | Persistent fixed-row pattern supported |
+| Hardware repair | Symptom disappeared after repair | Hardware intervention was associated with recovery |
+| Repair analysis | Not preserved | Exact failed hardware mechanism not verified |
 
-结果：
+Important boundary:
 
-横线仍存在。
-
----
-
-## Step 3
-
-重新加载：
-
-- Offset Template
-- Gain Template
-- Defect Template
-
-结果：
-
-异常无变化。
+The evidence supports a persistent detector-side or readout-related candidate path, but does not identify a specific component solely from image morphology.
 
 ---
 
-## Step 4
+# 6. Troubleshooting Timeline
 
-采集暗场图。
+## Step 1 — Check Communication State
 
-观察：
+Observed:
 
-暗场图仍存在相同行位置异常。
+- Detector Online;
+- no Image Loss recorded;
+- no Timeout recorded.
 
-排除曝光因素。
+Result:
 
----
-
-## Step 5
-
-采集多张 RAW 图像。
-
-结果：
-
-异常始终位于同一行。
-
-判断：
-
-属于固定行异常。
+The recorded event did not support communication interruption as the primary explanation.
 
 ---
 
-## Step 6
+## Step 2 — Reacquire Offset
 
-结合 TFT Readout 原理分析。
+Action:
 
-初步判断：
+- reacquire Offset according to the applicable calibration procedure.
 
-Row Readout 通道异常。
+Result:
 
-建议进一步进行硬件检测。
+- horizontal line remained.
 
----
+Finding:
 
-# 6. Root Cause
-
-固定行读出异常导致整行像素输出异常。
-
-详细机理请参见：
-
-- ../../07_FailureKnowledge/ImageFailure/RowFailure.md
+Simple Offset reacquisition did not resolve the artifact.
 
 ---
 
-# 7. Solution
+## Step 3 — Reload Existing Correction Templates
 
-现场处理：
+Reloaded:
 
-- 保存 RAW 图像
-- 记录异常行坐标
-- 验证 Defect Template 是否能够修正
+- Offset Template;
+- Gain Template;
+- Defect Template.
 
-若无法修正：
+Result:
 
-提交研发进一步分析，并安排返厂检测。
+- no visible improvement.
 
----
+Finding:
 
-# 8. Verification
-
-维修完成后验证：
-
-- 横线消失
-- 图像均匀
-- 暗场图正常
-- 连续曝光验证正常
-
-问题解决。
+The recorded template reload path did not remove the artifact.
 
 ---
 
-# 9. Lessons Learned
+## Step 4 — Acquire Dark Image
 
-- 固定位置且贯穿整幅图像的横线，应优先怀疑 Row Readout 异常。
-- 暗场图仍存在横线，可快速排除曝光条件影响。
-- 不建议在未定位异常前反复执行校准，应优先确认是否属于硬件读出问题。
-- 记录异常行坐标，有助于研发快速定位故障。
+Observation:
 
----
+- the anomaly remained at the same row position.
 
-# 10. Related Documents
+Finding:
 
-Image Diagnosis：
+The event evidence did not support normal exposure content as the direct source of the fixed-row artifact.
 
-- HorizontalLineArtifact
-
-Failure Knowledge：
-
-- RowFailure.md
-
-Decision Tree：
-
-- HorizontalLine.md
-
-Principles：
-
-- TFTReadout
-- GateDriver
+This does not, by itself, prove a specific readout component failure.
 
 ---
 
-# 11. Revision History
+## Step 5 — Compare Multiple RAW Images
+
+Observation:
+
+- the anomaly remained at the same row coordinate across multiple RAW images.
+
+Finding:
+
+- persistent fixed-row abnormality confirmed.
+
+Required record for future Cases:
+
+- affected RAW files;
+- row coordinate;
+- image dimensions / binning / ROI;
+- acquisition mode;
+- timestamp and detector/software version.
+
+---
+
+## Step 6 — Failure Mechanism Assessment
+
+Based on the fixed-row pattern, dark-image persistence, and RAW consistency:
+
+- suspected mechanism: Row Readout Path or related detector-side hardware;
+- confidence: diagnostic candidate, not independently verified root cause.
+
+Recommended next action:
+
+- preserve RAW and corrected images;
+- record abnormal row coordinate;
+- verify whether an applicable defect-correction mechanism can safely compensate for the defect;
+- submit the evidence package for hardware/R&D analysis when the artifact cannot be corrected within product requirements.
+
+---
+
+# 7. Current Conclusion
+
+## Verified Findings
+
+The following findings are supported by the Case record:
+
+- a horizontal artifact occurred at a fixed row position;
+- the artifact persisted across repeated exposures;
+- the artifact persisted after Offset reacquisition and template reload;
+- the artifact was visible in a dark image at the same row position;
+- the artifact was visible in multiple RAW images at the same row coordinate;
+- the symptom disappeared after hardware repair and controlled post-repair verification.
+
+## Root Cause
+
+Not Fully Confirmed.
+
+## Suspected Failure Mechanism
+
+Row Readout Path abnormality or related detector-side hardware abnormality.
+
+This mechanism must remain explicitly marked as suspected until supported by:
+
+- hardware diagnostic result;
+- return/factory analysis;
+- component-level repair record;
+- or equivalent technical confirmation.
+
+For general mechanism reference, see [RowFailure](../../07_FailureKnowledge/ImageFailure/RowFailure.md).
+
+---
+
+# 8. Resolution
+
+Field handling:
+
+- preserve RAW images;
+- record the abnormal row coordinate;
+- verify whether the applicable Defect Template path can correct the artifact within product requirements;
+- if correction is ineffective or outside the supported compensation boundary, submit the detector for further hardware/R&D analysis;
+- complete hardware repair through the approved service path.
+
+The Case does not establish that every fixed-row artifact requires the same repair action.
+
+---
+
+# 9. Verification
+
+After repair, the following were recorded:
+
+- horizontal line disappeared;
+- image uniformity returned to normal appearance;
+- dark image no longer showed the fixed-row artifact;
+- repeated exposure verification was normal.
+
+Current Case result:
+
+`Resolved`.
+
+Additional verification required for future similar Cases:
+
+- preserve before/after images;
+- record test count and acquisition conditions;
+- confirm whether the same detector configuration and correction templates were used;
+- attach repair analysis where available.
+
+---
+
+# 10. Diagnostic Lessons
+
+- A fixed-position horizontal line should first be classified as a phenomenon, not immediately as a root cause.
+- Persistence in dark images and RAW images is strong evidence for a detector/readout-side candidate path.
+- Failure of Offset reacquisition or template reload does not by itself prove hardware failure, but it is useful branch evidence.
+- Repeated calibration should not replace evidence collection.
+- Record the abnormal row coordinate to support later R&D/hardware correlation.
+- Do not generalize this Case to periodic horizontal stripes or transfer corruption without checking the appropriate DecisionTree branches.
+
+---
+
+# 11. Knowledge Feedback Review
+
+| Layer | Checked Entry | Result | Action / Reason |
+|---|---|---|---|
+| FailureKnowledge | [RowFailure](../../07_FailureKnowledge/ImageFailure/RowFailure.md) | No update required | Existing mechanism reference already covers the candidate path; this Case does not add a verified component-level mechanism |
+| DecisionTree | [HorizontalLine](../../09_DecisionTree/Image/HorizontalLine.md) | No update required | Existing DecisionTree remains the correct entry; this Case reinforces fixed-position / dark / RAW evidence usage |
+| SOP | [ImageTroubleshooting](../../10_SOP/ImageTroubleshooting.md) | No update required | No new universal step was verified |
+| Calibration SOP | [Calibration](../../10_SOP/Calibration.md) | No update required | Offset/template failure is Case evidence, not a new calibration procedure |
+| Tools | Existing image/RAW evidence tools | Additional evidence recommended | Future Case should preserve RAW and coordinate metadata |
+| ErrorCode | Not applicable | No update required | No error-code event established |
+| Index | Case retained | Update not required | Existing HorizontalLine search entry remains valid; status is now Resolved |
+
+---
+
+# 12. Evidence Gap for Promotion to Verified
+
+The following evidence is missing from the current record:
+
+- detector SN;
+- software / SDK / firmware version;
+- original RAW and dark images;
+- abnormal row coordinate;
+- repair report;
+- confirmed failed component or circuit;
+- before/after configuration record.
+
+Without this evidence, the Case remains `Resolved` rather than `Verified`.
+
+---
+
+# 13. Related Documents
+
+- [HorizontalLineArtifact](../../08_ImageDiagnosis/HorizontalLineArtifact/)
+- [RowFailure](../../07_FailureKnowledge/ImageFailure/RowFailure.md)
+- [HorizontalLine DecisionTree](../../09_DecisionTree/Image/HorizontalLine.md)
+- [ImageTroubleshooting SOP](../../10_SOP/ImageTroubleshooting.md)
+- [Calibration SOP](../../10_SOP/Calibration.md)
+- [TFTReadout](../../13_Principles/TFTReadout/)
+- [GateDriver](../../13_Principles/GateDriver/)
+- [Case Admission Checklist](../CaseAdmissionChecklist.md)
+- [Knowledge Feedback Record](../KnowledgeFeedbackRecord.md)
+
+---
+
+# 14. Revision History
 
 | Version | Date | Description |
-|----------|------|-------------|
-| V1.0 | 2026-08 | 建立 Horizontal Line 图像异常现场案例。 |
+|---|---|---|
+| V1.1 | 2026-08-10 | Batch 5 admission audit: retained as field Case, changed status to Resolved, separated verified findings from suspected Row Readout mechanism, added evidence gaps and knowledge feedback |
+| V1.0 | 2026-08 | Initial horizontal-line field case |

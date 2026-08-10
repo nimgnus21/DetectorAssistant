@@ -1,10 +1,12 @@
 # Case
 
-Version: V1.1
-
-Module: 11_Case
-
-Status: Released
+> DetectorAssistant verified field-case and knowledge-feedback module
+>
+> Version: V1.2
+>
+> Status: Released
+>
+> Last Updated: 2026-08-10
 
 Applicable Products:
 
@@ -17,15 +19,33 @@ Applicable Products:
 - Medical DR
 - Industrial Detector（部分案例适用）
 
-Related Documents:
+---
 
-- [Case Template](../00_Project/Templates/CaseTemplate.md)
-- [Case Index](../00_Project/Index/CaseIndex.md)
-- [Failure Knowledge](../07_FailureKnowledge/README.md)
-- [DecisionTree](../09_DecisionTree/README.md)
-- [SOP](../10_SOP/README.md)
-- [ErrorCode](../12_ErrorCode/)
-- [Tools](../17_Tools/README.md)
+# Quick Entry
+
+Use the Case module when a field or laboratory issue has been investigated and you need to:
+
+- find a previously verified similar case;
+- record a new real support case;
+- check whether a resolved case can feed new knowledge back into the repository.
+
+## Find by Problem Domain
+
+- [Communication](Communication/) — connection, network, timeout and communication cases
+- [Calibration](Calibration/) — Offset, Gain, Defect, Ghost and calibration cases
+- [Image](Image/) — image artifacts and image-quality cases
+- [Firmware](Firmware/) — upgrade, version, startup and recovery cases
+- [Software](Software/) — SDK, License, Mode, configuration and API cases
+- [Customer](Customer/) — sample, OQC, training, RMA and field-support cases
+
+## Create or Admit a Case
+
+1. [Case Template](../00_Project/Templates/CaseTemplate.md)
+2. [Case Admission Checklist](CaseAdmissionChecklist.md)
+3. Create the case in the single most appropriate domain
+4. Complete verification and status classification
+5. [Knowledge Feedback Record](KnowledgeFeedbackRecord.md)
+6. Update related links and [Case Index](../00_Project/Index/CaseIndex.md) when required
 
 ---
 
@@ -64,15 +84,15 @@ Case 模块目标：
 
 ```text
 11_Case
-
 ├── README.md
-│
-├── Communication
-├── Calibration
-├── Image
-├── Firmware
-├── Software
-└── Customer
+├── CaseAdmissionChecklist.md
+├── KnowledgeFeedbackRecord.md
+├── Communication/
+├── Calibration/
+├── Image/
+├── Firmware/
+├── Software/
+└── Customer/
 ```
 
 说明：
@@ -114,6 +134,8 @@ Case 模块目标：
 5. **验证结果**：恢复、未恢复或现象变化的客观结果。
 
 缺少以上信息时，不应标记为“已解决真实 Case”。
+
+新增或准入 Case 时，使用：[Case Admission Checklist](CaseAdmissionChecklist.md)。
 
 ## 5.2 Case Status
 
@@ -179,8 +201,12 @@ Knowledge Gap Review
    ↓    ↓    ↓    ↓
 Failure Tree SOP Tool/ErrorCode
         ↓
+Knowledge Feedback Record
+        ↓
 Update Index and Related Links
 ```
+
+使用：[Knowledge Feedback Record](KnowledgeFeedbackRecord.md) 记录准入后的反向知识审查。
 
 ## 7.1 Mandatory Feedback Check
 
@@ -310,13 +336,16 @@ Case 属于持续更新模块。
 
 ---
 
-# 12. References
+# 12. Related Documents
 
 - [Case Template](../00_Project/Templates/CaseTemplate.md)
+- [Case Admission Checklist](CaseAdmissionChecklist.md)
+- [Knowledge Feedback Record](KnowledgeFeedbackRecord.md)
 - [Case Index](../00_Project/Index/CaseIndex.md)
 - [FailureKnowledge](../07_FailureKnowledge/README.md)
 - [DecisionTree](../09_DecisionTree/README.md)
 - [SOP](../10_SOP/README.md)
+- [ErrorCode](../12_ErrorCode/README.md)
 - [Tools](../17_Tools/README.md)
 
 ---
@@ -324,6 +353,7 @@ Case 属于持续更新模块。
 # 13. Revision History
 
 | Version | Date | Description |
-|----------|------|-------------|
+|---|---|---|
+| V1.2 | 2026-08-10 | Conservatively repaired module navigation; added admission and feedback entry points without changing Case rules or Case content |
 | V1.1 | 2026-08-10 | Added case admission status and mandatory knowledge feedback mechanism |
 | V1.0 | 2026-08 | Established Case module navigation and writing principles |

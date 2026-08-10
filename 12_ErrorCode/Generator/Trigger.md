@@ -10,174 +10,85 @@
 
 This document describes trigger-related abnormalities between the detector and the X-ray generator.
 
-Trigger control determines when the detector starts image acquisition relative to the generator exposure. Incorrect trigger configuration is one of the most common causes of acquisition failures, image loss, and synchronization issues.
-
-Although the SDK does not define dedicated trigger error codes, trigger failures are reflected through detector events, acquisition status, and image reception.
+Trigger problems must be separated into configuration, physical signal, timing, and acquisition-window failures. A timeout alone does not identify which layer failed.
 
 ---
 
-# Related Commands
+# Related Commands / Events
 
-- Cmd_StartAcq
-- Cmd_StopAcq
-- Cmd_SetCaliSubset
+Commands:
 
----
+- `Cmd_StartAcq`
+- `Cmd_StopAcq`
+- `Cmd_SetCaliSubset`
 
-# Related Events
+Events:
 
-- Evt_Exp_Enable
-- Evt_Exp_Prohibit
-- Evt_WaitImage_Timeout
-- Evt_Image
-- Evt_TaskResult_Failed
-
----
-
-# Typical Symptoms
-
-- No exposure response.
-- Exposure completed but no image received.
-- Detector waits indefinitely for trigger.
-- Exposure occurs before detector is ready.
-- Trigger received multiple times.
-- Continuous acquisition unexpectedly stops.
+- `Evt_Exp_Enable`
+- `Evt_Exp_Prohibit`
+- `Evt_WaitImage_Timeout`
+- `Evt_Image`
+- `Evt_TaskResult_Failed`
 
 ---
 
-# Related SDK Errors
+# Diagnostic Entry
 
-## Err_Cali_UnexpectImage_MistakeTrigger
-
-### Description
-
-The received image does not match the expected trigger mode or exposure request.
-
-### Possible Causes
-
-- Incorrect trigger mode.
-- Generator trigger configuration mismatch.
-- Detector acquisition mode mismatch.
-- Exposure occurred outside the expected acquisition window.
-
-### Recommended Actions
-
-1. Verify detector trigger mode.
-2. Verify generator trigger configuration.
-3. Restart acquisition.
-4. Repeat exposure.
-
----
-
-## Evt_WaitImage_Timeout
-
-Indicates that the detector waited for an image but no valid trigger or exposure was received within the configured timeout period.
-
----
-
-# Common Trigger Modes
-
-| Mode | Description |
-|------|-------------|
-| Software Trigger | Exposure initiated by software command |
-| External Trigger | Exposure initiated by external trigger input |
-| AED Trigger | Automatic Exposure Detection |
-| Dynamic Trigger | Continuous frame acquisition synchronized with generator |
-
----
-
-# Possible Causes
-
-## Detector
-
-- Detector not in Ready state.
-- Acquisition not started.
-- Incorrect application mode.
-- Wrong trigger configuration.
-
----
-
-## Generator
-
-- Trigger output disabled.
-- Incorrect trigger polarity.
-- Trigger pulse width too short.
-- Incorrect exposure timing.
-
----
-
-## Wiring
-
-- Trigger cable disconnected.
-- Incorrect pin assignment.
-- Poor connector contact.
-- Damaged cable.
-
----
-
-## Timing
-
-- Exposure occurred before acquisition started.
-- Trigger signal delayed.
-- Synchronization timeout.
+| Symptom / Error | Primary Path | Evidence |
+|---|---|---|
+| `Err_Cali_UnexpectImage_MistakeTrigger` | [DefectFailure](../../09_DecisionTree/Calibration/DefectFailure.md) | Calibration mode, trigger mode, timing |
+| `Evt_WaitImage_Timeout` | [AcquisitionTimeout](../../09_DecisionTree/Software/AcquisitionTimeout.md) | Acquisition state, trigger, exposure |
+| No exposure response | [NoExposure](../../09_DecisionTree/Connection/NoExposure.md) | Interlock, trigger signal, configuration |
+| Exposure occurred but no image | [ImageLoss](../../09_DecisionTree/Image/ImageLoss.md) | Trigger timing, image/RAW, network/log |
 
 ---
 
 # Diagnostic Procedure
 
-1. Confirm detector status is **Ready**.
-2. Execute `Cmd_StartAcq`.
-3. Verify acquisition has started.
-4. Confirm trigger mode configuration.
-5. Verify trigger signal using an oscilloscope if available.
-6. Perform a test exposure.
-7. Verify `Evt_Image` is received.
-8. Review `Detector.log`.
+1. Confirm detector state is `Ready`.
+2. Start acquisition and confirm the expected mode.
+3. Record detector trigger mode and generator trigger configuration.
+4. Verify physical trigger connection and pin/interface mapping.
+5. Verify polarity and timing/pulse evidence where available.
+6. Confirm whether exposure occurred inside the expected acquisition window.
+7. Confirm `Evt_Image` or image data was received.
+8. Route to the matching DecisionTree rather than changing multiple trigger parameters at once.
+9. Perform one controlled retest after a documented configuration change.
 
 ---
 
-# Inspection Checklist
+# Trigger Mode Boundary
 
-- Detector Ready
-- Acquisition started
-- Trigger mode correct
-- Trigger cable connected
-- Trigger polarity correct
-- Trigger pulse width sufficient
-- Generator exposure output normal
-- Detector.log reviewed
+Possible modes may include Software Trigger, External Trigger, AED Trigger, and Dynamic Trigger depending on the product/configuration. This document does not define universal parameter values or timing thresholds; use the applicable product configuration source before changing values.
 
 ---
 
-# Related DecisionTree
+# Evidence Package
 
-- 09_DecisionTree/Connection/NoExposure.md
-- 09_DecisionTree/Image/ImageLoss.md
-- 09_DecisionTree/Software/AcquisitionTimeout.md
+Collect:
 
----
-
-# Related Workflow
-
-- 06_Workflow/ConfigurationWorkflow.md
-- 06_Workflow/ImageGenerationWorkflow.md
-
----
-
-# Related Case
-
-- 11_Case/Communication
-- 11_Case/Image
+- exact event/error and timestamp;
+- detector and generator trigger mode;
+- acquisition/application mode;
+- trigger interface/pin configuration;
+- polarity and waveform/timing where available;
+- exposure evidence;
+- image/RAW evidence when relevant;
+- `Detector.log`;
+- result after one controlled retest.
 
 ---
 
-# Related Log
+# Related DecisionTree / Workflow / Tool
 
-```
-Detector.log
-```
-
-Trigger-related problems should be analyzed together with detector logs, trigger waveform, generator configuration, acquisition timing, and detector operating mode.
+- [NoExposure](../../09_DecisionTree/Connection/NoExposure.md)
+- [ImageLoss](../../09_DecisionTree/Image/ImageLoss.md)
+- [AcquisitionTimeout](../../09_DecisionTree/Software/AcquisitionTimeout.md)
+- [DefectFailure](../../09_DecisionTree/Calibration/DefectFailure.md)
+- [ConfigurationWorkflow](../../06_Workflow/ConfigurationWorkflow.md)
+- [ImageGenerationWorkflow](../../06_Workflow/ImageGenerationWorkflow.md)
+- [ModeConfiguration](../../17_Tools/SDKTool/ModeConfiguration.md)
+- [LogExport](../../17_Tools/SDKTool/LogExport.md)
 
 ---
 
@@ -185,4 +96,5 @@ Trigger-related problems should be analyzed together with detector logs, trigger
 
 | Version | Date | Description |
 |---------|------|-------------|
+| v1.1 | 2026-08-10 | Added trigger-layer routing, evidence boundary and controlled verification |
 | v1.0 | 2026-08-07 | Initial release |

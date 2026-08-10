@@ -1,12 +1,18 @@
 # ImageShift
 
-Version: V1.0
+Version: V1.1
 
 Case ID: CASE-IMG-008
 
 Module: 11_Case / Image
 
-Status: Released
+Status: Resolved
+
+Case Classification: Mixed Field Evidence / Event Record
+
+Evidence Level: Resolved Event Evidence — the primary Pluto0900X event records a repeatable dynamic-mode image shift and recovery after configuration/timing correction. The file also contains a separate field experience with software-side candidates. These records must not be merged into one universal root cause.
+
+Promotion Rule: Promote the primary root cause to `Verified` only when preserved timing/configuration evidence demonstrates the mismatch and controlled before/after testing isolates the causal variable.
 
 Severity: ★★★★☆
 
@@ -19,627 +25,303 @@ Applicable Products:
 
 Related Documents:
 
-- ../../08_ImageDiagnosis/ImageShiftArtifact/
-- ../../07_FailureKnowledge/ImageFailure/ImageShift.md
-- ../../09_DecisionTree/Image/ImageShift.md
-- ../../06_Workflow/ImageGenerationWorkflow.md
-- ../../06_Workflow/ReadoutWorkflow.md
-- ../../17_Tools/SDKTool/ModeConfiguration.md
+- [ImageShiftArtifact](../../08_ImageDiagnosis/ImageShiftArtifact/)
+- [ImageShift FailureKnowledge](../../07_FailureKnowledge/ImageFailure/ImageShift.md)
+- [ImageShift DecisionTree](../../09_DecisionTree/Image/ImageShift.md)
+- [ImageGenerationWorkflow](../../06_Workflow/ImageGenerationWorkflow.md)
+- [ReadoutWorkflow](../../06_Workflow/ReadoutWorkflow.md)
+- [ModeConfiguration](../../17_Tools/SDKTool/ModeConfiguration.md)
+- [Case Admission Checklist](../CaseAdmissionChecklist.md)
+- [Knowledge Feedback Record](../KnowledgeFeedbackRecord.md)
 
 ---
 
-# 1. Case Summary
+# 1. Admission Audit Result
+
+The file contains two evidence streams:
+
+1. Primary Case: Pluto0900X dynamic acquisition with a repeatable image-position shift and recovery after Mode/Trigger-related correction.
+2. Field Experience 01: a separate pre-sales report in which detector hardware was reported normal and investigation focused on reconstruction, synchronization, display offset, and application-side processing.
+
+These records do not establish one universal ImageShift root cause. The primary event remains `Resolved`; the additional experience is retained as a candidate diagnostic branch.
+
+---
+
+# 2. Primary Case Summary
 
 ## Case Name
 
-Image Position Shift During Acquisition
+Repeatable Image Position Shift During Dynamic Acquisition
 
----
+## Product / Environment
 
-# 2. Customer Information
+Customer Type:
 
-Customer Type：
+- OEM Customer
 
-OEM Customer
+Product:
 
-Product：
+- Pluto0900X
 
-Pluto0900X
+Detector:
 
-Detector：
+- Dynamic Detector
 
-Dynamic Detector
+Working Mode:
 
-Working Mode：
+- Continuous Acquisition
 
-Continuous Acquisition
+Evidence limitations:
+
+- detector SN not preserved;
+- firmware/FPGA version not preserved;
+- original Mode/Trigger configuration snapshot not attached;
+- SDK/Detector log not attached.
 
 ---
 
 # 3. Fault Description
 
-客户反馈：
+Customer reported that during continuous acquisition the complete image shifted left or right.
 
-连续采图过程中，图像整体向左（或向右）发生偏移。
+Observed characteristics:
 
-异常特点：
+- image content remained present;
+- image position changed as a whole;
+- shift amount was approximately fixed under the recorded condition;
+- abnormality persisted during continuous acquisition;
+- static mode was reported normal while dynamic mode was abnormal.
 
-- 图像内容完整，但位置发生偏移
-- 偏移量基本固定
-- 连续采图过程中持续出现
-- 静态模式正常，动态模式异常
+This pattern should first be distinguished from:
 
----
-
-# 4. Initial Customer Judgment
-
-Customer Judgment：
-
-- Detector Hardware Failure（？）
-- SDK Software Issue（？）
-- Trigger Timing Failure（√）
-
-FAE Initial Assessment：
-
-优先检查同步时序及 Mode 配置。
+- detector-coordinate artifact;
+- ROI/display cropping;
+- software reconstruction offset;
+- frame synchronization mismatch;
+- trigger/exposure timing mismatch.
 
 ---
 
-# 5. Evidence Collection
+# 4. Evidence Classification
 
-## Detector Information
-
-- [ ] Detector SN
-- [ ] Firmware Version
-- [ ] FPGA Version
-
-## Configuration
-
-- [ ] Mode Configuration
-- [ ] ROI Configuration
-- [ ] Trigger Configuration
-- [ ] Frame Rate
-
-## Image Evidence
-
-- [ ] RAW Image（连续采集）
-- [ ] Offset
-- [ ] Gain
-
-## Logs
-
-- [ ] SDK Log
-- [ ] Detector Log
+| Evidence | Observation | Supported Finding |
+|---|---|---|
+| Static mode | Reported normal | Problem was mode-dependent in the recorded event |
+| ROI check | Reported normal | No ROI abnormality was found in the recorded investigation |
+| Mode configuration | Frame configuration inconsistent with customer software | Configuration mismatch candidate supported |
+| Trigger timing | Trigger reported to arrive early | Timing mismatch candidate supported |
+| Reconfiguration | Mode reconfigured | Corrective change applied |
+| Retest | Image position returned to normal; continuous acquisition stable | Resolution supported |
+| Timing capture/log | Not preserved | Exact causal timing relationship not independently verified |
 
 ---
 
-# 6. FAE Investigation
+# 5. Troubleshooting Timeline
 
-## Step 1
+## Step 1 — Compare Static and Dynamic Modes
 
-确认异常仅发生于动态模式。
+Result:
 
-结果：
+- static mode normal;
+- dynamic/continuous mode abnormal.
 
-静态模式正常。
+Finding:
 
----
+The recorded symptom was mode-dependent.
 
-## Step 2
+## Step 2 — Check ROI Configuration
 
-检查 ROI 配置。
+Checks included:
 
-确认：
+- alignment requirement applicable to the product;
+- whether ROI had changed.
 
-- ROI 是否满足 8 对齐要求。
-- ROI 是否发生修改。
+Recorded result:
 
-结果：
+- configuration reported normal.
 
-配置正常。
+## Step 3 — Check Mode Configuration
 
----
+Focus:
 
-## Step 3
+- Frame Rate;
+- Exposure Mode;
+- Readout Timing.
 
-检查 Mode Configuration。
+Recorded result:
 
-重点确认：
+- Frame configuration was inconsistent with the customer software configuration.
 
-- Frame Rate
-- Exposure Mode
-- Readout Timing
+## Step 4 — Check Trigger Timing
 
-结果：
+Signals reviewed:
 
-Frame 配置与客户软件不一致。
+- Acquire;
+- Enable;
+- X-Ray;
+- FrameReq.
 
----
+Recorded result:
 
-## Step 4
+- Trigger was reported to arrive early relative to the expected sequence.
 
-检查 Trigger Timing。
+Evidence boundary:
 
-确认：
+No preserved timing trace is attached. The timing mismatch is therefore a supported candidate, not a fully verified mechanism.
 
-- Acquire
-- Enable
-- X-Ray
-- FrameReq
+## Step 5 — Reconfigure and Retest
 
-时序是否一致。
+Action:
 
-结果：
+- correct Mode-related configuration;
+- restart according to the applicable procedure;
+- repeat continuous acquisition.
 
-Trigger 提前到达，导致图像读出位置发生偏移。
+Result:
 
----
-
-## Step 5
-
-重新配置 Mode。
-
-重新采图。
-
-结果：
-
-图像恢复正常。
+- image position returned to normal;
+- continuous acquisition remained stable;
+- customer confirmed resolution.
 
 ---
 
-# 7. Root Cause
+# 6. Current Conclusion
 
-Trigger 时序与 Detector 当前 Mode 不匹配，导致图像采集起始位置错误，引起整体偏移。
+## Verified Findings
 
----
+- the event was repeatable in dynamic acquisition;
+- static operation was reported normal;
+- a Frame/Mode configuration inconsistency was found;
+- Trigger timing was reported inconsistent with the expected sequence;
+- image position recovered after configuration correction and retest.
 
-# 8. Corrective Action
+## Root Cause
 
-现场采取：
+Not Fully Confirmed.
 
-① 检查 ROI 配置。
+## Suspected Failure Mechanism
 
-② 检查 Trigger 时序。
+Mismatch between the detector operating Mode and acquisition/trigger synchronization, potentially causing incorrect frame/readout alignment.
 
-③ 重新配置 Mode。
+Alternative branches remain possible without preserved traces:
 
-④ 重新启动 Detector。
-
-⑤ 连续采图验证。
-
----
-
-# 9. Verification
-
-验证结果：
-
-- 图像位置恢复正常
-- 连续采集稳定
-- 无再次偏移
-- 客户确认问题解决
+- application-side synchronization;
+- image reconstruction parameters;
+- display offset/processing logic.
 
 ---
 
-# 10. Preventive Action（CAPA）
+# 7. Resolution
 
-建议：
+The recorded field action was:
 
-① 修改 ROI 后重新验证 Mode。
+1. verify ROI configuration;
+2. inspect Mode configuration;
+3. inspect Trigger/acquisition timing;
+4. correct the applicable configuration;
+5. restart according to the approved procedure;
+6. repeat continuous acquisition under the original operating condition.
 
-② 修改帧率后重新验证 Trigger Timing。
-
-③ SDK 升级后重新验证连续采图。
-
-④ 保存现场 Mode Configuration。
-
----
-
-# 11. Lessons Learned
-
-## Technical
-
-Image Shift 通常与同步时序有关，而不是图像校准问题。
-
-## Diagnostic
-
-优先检查 Trigger、ROI、Mode，再考虑硬件。
-
-## Operation
-
-修改 ROI 后应同步验证动态模式。
-
-## Maintenance
-
-保留现场 Mode Configuration，便于快速恢复。
+The Case does not establish that every ImageShift event should be solved by Mode or Trigger changes.
 
 ---
 
-# 12. Related Documents
+# 8. Verification
 
-Image Diagnosis：
+Recorded result:
 
-- ImageShiftArtifact
+- image position returned to normal;
+- continuous acquisition stable;
+- no repeated shift observed during the recorded verification;
+- customer confirmed resolution.
 
-Failure Knowledge：
+For future promotion to `Verified`, preserve:
 
-- ImageShift.md
+- before/after Mode file or parameter set;
+- trigger timing trace or timestamp correlation;
+- original and corrected image sequence;
+- SDK/Detector logs;
+- product and software/firmware versions.
 
-Workflow：
+---
 
-- ImageGenerationWorkflow.md
-- ReadoutWorkflow.md
+# 9. Associated Field Experience — Software / Display Branch
 
-Tools：
+Source:
 
-- ModeConfiguration.md
+- FAE Pre-sales Weekly Report
 
-Decision Tree：
+Observed pattern:
 
-- ImageShift.md
+- detector communication normal;
+- image acquisition succeeds;
+- displayed image shifts horizontally or vertically;
+- shift repeatable under the same condition;
+- detector hardware and calibration reported normal.
+
+Candidate branches:
+
+- incorrect image reconstruction parameters;
+- synchronization mismatch between detector output and software processing;
+- display offset configuration;
+- application-side image processing logic.
+
+Recommended branch test:
+
+1. verify detector output resolution;
+2. compare software reconstruction parameters;
+3. verify synchronization settings;
+4. compare with the official SDK Demo where applicable;
+5. repeat acquisition after one documented parameter change.
+
+Evidence boundary:
+
+This is a separate field experience, not proof that the primary Pluto0900X event had a software-display root cause.
+
+---
+
+# 10. Diagnostic Lessons
+
+- Image Shift is a phenomenon, not a root cause.
+- First distinguish detector-coordinate shift from display/reconstruction shift.
+- Dynamic-only symptoms justify checking Mode, Frame Rate, readout, and synchronization boundaries.
+- Do not replace detector hardware before checking configuration and software-processing evidence.
+- Do not assume all ImageShift events are Trigger problems.
+- Preserve timing/configuration evidence before correction whenever possible.
+
+---
+
+# 11. Knowledge Feedback Review
+
+| Layer | Result | Action / Reason |
+|---|---|---|
+| FailureKnowledge | No update required | Existing ImageShift knowledge already represents the generic mechanism layer |
+| DecisionTree | No update required | Existing ImageShift DecisionTree remains the primary routing entry |
+| Workflow | No update required | ImageGeneration/Readout workflows remain applicable |
+| Tools | No update required | ModeConfiguration is the existing configuration entry |
+| Case | Updated | Separated primary event from software/display field experience |
+| ErrorCode | Not applicable | No error-code evidence recorded |
+
+---
+
+# 12. Evidence Gap for Promotion to Verified
+
+Missing evidence:
+
+- detector SN;
+- firmware/FPGA/software/SDK versions;
+- before/after Mode configuration;
+- Trigger timing trace;
+- original image sequence;
+- SDK/Detector logs.
+
+Without these, the Case remains `Resolved`.
 
 ---
 
 # 13. Revision History
 
 | Version | Date | Description |
-|----------|------|-------------|
-| V1.0 | 2026-08 | 建立 Image Shift 图像异常案例。 |# ImageShift
-
-Version: V1.0
-
-Case ID: CASE-IMG-008
-
-Module: 11_Case / Image
-
-Status: Released
-
-Severity: ★★★★☆
-
-Typical Frequency: ★★☆☆☆
-
-Applicable Products:
-
-- Dynamic Flat Panel Detector
-- Pluto Series
-
-Related Documents:
-
-- ../../08_ImageDiagnosis/ImageShiftArtifact/
-- ../../07_FailureKnowledge/ImageFailure/ImageShift.md
-- ../../09_DecisionTree/Image/ImageShift.md
-- ../../06_Workflow/ImageGenerationWorkflow.md
-- ../../06_Workflow/ReadoutWorkflow.md
-- ../../17_Tools/SDKTool/ModeConfiguration.md
-
----
-
-# 1. Case Summary
-
-## Case Name
-
-Image Position Shift During Acquisition
-
----
-
-# 2. Customer Information
-
-Customer Type：
-
-OEM Customer
-
-Product：
-
-Pluto0900X
-
-Detector：
-
-Dynamic Detector
-
-Working Mode：
-
-Continuous Acquisition
-
----
-
-# 3. Fault Description
-
-客户反馈：
-
-连续采图过程中，图像整体向左（或向右）发生偏移。
-
-异常特点：
-
-- 图像内容完整，但位置发生偏移
-- 偏移量基本固定
-- 连续采图过程中持续出现
-- 静态模式正常，动态模式异常
-
----
-
-# 4. Initial Customer Judgment
-
-Customer Judgment：
-
-- Detector Hardware Failure（？）
-- SDK Software Issue（？）
-- Trigger Timing Failure（√）
-
-FAE Initial Assessment：
-
-优先检查同步时序及 Mode 配置。
-
----
-
-# 5. Evidence Collection
-
-## Detector Information
-
-- [ ] Detector SN
-- [ ] Firmware Version
-- [ ] FPGA Version
-
-## Configuration
-
-- [ ] Mode Configuration
-- [ ] ROI Configuration
-- [ ] Trigger Configuration
-- [ ] Frame Rate
-
-## Image Evidence
-
-- [ ] RAW Image（连续采集）
-- [ ] Offset
-- [ ] Gain
-
-## Logs
-
-- [ ] SDK Log
-- [ ] Detector Log
-
----
-
-# 6. FAE Investigation
-
-## Step 1
-
-确认异常仅发生于动态模式。
-
-结果：
-
-静态模式正常。
-
----
-
-## Step 2
-
-检查 ROI 配置。
-
-确认：
-
-- ROI 是否满足 8 对齐要求。
-- ROI 是否发生修改。
-
-结果：
-
-配置正常。
-
----
-
-## Step 3
-
-检查 Mode Configuration。
-
-重点确认：
-
-- Frame Rate
-- Exposure Mode
-- Readout Timing
-
-结果：
-
-Frame 配置与客户软件不一致。
-
----
-
-## Step 4
-
-检查 Trigger Timing。
-
-确认：
-
-- Acquire
-- Enable
-- X-Ray
-- FrameReq
-
-时序是否一致。
-
-结果：
-
-Trigger 提前到达，导致图像读出位置发生偏移。
-
----
-
-## Step 5
-
-重新配置 Mode。
-
-重新采图。
-
-结果：
-
-图像恢复正常。
-
----
-
-# 7. Root Cause
-
-Trigger 时序与 Detector 当前 Mode 不匹配，导致图像采集起始位置错误，引起整体偏移。
-
----
-
-# 8. Corrective Action
-
-现场采取：
-
-① 检查 ROI 配置。
-
-② 检查 Trigger 时序。
-
-③ 重新配置 Mode。
-
-④ 重新启动 Detector。
-
-⑤ 连续采图验证。
-
----
-
-# 9. Verification
-
-验证结果：
-
-- 图像位置恢复正常
-- 连续采集稳定
-- 无再次偏移
-- 客户确认问题解决
-
----
-
-# 10. Preventive Action（CAPA）
-
-建议：
-
-① 修改 ROI 后重新验证 Mode。
-
-② 修改帧率后重新验证 Trigger Timing。
-
-③ SDK 升级后重新验证连续采图。
-
-④ 保存现场 Mode Configuration。
-
----
-
-# 11. Lessons Learned
-
-## Technical
-
-Image Shift 通常与同步时序有关，而不是图像校准问题。
-
-## Diagnostic
-
-优先检查 Trigger、ROI、Mode，再考虑硬件。
-
-## Operation
-
-修改 ROI 后应同步验证动态模式。
-
-## Maintenance
-
-保留现场 Mode Configuration，便于快速恢复。
-
----
-
-# 12. Related Documents
-
-Image Diagnosis：
-
-- ImageShiftArtifact
-
-Failure Knowledge：
-
-- ImageShift.md
-
-Workflow：
-
-- ImageGenerationWorkflow.md
-- ReadoutWorkflow.md
-
-Tools：
-
-- ModeConfiguration.md
-
-Decision Tree：
-
-- ImageShift.md
-
----
-
-# 13. Revision History
-
-| Version | Date | Description |
-|----------|------|-------------|
-| V1.0 | 2026-08 | 建立 Image Shift 图像异常案例。 |
-
----
-
-## Field Experience 01 – Image Shift During Image Acquisition
-
-### Source
-
-FAE Pre-sales Weekly Report
-
-### Product
-
-Mercu Series / Pluto Series
-
-### Symptom
-
-- Detector communication is normal.
-- Image acquisition succeeds.
-- The displayed image is shifted horizontally or vertically.
-- The shift is repeatable under the same acquisition conditions.
-
-### Investigation
-
-The following items were verified:
-
-- Detector communication: Normal
-- Firmware version: Compatible
-- Offset calibration: Passed
-- Gain calibration: Passed
-- Detector hardware: Normal
-
-No abnormalities were found in the detector.
-
-Further investigation focused on the acquisition software, synchronization settings and image display process.
-
-### Root Cause
-
-The image shift was not caused by detector hardware.
-
-Possible contributing factors included:
-
-- Incorrect image reconstruction parameters.
-- Synchronization mismatch between detector output and software processing.
-- Incorrect display offset configuration.
-- Application-side image processing logic.
-
-### Failure Classification
-
-- Detector Hardware：No
-- Detector Firmware：No
-- Detector Configuration：No
-- Customer Environment：Yes
-- Third-party Software：Yes
-
-### Solution
-
-1. Verify detector output resolution.
-2. Check image reconstruction parameters.
-3. Verify synchronization settings.
-4. Compare the result with the official SDK Demo.
-5. Repeat acquisition after parameter correction.
-
-### Verification
-
-After correcting the software configuration:
-
-- Image position returned to normal.
-- No additional detector calibration was required.
-- Continuous acquisition remained stable.
-
-### Lessons Learned
-
-Image shift should not be treated as detector failure without first verifying the acquisition software and synchronization parameters.
-
-Software configuration and image processing logic should always be checked before replacing detector hardware.
+|---|---|---|
+| V1.1 | 2026-08-10 | Batch 5 admission audit: retained primary event as Resolved, separated Trigger/Mode findings from software/display field experience, added evidence boundaries |
+| V1.0 | 2026-08 | Initial Image Shift field case |

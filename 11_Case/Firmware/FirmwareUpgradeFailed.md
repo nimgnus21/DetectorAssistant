@@ -1,12 +1,18 @@
 # FirmwareUpgradeFailed
 
-Version: V1.0
+Version: V1.1
 
 Case ID: CASE-FW-002
 
 Module: 11_Case / Firmware
 
-Status: Released
+Status: Resolved
+
+Case Classification: Recovery Record / Root Cause Not Fully Confirmed
+
+Evidence Level: Partial. The record documents successful recovery after repeating the upgrade and performing the required restart, but it does not preserve the failed upgrade log or sufficient evidence to prove that the missing restart was the sole failure mechanism.
+
+Promotion Rule: Upgrade to `Verified` only with the exact failed stage, package/version scope, relevant logs, and controlled evidence showing that the identified condition explains the failure.
 
 Severity: ★★★★☆
 
@@ -20,252 +26,116 @@ Applicable Products:
 
 Related Documents:
 
-- ../../17_Tools/SDKTool/FirmwareUpgrade.md
-- ../../06_Workflow/FirmwareUpgradeWorkflow.md
-- ../../07_FailureKnowledge/FirmwareFailure/FirmwareUpgradeFailed.md
-- ../../09_DecisionTree/Firmware/FirmwareUpgradeFailed.md
+- [FirmwareUpgrade Tool](../../17_Tools/SDKTool/FirmwareUpgrade.md)
+- [FirmwareUpgrade Workflow](../../06_Workflow/FirmwareUpgradeWorkflow.md)
+- [FirmwareUpgradeFailed FailureKnowledge](../../07_FailureKnowledge/FirmwareFailure/FirmwareUpgradeFailed.md)
+- [FirmwareUpgradeFailed DecisionTree](../../09_DecisionTree/Firmware/FirmwareUpgradeFailed.md)
+- [Firmware Upgrade SOP](../../10_SOP/FirmwareUpgrade.md)
+- [Case Admission Checklist](../CaseAdmissionChecklist.md)
+- [Knowledge Feedback Record](../KnowledgeFeedbackRecord.md)
 
 ---
 
-# 1. Case Summary
+# 1. Admission Audit Result
 
-## Case Name
+The record contains a concrete recovery sequence, but detector identity, package version, SDK version, and failed upgrade-log evidence are not preserved.
 
-Firmware Upgrade Failed
+The original statement that failure was caused by an incomplete shutdown/restart procedure is plausible and operationally useful, but the current record does not prove it as the unique root cause.
 
----
-
-# 2. Customer Information
-
-Customer Type：
-
-OEM Customer
-
-Product：
-
-Pluto1717
-
-Operation：
-
-Firmware Upgrade
+Therefore the correct status is `Resolved` rather than `Verified`.
 
 ---
 
-# 3. Fault Description
+# 2. Case Summary
 
-客户反馈：
-
-升级 Firmware 过程中升级失败。
-
-表现为：
-
-- Upgrade Failed
-- Detector Offline
-- 无法重新连接
-- Firmware Version 未更新
-
-客户怀疑 Firmware 已损坏。
+During firmware upgrade, the upgrade was reported as failed or incomplete and the detector could not be reliably returned to normal operation until the approved upgrade/restart sequence was repeated.
 
 ---
 
-# 4. Initial Customer Judgment
+# 3. Evidence Boundary
 
-Customer Judgment：
+Recorded:
 
-- Detector 已损坏（？）
-- Firmware 写入失败（√）
+- Product family: Pluto1717
+- operation: firmware upgrade
+- approved release package was reportedly used
+- factory parameters were backed up
+- upgrade was repeated
+- detector was powered off for the required interval and restarted
+- firmware version, communication, and image acquisition recovered
 
-FAE Initial Assessment：
+Missing:
 
-确认升级流程及升级包是否正确，再判断是否属于 Firmware 损坏。
-
----
-
-# 5. Evidence Collection
-
-## Detector Information
-
-- [ ] Detector SN
-- [ ] Detector Model
-- [ ] Current Firmware Version
-
-## Upgrade Information
-
-- [ ] Upgrade Package Version
-- [ ] SDK Version
-- [ ] Upgrade Log
-
-## Supporting Information
-
-- [ ] Release Note
-- [ ] SVN Release Package 路径
-- [ ] 操作录像（如有）
+- detector SN
+- exact package/version identity
+- exact SDK version
+- failed upgrade log
+- precise failure stage
+- controlled comparison isolating restart as the only causal variable
 
 ---
 
-# 6. FAE Investigation
+# 4. Actual Diagnostic / Recovery Sequence
 
-## Step 1
-
-确认升级包来源。
-
-检查：
-
-Release Package 是否来自正式发布目录。
-
-结果：
-
-确认使用正确版本。
+1. Confirmed upgrade package source.
+2. Confirmed parameter backup was completed.
+3. Re-executed the firmware upgrade.
+4. Performed the required power-off interval and restart.
+5. Reconnected the detector.
+6. Verified firmware version, SDK communication, and image acquisition.
 
 ---
 
-## Step 2
+# 5. Current Conclusion
 
-确认升级前是否保存出厂参数。
+Root Cause: Not Fully Confirmed.
 
-结果：
+Operationally supported finding: recovery succeeded after the approved upgrade sequence, including the required restart, was completed.
 
-已完成参数备份。
-
----
-
-## Step 3
-
-重新执行 Firmware Upgrade。
-
-升级完成后：
-
-按照要求断电 10~20 秒。
-
-重新上电。
+Do not generalize this record into a universal statement that every firmware upgrade failure is caused by missing power cycling.
 
 ---
 
-## Step 4
+# 6. Corrective Action
 
-重新连接 Detector。
-
-确认：
-
-- Firmware Version
-- SDK 通信
-- 图像采集
-
-结果：
-
-升级恢复正常。
+- Back up required parameters before upgrade.
+- Use the approved release package.
+- Preserve the exact package/version identity.
+- Follow the product-specific power-cycle/restart requirement.
+- Preserve failed and successful upgrade logs.
+- Verify firmware version, communication, and image acquisition after upgrade.
 
 ---
 
-# 7. Root Cause
+# 7. Verification
 
-升级流程未完整执行（升级完成后未按要求断电重启），导致 Firmware 未正确初始化。
+Recorded result:
 
-详细分析请参见：
+- Firmware version updated successfully.
+- Detector communication recovered.
+- SDK communication was normal.
+- Image acquisition was normal.
 
-- ../../07_FailureKnowledge/FirmwareFailure/FirmwareUpgradeFailed.md
-
----
-
-# 8. Corrective Action
-
-现场采取：
-
-① 保存出厂参数。
-
-② 使用正式 Release Package。
-
-③ 重新执行 Firmware Upgrade。
-
-④ 升级完成后断电 10~20 秒。
-
-⑤ 重新连接并验证 Detector。
+Status: `Resolved`.
 
 ---
 
-# 9. Verification
+# 8. Knowledge Feedback Review
 
-验证结果：
-
-- Firmware Version 更新成功。
-- Detector 正常连接。
-- SDK 通信正常。
-- 图像采集正常。
-
----
-
-# 10. Preventive Action (CAPA)
-
-建议：
-
-① 升级前必须备份出厂参数。
-
-② 使用正式发布的 Firmware Package。
-
-③ 升级完成后严格执行断电 10~20 秒。
-
-④ 升级后验证 Firmware Version 与 SDK 兼容性。
+| Layer | Result | Reason |
+|---|---|---|
+| FailureKnowledge | No update required | Existing upgrade-failure knowledge remains the formal diagnostic layer |
+| DecisionTree | No update required | Existing upgrade-failure routing already covers failed-stage investigation |
+| SOP | Update required | Evidence preservation and explicit post-upgrade restart verification are operationally relevant |
+| Tools | No update required | Firmware upgrade tool is already the execution entry |
+| ErrorCode | No update required | No verified error code/event is preserved in this record |
+| Index | Update required | Status changed from Released to Resolved |
 
 ---
 
-# 11. Lessons Learned
-
-## Technical
-
-Firmware 升级不仅包含写入过程，还包括升级后的初始化。
-
-## Diagnostic
-
-Upgrade Failed 不代表 Firmware 已损坏，应先确认升级流程。
-
-## Operation
-
-升级完成后必须执行完整的断电重启流程。
-
-## Maintenance
-
-建立 Firmware 升级记录，保存升级日志与版本信息。
-
----
-
-# 12. Field Experience
-
-> **FAE 现场经验**
->
-> Firmware 升级标准流程：
->
-> 1. 保存出厂参数。
-> 2. 使用正式 Release Package。
-> 3. 完成升级。
-> 4. 断电等待 10~20 秒。
-> 5. 重新上电并验证通信及图像采集。
->
-> 缺少第 4 步是现场较常见的操作失误之一。
-
----
-
-# 13. Related Documents
-
-Workflow：
-
-- FirmwareUpgradeWorkflow.md
-
-Failure Knowledge：
-
-- FirmwareUpgradeFailed.md
-
-Tools：
-
-- FirmwareUpgrade.md
-
-Decision Tree：
-
-- FirmwareUpgradeFailed.md
-
----
-
-# 14. Revision History
+# 9. Revision History
 
 | Version | Date | Description |
-|----------|------|-------------|
-| V1.0 | 2026-08 | 建立 Firmware Upgrade Failed 现场案例，整理升级失败排查及恢复流程。 |
+|---|---|---|
+| V1.1 | 2026-08-10 | Case admission audit: reclassified as Resolved and separated recovery success from unverified root cause |
+| V1.0 | 2026-08 | Initial firmware upgrade failure record |

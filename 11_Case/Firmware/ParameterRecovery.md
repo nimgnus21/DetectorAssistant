@@ -1,12 +1,18 @@
 # ParameterRecovery
 
-Version: V1.0
+Version: V1.1
 
 Case ID: CASE-FW-004
 
 Module: 11_Case / Firmware
 
-Status: Released
+Status: Resolved
+
+Case Classification: Recovery Record / Parameter Loss Mechanism Not Fully Confirmed
+
+Evidence Level: Partial. The record documents a successful parameter restoration sequence, but the specific parameter-loss mechanism and exact parameter/version evidence are not preserved.
+
+Promotion Rule: Upgrade to `Verified` only when before/after parameter sets, firmware/package scope, and controlled verification establish the mechanism that caused the configuration change.
 
 Severity: ★★★★☆
 
@@ -20,300 +26,115 @@ Applicable Products:
 
 Related Documents:
 
-- ../../17_Tools/SDKTool/FirmwareUpgrade.md
-- ../../17_Tools/SDKTool/CalibrationTools.md
-- ../../06_Workflow/FirmwareUpgradeWorkflow.md
-- ../../07_FailureKnowledge/FirmwareFailure/ParameterRecovery.md
-- ../../09_DecisionTree/Firmware/ParameterRecovery.md
+- [FirmwareUpgrade Tool](../../17_Tools/SDKTool/FirmwareUpgrade.md)
+- [CalibrationTools](../../17_Tools/SDKTool/CalibrationTools.md)
+- [FirmwareUpgrade Workflow](../../06_Workflow/FirmwareUpgradeWorkflow.md)
+- [ParameterRecovery FailureKnowledge](../../07_FailureKnowledge/FirmwareFailure/ParameterRecovery.md)
+- [ParameterRecovery DecisionTree](../../09_DecisionTree/Firmware/ParameterRecovery.md)
+- [Firmware Upgrade SOP](../../10_SOP/FirmwareUpgrade.md)
+- [Case Admission Checklist](../CaseAdmissionChecklist.md)
+- [Knowledge Feedback Record](../KnowledgeFeedbackRecord.md)
 
 ---
 
-# 1. Case Summary
+# 1. Admission Audit Result
 
-## Case Name
+The record supports that restoring a saved factory parameter set returned the detector to the intended operating state. However, the stored Case does not preserve the actual backup files, before/after parameter comparison, exact firmware/package scope, or evidence proving why the parameters changed.
 
-Factory Parameter Recovery After Firmware Upgrade
-
----
-
-# 2. Customer Information
-
-Customer Type：
-
-OEM Customer
-
-Product：
-
-Pluto1717
-
-Operation：
-
-Firmware Upgrade
-
-Application：
-
-Factory Maintenance / OQC / FAE On-site Support
+The recovery outcome is sufficient for `Resolved`, but not for a fully verified universal mechanism.
 
 ---
 
-# 3. Fault Description
+# 2. Case Summary
 
-客户反馈：
-
-Firmware 已成功升级。
-
-Detector 可以正常连接。
-
-但是升级完成后发现：
-
-- Detector 参数恢复默认
-- 网络参数异常
-- 校准参数失效
-- 图像无法正常输出（如适用）
-- 与升级前配置不一致
-
-客户认为：
-
-Firmware 升级失败。
+Firmware upgrade was reported successful and the detector could connect, but configuration and/or calibration-related operating parameters no longer matched the expected pre-upgrade state. Restoring the saved parameter set and restarting the detector recovered normal operation.
 
 ---
 
-# 4. Initial Customer Judgment
+# 3. Evidence Boundary
 
-Customer Judgment：
+Recorded:
 
-- Firmware Upgrade Failed（√）
-- Detector Hardware Failure（×）
+- product: Pluto1717
+- firmware upgrade reported successful
+- detector communication remained available
+- parameters were observed as inconsistent with the expected state
+- saved factory parameters were restored
+- restart and functional verification completed
 
-FAE Initial Assessment：
+Missing:
 
-Firmware 已成功升级。
-
-优先检查 Factory Parameter 是否恢复。
-
----
-
-# 5. Evidence Collection
-
-## Detector Information
-
-- [ ] Detector SN
-- [ ] Detector Model
-- [ ] Firmware Version
-- [ ] FPGA Version（如适用）
-
-## Parameter Backup
-
-- [ ] Factory Parameter Backup
-- [ ] Calibration Backup
-- [ ] Network Configuration Backup
-
-## Software Information
-
-- [ ] SDK Version
-- [ ] Release Package Version
-
-## Verification
-
-- [ ] Detector Communication
-- [ ] Image Acquisition
-- [ ] Calibration Status
+- detector SN
+- exact firmware/FPGA/package versions
+- original parameter backup identity
+- before/after parameter diff
+- calibration artifact/version identity
+- upgrade log demonstrating how or why parameters changed
 
 ---
 
-# 6. FAE Investigation
+# 4. Actual Diagnostic / Recovery Sequence
 
-## Step 1
-
-确认 Firmware Upgrade 已完成。
-
-检查：
-
-- Firmware Version
-- Upgrade Log
-
-结果：
-
-Firmware 升级成功。
+1. Confirmed the firmware upgrade had completed.
+2. Reviewed detector configuration, network parameters, and calibration-related status.
+3. Recorded that the observed configuration did not match the expected state.
+4. Restored the saved factory parameter set.
+5. Restored applicable network/configuration values and checked calibration-related status.
+6. Restarted the detector and allowed initialization to complete.
+7. Reconnected through the SDK and verified detector online state and image acquisition.
 
 ---
 
-## Step 2
+# 5. Current Conclusion
 
-检查 Detector 参数。
+Root Cause: Not Fully Confirmed.
 
-确认：
+Supported operational conclusion: restoring the saved parameter set returned the detector to the expected configuration and functional state.
 
-- Network Configuration
-- Detector Configuration
-- Calibration Information
-
-结果：
-
-参数恢复为默认值。
+The statement that a firmware upgrade universally resets parameters to defaults is not established by the current evidence and must not be promoted as a general rule from this Case alone.
 
 ---
 
-## Step 3
+# 6. Corrective Action
 
-导入升级前备份的 Factory Parameter。
-
-恢复：
-
-- Detector Configuration
-- Network Parameters
-- Calibration Parameters（如适用）
+- Preserve factory parameter backup before firmware upgrade.
+- Preserve applicable calibration/configuration artifacts and version scope.
+- After upgrade, compare the actual configuration against the required state.
+- Restore only the approved parameter set for the specific detector/version scope.
+- Restart and verify communication, configuration, calibration status, and image acquisition.
 
 ---
 
-## Step 4
+# 7. Verification
 
-重新启动 Detector。
+Recorded result:
 
-等待系统初始化完成。
+- Detector connected normally.
+- Required parameter state was restored.
+- Calibration-related status was reported normal.
+- Image acquisition recovered.
+- Functional recovery was accepted.
 
----
-
-## Step 5
-
-重新连接 SDK。
-
-验证：
-
-- Detector Online
-- Image Acquisition
-- Parameter Status
-
-确认恢复正常。
+Status: `Resolved`.
 
 ---
 
-# 7. Root Cause
+# 8. Knowledge Feedback Review
 
-Firmware 升级后未恢复 Factory Parameter，导致 Detector 配置恢复默认值。
-
-Firmware 程序正常，但运行参数缺失。
-
-详细分析请参见：
-
-- ../../07_FailureKnowledge/FirmwareFailure/ParameterRecovery.md
-
----
-
-# 8. Corrective Action
-
-现场采取：
-
-① 导入升级前备份的 Factory Parameter。
-
-② 检查网络配置。
-
-③ 检查 Calibration 数据。
-
-④ 重启 Detector。
-
-⑤ 验证 Detector 通信及采图功能。
+| Layer | Result | Reason |
+|---|---|---|
+| FailureKnowledge | No update required | Existing parameter-recovery knowledge remains the generic mechanism layer |
+| DecisionTree | No update required | Existing parameter-recovery routing remains applicable |
+| SOP | Update required | Backup identity, restore boundary, and post-restore functional verification are important procedural controls |
+| Tools | No update required | Firmware upgrade and calibration tools are already linked |
+| ErrorCode | No update required | No verified error/event mapping was established |
+| Index | Update required | Status changed from Released to Resolved |
 
 ---
 
-# 9. Verification
-
-验证结果：
-
-- Detector 正常连接。
-- Factory Parameter 恢复。
-- Calibration 状态正常。
-- 图像采集恢复正常。
-- 客户确认功能恢复。
-
----
-
-# 10. Preventive Action (CAPA)
-
-建议：
-
-① Firmware 升级前必须备份 Factory Parameter。
-
-② Parameter Backup 与 Firmware Package 一并保存。
-
-③ Firmware 升级完成后，立即恢复 Factory Parameter。
-
-④ 建立 Firmware、Parameter、Calibration 三者版本对应关系。
-
-⑤ OQC 增加 Parameter Verification 检查项。
-
----
-
-# 11. Lessons Learned
-
-## Technical
-
-Firmware 与 Factory Parameter 属于两个独立对象。
-
-升级 Firmware 不会自动恢复原有配置。
-
-## Diagnostic
-
-升级成功但功能异常时，应优先确认 Parameter，而不是重新升级 Firmware。
-
-## Operation
-
-Firmware 升级流程应包含：
-
-- 参数备份
-- Firmware Upgrade
-- 参数恢复
-- 功能验证
-
-缺一不可。
-
-## Maintenance
-
-建议统一管理：
-
-- Firmware
-- Factory Parameter
-- Calibration Data
-
-确保版本对应、备份完整。
-
----
-
-# 12. Field Experience
-
-> **FAE 现场经验**
->
-> 根据现场维护经验，Firmware 升级前必须先保存 Factory Parameter。
->
-> 升级完成后，应恢复备份参数，并验证网络配置、校准状态及图像采集功能。
->
-> 若忽略 Parameter Recovery，虽然 Firmware 已升级成功，但 Detector 可能无法按照升级前配置正常工作。
-
----
-
-# 13. Related Documents
-
-Workflow：
-
-- FirmwareUpgradeWorkflow.md
-
-Failure Knowledge：
-
-- ParameterRecovery.md
-
-Tools：
-
-- FirmwareUpgrade.md
-- CalibrationTools.md
-
-Decision Tree：
-
-- ParameterRecovery.md
-
----
-
-# 14. Revision History
+# 9. Revision History
 
 | Version | Date | Description |
-|----------|------|-------------|
-| V1.0 | 2026-08 | 建立 Parameter Recovery 现场案例，规范 Firmware 升级后的参数恢复流程。 |
+|---|---|---|
+| V1.1 | 2026-08-10 | Case admission audit: reclassified as Resolved and separated parameter recovery success from unverified loss mechanism |
+| V1.0 | 2026-08 | Initial parameter recovery record |

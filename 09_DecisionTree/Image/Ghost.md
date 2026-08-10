@@ -4,9 +4,9 @@
 >
 > Category: Decision Tree
 >
-> Version: v3.1
+> Version: v3.2
 >
-> Last Updated: 2026-08-06
+> Last Updated: 2026-08-10
 
 ---
 
@@ -96,19 +96,12 @@ Verification Status
 
 ```
 Exposure            □
-
 Pixel               □
-
 TFT                 □
-
 Readout             □
-
 ADC                 □
-
 FPGA                □
-
 Image Processing    □
-
 SDK                 □
 ```
 
@@ -182,15 +175,10 @@ Ghost artifacts are usually caused by incomplete removal of residual image infor
 Typical investigation order:
 
 1. Offset Calibration
-
 2. Gain Calibration
-
 3. Ghost Correction
-
 4. Exposure Conditions
-
 5. Pixel / TFT
-
 6. Image Processing
 
 If Ghost disappears after Ghost Correction, calibration is the most likely cause.
@@ -204,15 +192,10 @@ If Ghost remains unchanged after complete recalibration, hardware investigation 
 Possible affected hardware
 
 ★★★★★ Pixel Cell
-
 ★★★★★ TFT
-
 ★★★★☆ Readout Circuit
-
 ★★★★☆ FPGA
-
 ★★★☆☆ ADC
-
 ★★☆☆☆ SDK Processing
 
 ---
@@ -221,33 +204,19 @@ Possible affected hardware
 
 ### Offset
 
-Expected Result
-
 - Offset completed successfully.
 - Detector Ready.
 
----
-
 ### Gain
-
-Expected Result
 
 - Gain completed successfully.
 - Image quality improved.
 
----
-
 ### Ghost Correction
-
-Expected Result
 
 - Ghost artifact significantly reduced or removed.
 
----
-
 ### SDK Demo
-
-Expected Result
 
 - Ghost reproduced.
 
@@ -273,21 +242,13 @@ If SDK Demo is normal:
 Verify
 
 □ Offset Calibration
-
 □ Gain Calibration
-
 □ Ghost Correction
-
 □ Exposure Parameters
-
 □ Firmware Version
-
 □ SDK Version
-
 □ RAW Image
-
 □ SDK Demo
-
 □ Detector Status
 
 ---
@@ -297,23 +258,14 @@ Verify
 Collect before escalation
 
 - Detector Model
-
 - Detector SN
-
 - Firmware Version
-
 - SDK Version
-
 - Exposure Parameters
-
 - RAW Image
-
 - Processed Image
-
 - Ghost Correction Log
-
 - SDK Log
-
 - Detector Status Screenshot
 
 ---
@@ -323,33 +275,22 @@ Collect before escalation
 ## Calibration
 
 - Offset abnormal
-
 - Gain abnormal
-
 - Ghost correction incomplete
-
----
 
 ## Detector
 
 - Pixel charge retention
-
 - TFT leakage
-
----
 
 ## Exposure
 
 - High exposure dose
-
 - Incorrect calibration exposure
-
----
 
 ## Software
 
 - Image processing abnormal
-
 - SDK rendering issue
 
 ---
@@ -383,13 +324,9 @@ Priority 5
 Escalate when:
 
 - Ghost remains after complete recalibration.
-
 - SDK Demo reproduces the issue.
-
 - RAW image contains the same artifact.
-
 - Another detector works normally.
-
 - Pixel or TFT hardware failure is suspected.
 
 ---
@@ -398,27 +335,29 @@ Escalate when:
 
 ## Workflow
 
-- 06_Workflow/CalibrationWorkflow.md
-
-- 06_Workflow/ImageWorkflow.md
+- [Calibration Workflow](../../06_Workflow/CalibrationWorkflow.md)
+- [Image Generation Workflow](../../06_Workflow/ImageGenerationWorkflow.md)
+- [Dynamic Correction Workflow](../../06_Workflow/DynamicCorrectionWorkflow.md)
 
 ## Case
 
-- 11_Case/Image/Ghost.md
-
-- 11_Case/Calibration/GhostCorrection.md
+- [Ghost Case](../../11_Case/Image/Ghost.md)
 
 ## Failure Knowledge
 
-- 07_FailureKnowledge/TFT/
+- [Failure Analysis Method](../../07_FailureKnowledge/FailureAnalysisMethod.md)
+- [Failure Classification](../../07_FailureKnowledge/FailureClassification.md)
 
-- 07_FailureKnowledge/Pixel/
+## Decision Tree
 
-- 07_FailureKnowledge/Calibration/
+- [Ghost Calibration Failure](../Calibration/GhostFailure.md)
+- [Offset Failure](../Calibration/OffsetFailure.md)
+- [Gain Failure](../Calibration/GainFailure.md)
 
-## Reference
+## Tools
 
-- 15_Reference/ImageReference.md
+- [Calibration Tools](../../17_Tools/SDKTool/CalibrationTools.md)
+- [Log Viewer](../../17_Tools/Log/README.md)
 
 ---
 
@@ -426,4 +365,5 @@ Escalate when:
 
 | Version | Date | Description |
 |---------|------|-------------|
+| v3.2 | 2026-08-10 | Repaired obsolete Workflow, Case, FailureKnowledge and Reference paths |
 | v3.1 | 2026-08-06 | Initial release |

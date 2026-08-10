@@ -8,14 +8,12 @@
 
 | Tool | Primary Use | Typical Entry |
 |---|---|---|
-| SDKTool | SDK、校正、固件、License、模式配置 | Software / Calibration / Firmware |
+| SDKTool | SDK、校正、固件、License、模式配置、日志导出 | Software / Calibration / Firmware / Configuration |
 | Ping | 连通性基础验证 | Connection / UnableToConnect |
 | Wireshark | 网络通信与数据包分析 | PacketLoss / Communication |
 | Offset Viewer | Offset 图像检查 | HorizontalLine / Calibration |
 | ImageJ | 图像测量与异常特征分析 | Image Failure |
 | Log Viewer | Debug Log / 软件日志分析 | Software Failure / Error Code |
-| FTP | 文件传输与现场资料获取 | Log / Firmware / Remote Support |
-| Hex | 原始数据与文件内容检查 | Advanced Analysis / Escalation |
 
 ## Recommended Use Path
 
@@ -54,3 +52,5 @@ Case or Escalation
 5. 正常判定标准。
 6. 异常或无法判定时的升级方向。
 7. 关联的 FailureKnowledge、DecisionTree 或 SOP。
+
+未形成明确技术支持调用关系的工具，不应以空目录或空文档形式保留在正式 Tool Map 中。

@@ -27,9 +27,10 @@ Applicable Products:
 Related Documents:
 
 - [FirmwareUpgrade Tool](../../17_Tools/SDKTool/FirmwareUpgrade.md)
-- [FirmwareUpgrade Workflow](../../06_Workflow/FirmwareUpgradeWorkflow.md)
-- [BootFailed FailureKnowledge](../../07_FailureKnowledge/FirmwareFailure/BootFailed.md)
-- [BootFailed DecisionTree](../../09_DecisionTree/Firmware/BootFailed.md)
+- [Initialization Workflow](../../06_Workflow/InitializationWorkflow.md)
+- [Configuration Workflow](../../06_Workflow/ConfigurationWorkflow.md)
+- [Failure Analysis Method](../../07_FailureKnowledge/FailureAnalysisMethod.md)
+- [BootFailure DecisionTree](../../09_DecisionTree/Firmware/BootFailure.md)
 - [Firmware Upgrade SOP](../../10_SOP/FirmwareUpgrade.md)
 - [Case Admission Checklist](../CaseAdmissionChecklist.md)
 - [Knowledge Feedback Record](../KnowledgeFeedbackRecord.md)

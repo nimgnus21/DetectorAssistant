@@ -6,7 +6,7 @@
 >
 > Category: Network Configuration
 >
-> Version: v1.1
+> Version: v1.2
 
 ---
 
@@ -68,7 +68,7 @@ Software / Diagnostics
 - Windows Network Configuration
 - [Ping](../17_Tools/Ping/)
 - [Wireshark](../17_Tools/Wireshark/)（需要分析丢包或异常网络流量时）
-- [Log Viewer](../17_Tools/LogViewer/)（需要关联连接失败时间点时）
+- [Log Viewer](../17_Tools/Log%20Viewer/)（需要关联连接失败时间点时）
 - [DTDI Tool](../17_Tools/SDKTool/DTDITool.md)（适用产品）
 
 ---
@@ -252,7 +252,7 @@ Detector status becomes Ready.
 
 ### Exception Handling
 
-Preserve `Detector.log`, inspect with [Log Viewer](../17_Tools/LogViewer/) when needed, then refer to the [Connection DecisionTree](../09_DecisionTree/Connection/).
+Preserve `Detector.log`, inspect with [Log Viewer](../17_Tools/Log%20Viewer/) when needed, then refer to the [Connection DecisionTree](../09_DecisionTree/Connection/).
 
 ---
 
@@ -340,7 +340,7 @@ Record:
 - [Packet Loss](../07_FailureKnowledge/ImageFailure/PacketLoss.md)
 - [Ping](../17_Tools/Ping/)
 - [Wireshark](../17_Tools/Wireshark/)
-- [Log Viewer](../17_Tools/LogViewer/)
+- [Log Viewer](../17_Tools/Log%20Viewer/)
 - [Software Index](../00_Project/Index/SoftwareIndex.md)
 
 ---
@@ -349,5 +349,6 @@ Record:
 
 | Version | Date | Description |
 |---------|------|-------------|
+| v1.2 | 2026-08-10 | Fixed Log Viewer repository path |
 | v1.1 | 2026-08-10 | Added direct diagnostics, DecisionTree and failure knowledge links |
 | v1.0 | 2026-08-07 | Initial release |

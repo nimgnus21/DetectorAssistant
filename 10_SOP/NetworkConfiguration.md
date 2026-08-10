@@ -5,6 +5,8 @@
 > SOP ID: SOP-002
 >
 > Category: Network Configuration
+>
+> Version: v1.1
 
 ---
 
@@ -60,12 +62,14 @@ Hardware
 - Ethernet Cable
 - Network Switch (if required)
 
-Software
+Software / Diagnostics
 
-- SDK Tool
+- [SDK Tool / iDetector](../17_Tools/SDKTool/iDetectorQuickTroubleshooting.md)
 - Windows Network Configuration
-- Ping
-- DTDI Tool (if required)
+- [Ping](../17_Tools/Ping/)
+- [Wireshark](../17_Tools/Wireshark/)（需要分析丢包或异常网络流量时）
+- [Log Viewer](../17_Tools/LogViewer/)（需要关联连接失败时间点时）
+- [DTDI Tool](../17_Tools/SDKTool/DTDITool.md)（适用产品）
 
 ---
 
@@ -203,13 +207,7 @@ Detector IP.
 
 ### Process
 
-Execute:
-
-```text
-ping <Detector IP>
-```
-
-Observe:
+Execute the [Ping](../17_Tools/Ping/) test and observe:
 
 - Response
 - Packet loss
@@ -222,14 +220,13 @@ Connectivity verified.
 ### Acceptance Criteria
 
 - Successful replies
-- 0% packet loss
+- 0% packet loss during the verification window
 
 ### Exception Handling
 
-Refer to:
-
-- DecisionTree/Connection
-- ErrorCode/Communication
+- Connection failure → [Connection DecisionTree](../09_DecisionTree/Connection/)
+- General inability to connect → [Unable To Connect](../07_FailureKnowledge/ConnectionFailure/UnableToConnect.md)
+- Suspected intermittent packet loss → [Packet Loss](../07_FailureKnowledge/ImageFailure/PacketLoss.md) and capture evidence with [Wireshark](../17_Tools/Wireshark/)
 
 ---
 
@@ -241,7 +238,7 @@ Configured network.
 
 ### Process
 
-- Launch SDK application.
+- Launch the [SDK Tool / iDetector](../17_Tools/SDKTool/iDetectorQuickTroubleshooting.md).
 - Execute detector connection.
 - Wait for Ready state.
 
@@ -255,10 +252,7 @@ Detector status becomes Ready.
 
 ### Exception Handling
 
-Refer to:
-
-- DecisionTree/Connection
-- ErrorCode/Communication
+Preserve `Detector.log`, inspect with [Log Viewer](../17_Tools/LogViewer/) when needed, then refer to the [Connection DecisionTree](../09_DecisionTree/Connection/).
 
 ---
 
@@ -286,10 +280,8 @@ Image received successfully.
 
 ### Exception Handling
 
-Refer to:
-
-- DecisionTree/Image
-- ErrorCode/Image
+- Image-side failure → [Image DecisionTree](../09_DecisionTree/Image/)
+- Data-loss artifact → [Packet Loss](../07_FailureKnowledge/ImageFailure/PacketLoss.md)
 
 ---
 
@@ -303,6 +295,7 @@ Refer to:
 - SDK connection successful.
 - Detector status is Ready.
 - Image transmission verified.
+- If abnormal, logs or network evidence retained.
 
 ---
 
@@ -320,31 +313,35 @@ Record:
 - Detector Firmware Version
 - Test Result
 - Detector.log
+- Packet capture when applicable
 
 ---
 
 # Exception Matrix
 
-| Symptom | Possible Cause | Action |
-|----------|----------------|--------|
-| Ping failed | Wrong IP | Verify network configuration |
-| Detector not found | Different subnet | Reconfigure IP |
-| Connection timeout | Firewall or cable | Check firewall and Ethernet cable |
-| Packet loss | Network instability | Replace cable or switch |
-| Image timeout | Communication interrupted | Refer to DecisionTree/Image |
+| Symptom | Possible Cause / Direction | Action |
+|----------|----------------------------|--------|
+| Ping failed | IP or physical connection | Verify network configuration and physical connection |
+| Detector not found | Subnet / SDK / connection state | Run Connection DecisionTree and SDK check |
+| Connection timeout | Network or communication interruption | Preserve log and verify connection path |
+| Packet loss | Network instability | Verify with Ping; use Wireshark when evidence is needed |
+| Image timeout | Communication or image-side interruption | Refer to Image DecisionTree and Packet Loss knowledge |
 
 ---
 
 # Related Documents
 
-- SOP/DetectorInstallation
-- 04_Communication
-- 06_Workflow/CommunicationWorkflow
-- 09_DecisionTree/Connection
-- 11_Case/Communication
-- 12_ErrorCode/Communication
-- 14_Glossary/Communication
-- 14_Glossary/Network
+- [Detector Installation SOP](DetectorInstallation.md)
+- [Communication Workflow](../06_Workflow/CommunicationWorkflow.md)
+- [Connection Workflow](../06_Workflow/ConnectionWorkflow.md)
+- [Connection DecisionTree](../09_DecisionTree/Connection/)
+- [Image DecisionTree](../09_DecisionTree/Image/)
+- [Unable To Connect](../07_FailureKnowledge/ConnectionFailure/UnableToConnect.md)
+- [Packet Loss](../07_FailureKnowledge/ImageFailure/PacketLoss.md)
+- [Ping](../17_Tools/Ping/)
+- [Wireshark](../17_Tools/Wireshark/)
+- [Log Viewer](../17_Tools/LogViewer/)
+- [Software Index](../00_Project/Index/SoftwareIndex.md)
 
 ---
 
@@ -352,4 +349,5 @@ Record:
 
 | Version | Date | Description |
 |---------|------|-------------|
+| v1.1 | 2026-08-10 | Added direct diagnostics, DecisionTree and failure knowledge links |
 | v1.0 | 2026-08-07 | Initial release |

@@ -1,10 +1,16 @@
 # NetworkConfiguration
 
-Version: V1.0
+Version: V1.1
 
 Module: 11_Case / Communication
 
-Status: Released
+Status: Reference Candidate
+
+Case Classification: Mixed Field Experience / Diagnostic Reference
+
+Evidence Level: Candidate Evidence — the file summarizes recurring configuration patterns but does not contain a single independently evidenced event sufficient for `Verified` status.
+
+Promotion Rule: A specific network-configuration cause may be promoted only with product/version scope, actual before/after configuration, diagnostic evidence, and controlled verification.
 
 Severity: ★★★★☆
 
@@ -19,356 +25,130 @@ Applicable Products:
 
 Related Documents:
 
-- ../../06_Workflow/ConnectionWorkflow.md
-- ../../07_FailureKnowledge/SystemFailure/CommunicationFailure.md
-- ../../09_DecisionTree/Communication/
-- ../../17_Tools/Ping/
-- ../../17_Tools/Wireshark/
+- [NetworkConfiguration SOP](../../10_SOP/NetworkConfiguration.md)
+- [ConnectionWorkflow](../../06_Workflow/ConnectionWorkflow.md)
+- [CommunicationFailure](../../07_FailureKnowledge/SystemFailure/CommunicationFailure.md)
+- [DetectorOffline](../../09_DecisionTree/Connection/DetectorOffline.md)
+- [ConnectionTimeout](../../09_DecisionTree/Connection/ConnectionTimeout.md)
+- [Ping](../../17_Tools/Ping/README.md)
+- [Wireshark](../../17_Tools/Wireshark/README.md)
+- [Case Admission Checklist](../CaseAdmissionChecklist.md)
+- [Knowledge Feedback Record](../KnowledgeFeedbackRecord.md)
 
 ---
 
-# 1. Case Summary
+# 1. Admission Audit Result
 
-## Case Name
+This file is a cross-symptom network configuration reference, not a single event-level Case. The original `Released` status is therefore replaced by `Reference Candidate`.
 
-Network Configuration Error
-
-## Description
-
-由于网络参数配置错误导致探测器无法正常通信或数据传输异常。
-
-网络配置问题是现场支持中最常见的故障来源之一，既可能导致 **Connection Failed**，也可能导致 **Image Loss**、**Timeout** 等问题。
+The content remains useful for search and diagnostic branching, but statements such as "IP error", "Jumbo Frame", or "Packet Size" are candidate causes until confirmed in a specific event.
 
 ---
 
-# 2. Applicable Products
+# 2. Reference Summary
 
-适用于：
+Network configuration inconsistency may contribute to:
 
-- 有线 Gigabit Ethernet 探测器
-- 无线 AP Mode 探测器
-- Pluto 系列
-- SDK_AIO
+- Detector Offline;
+- Connection Failed;
+- Ping instability;
+- Image Loss;
+- Timeout;
+- calibration input interruption.
 
----
-
-# 3. Fault Phenomenon
-
-现场常见现象：
-
-- Detector Offline
-- Connection Failed
-- Ping Failed
-- Image Loss
-- Timeout
-- Offset Generation Failed
-- Gain Generation Failed
+The same symptom can also originate outside network configuration. Use the DecisionTree before applying a configuration change.
 
 ---
 
-# 4. Root Cause Analysis
+# 3. Candidate Configuration Branches
 
-## 4.1 IP 地址配置错误
+## 3.1 Interface Selection
 
-最常见原因。
+Verify that the PC interface actually connected to the detector is the interface being configured.
 
-包括：
+For AP Mode, the relevant wireless interface must be identified. Do not modify unrelated interfaces merely to test connectivity.
 
-- IP 不在同一网段
-- 修改了错误网卡
-- IP 冲突
+## 3.2 IP / Subnet / Address Conflict
 
----
+Record the actual configuration before modification and verify product-specific addressing requirements.
 
-## 4.2 AP Mode 配置错误
+## 3.3 Adapter Parameters
 
-无线连接时：
+Where applicable, verify the released product configuration for:
 
-修改了有线网卡。
+- MTU / Jumbo Frame;
+- packet or transport size;
+- receive/transmit buffer;
+- interrupt moderation;
+- power-saving features.
 
-没有修改无线网卡。
+This document does not define universal values.
 
----
+## 3.4 Driver / Operating System Layer
 
-## 4.3 Jumbo Frame 未开启
-
-导致：
-
-- 图像丢包
-- 校准失败
-- 动态图像异常
+Record adapter model and driver version. Use a validated driver/version boundary where one exists.
 
 ---
 
-## 4.4 Packet Size 设置错误
+# 4. Reference Diagnostic Path
 
-数据包大小不符合要求。
-
-导致：
-
-- Image Loss
-- Receive Error
-
----
-
-## 4.5 网卡驱动问题
-
-包括：
-
-- 驱动版本过旧
-- 驱动异常
-- 驱动兼容性问题
+1. Identify the actual connection mode: wired or AP Mode.
+2. Identify the active detector interface.
+3. Preserve current IP/subnet and adapter configuration.
+4. Run [Ping](../../17_Tools/Ping/README.md) and record reachability, loss, and repeatability.
+5. Compare adapter parameters against the applicable product release/configuration source.
+6. If image transfer is affected, capture logs and use [Wireshark](../../17_Tools/Wireshark/README.md) when packet evidence is required.
+7. Enter the symptom-specific DecisionTree rather than assuming all failures are network configuration errors.
+8. Change one documented variable at a time and perform a controlled retest.
 
 ---
 
-## 4.6 节能模式
+# 5. Candidate Field Experiences
 
-包括：
+### Candidate A — Wrong Interface Modified
 
-- Energy Efficient Ethernet
-- Green Ethernet
-- 网卡节能
+Pattern: connection remains abnormal after network changes because the configured interface was not the active detector interface.
 
-可能导致通信中断。
+Promotion evidence: before/after interface configuration and successful controlled reconnection.
 
----
+### Candidate B — AP Mode Interface Mismatch
 
-# 5. Diagnostic Process
+Pattern: wireless detector cannot communicate while the wired interface is being changed instead of the active AP interface.
 
-## Step 1
+Promotion evidence: connection mode, active adapter identity, before/after configuration, and reconnection result.
 
-确认连接方式：
+### Candidate C — Adapter Parameter Mismatch
 
-- Wired
-- AP Mode
+Pattern: detector connection may succeed but image transfer or calibration input becomes unstable until the validated adapter configuration is restored.
 
----
-
-## Step 2
-
-确认修改的是正确网卡。
-
-> **现场经验：**
->
-> 探测器连接失败时，只需要修改当前连接探测器的网卡 IP，其余网卡保持不变。
-
-AP Mode：
-
-修改无线网卡。
+Promotion evidence: exact product requirement, before/after parameters, logs, and continuous retest.
 
 ---
 
-## Step 3
+# 6. Verification Rule
 
-检查：
+A future Case may be closed only when the modified configuration is explicitly recorded and the original symptom is verified under the same relevant operating condition.
 
-- IP Address
-- Subnet Mask
-
----
-
-## Step 4
-
-检查 Jumbo Frame。
-
-确认：
-
-已开启。
+Ping success alone is insufficient proof of normal image acquisition, and successful acquisition alone is insufficient proof that a specific network parameter was the sole root cause without before/after evidence.
 
 ---
 
-## Step 5
+# 7. Knowledge Feedback Review
 
-检查 Packet Size。
-
-确认符合产品要求。
-
----
-
-## Step 6
-
-检查：
-
-- 网卡驱动
-- 节能配置
-
-必要时升级驱动。
+| Layer | Result | Reason |
+|---|---|---|
+| FailureKnowledge | No update required | Generic network configuration mechanisms already exist |
+| DecisionTree | No update required | Existing connection/image-loss branches remain the correct primary routing |
+| SOP | No update required | No new verified universal configuration step was established |
+| Tools | No update required | Ping/Wireshark usage is already available |
+| ErrorCode | No update required | No new verified error-code mapping |
+| Index | Update required | Classification changed to Reference Candidate |
 
 ---
 
-## Step 7
-
-Ping Detector。
-
-确认：
-
-- 是否可达
-- 是否稳定
-- 是否丢包
-
----
-
-# 6. Typical Field Experience
-
-## Case 1
-
-### Phenomenon
-
-Connection Failed。
-
-### Cause
-
-修改了错误网卡。
-
-### Solution
-
-修改当前连接 Detector 的网卡。
-
-恢复正常。
-
----
-
-## Case 2
-
-### Phenomenon
-
-无线无法连接。
-
-### Cause
-
-AP Mode 修改了有线网卡。
-
-### Solution
-
-修改无线网卡。
-
-恢复正常。
-
----
-
-## Case 3
-
-### Phenomenon
-
-Image Loss。
-
-### Cause
-
-Jumbo Frame 未开启。
-
-### Solution
-
-开启 Jumbo Frame。
-
-恢复正常。
-
----
-
-## Case 4
-
-### Phenomenon
-
-Offset Generation Failed。
-
-### Cause
-
-Packet Size 设置异常。
-
-### Solution
-
-恢复推荐配置。
-
-重新校准。
-
----
-
-# 7. Verification
-
-确认：
-
-- Ping 正常
-- Detector Online
-- SDK 正常连接
-- 图像采集正常
-- 校准成功
-
----
-
-# 8. Engineering Experience
-
-## Experience 1
-
-不要修改所有网卡。
-
-只修改：
-
-当前连接 Detector 的网卡。
-
----
-
-## Experience 2
-
-AP Mode：
-
-修改无线网卡。
-
----
-
-## Experience 3
-
-Image Loss 时：
-
-优先检查：
-
-- Jumbo Frame
-- Packet Size
-- 网卡驱动
-
----
-
-## Experience 4
-
-网络配置恢复后：
-
-建议重新启动 SDK。
-
----
-
-# 9. Prevention
-
-建议：
-
-- 固定网络配置
-- 使用统一网卡驱动版本
-- 禁止节能模式
-- 使用高质量网线
-- 建立网络配置检查表
-
----
-
-# 10. Related Documents
-
-Workflow：
-
-- ConnectionWorkflow.md
-
-Failure Knowledge：
-
-- CommunicationFailure.md
-
-Decision Tree：
-
-- Communication/
-
-Tools：
-
-- Ping
-- Wireshark
-
----
-
-# 11. Revision History
+# 8. Revision History
 
 | Version | Date | Description |
 |----------|------|-------------|
-| V1.0 | 2026-08 | 初版建立，整理网络配置相关现场案例。 |
+| V1.1 | 2026-08-10 | Case admission audit: reclassified as Reference Candidate and added evidence, promotion and feedback boundaries |
+| V1.0 | 2026-08 | Initial network field-experience summary |

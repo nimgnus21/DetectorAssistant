@@ -4,9 +4,9 @@
 >
 > Category: Decision Tree
 >
-> Version: v1.0
+> Version: v1.1
 >
-> Last Updated: 2026-08-06
+> Last Updated: 2026-08-10
 
 ---
 
@@ -28,60 +28,23 @@ Typical symptoms include:
 # Diagnostic Flow
 
 ```
-                  Version Mismatch
-                         │
-              Firmware Version Readable?
-                         │
-               ┌─────────┴─────────┐
-               │                   │
-              NO                  YES
-               │                   │
-       Go to Boot Failure     Compare Version Matrix
-                                   │
-                                   ▼
-                    Firmware Supported by SDK?
-                                   │
-                      ┌────────────┴────────────┐
-                      │                         │
-                     NO                        YES
-                      │                         │
-            Install Compatible SDK      Continue
-                                   │
-                                   ▼
-                    Detector Model Correct?
-                                   │
-                      ┌────────────┴────────────┐
-                      │                         │
-                     NO                        YES
-                      │                         │
-              Verify Detector Model      Continue
-                                   │
-                                   ▼
-                    Configuration Compatible?
-                                   │
-                      ┌────────────┴────────────┐
-                      │                         │
-                     NO                        YES
-                      │                         │
-               Reload Parameters        Continue
-                                   │
-                                   ▼
-                  Calibration Successful?
-                                   │
-                      ┌────────────┴────────────┐
-                      │                         │
-                     NO                        YES
-                      │                         │
-           Go to Calibration Tree      Continue
-                                   │
-                                   ▼
-                 Image Acquisition Successful?
-                                   │
-                      ┌────────────┴────────────┐
-                      │                         │
-                     NO                        YES
-                      │                         │
-              Go to Image Tree         Problem Solved
+Version Mismatch
+    ↓
+Firmware version readable?
+    ├─ No → BootFailure
+    └─ Yes → Compare approved compatibility requirement
+                 ↓
+          Firmware supported by SDK?
+                 ├─ No → Select approved compatible SDK/package
+                 └─ Yes → Detector model correct?
+                              ├─ No → Verify product/model scope
+                              └─ Yes → Configuration compatible?
+                                           ├─ No → Configuration recovery
+                                           └─ Yes → Calibration successful?
+                                                        ├─ No → Calibration branch
+                                                        └─ Yes → Acquisition successful?
+                                                                     ├─ No → Image branch
+                                                                     └─ Yes → Problem solved
 ```
 
 ---
@@ -125,23 +88,17 @@ Collect the following information before escalation:
 - Incorrect firmware package
 - Firmware downgrade
 
----
-
 ## SDK
 
 - SDK too old
 - SDK too new
 - Incorrect runtime library
 
----
-
 ## Configuration
 
 - Old parameter file
 - Configuration not updated
 - Mode configuration mismatch
-
----
 
 ## Product
 
@@ -189,27 +146,29 @@ Escalate when:
 
 ## Workflow
 
-- 06_Workflow/FirmwareUpgradeWorkflow.md
-- 06_Workflow/ConfigurationWorkflow.md
+- [InitializationWorkflow](../../06_Workflow/InitializationWorkflow.md)
+- [ConfigurationWorkflow](../../06_Workflow/ConfigurationWorkflow.md)
 
 ## Case
 
-- 11_Case/Firmware/VersionMismatch.md
-- 11_Case/Firmware/FirmwareUpgradeFailed.md
-- 11_Case/Firmware/ParameterRecovery.md
+- [VersionMismatch](../../11_Case/Firmware/VersionMismatch.md)
+- [FirmwareUpgradeFailed](../../11_Case/Firmware/FirmwareUpgradeFailed.md)
+- [ParameterRecovery](../../11_Case/Firmware/ParameterRecovery.md)
 
 ## Tools
 
-- 17_Tools/SDKTool/FirmwareUpgrade.md
-- 17_Tools/SDKTool/README.md
+- [FirmwareUpgrade](../../17_Tools/SDKTool/FirmwareUpgrade.md)
+- [SDKTool README](../../17_Tools/SDKTool/README.md)
 
 ## Reference
 
-- 15_Reference/SDKReference.md
+- [SDKReference](../../15_Reference/SDKReference.md)
 
 ## Failure Knowledge
 
-- 07_FailureKnowledge/Firmware/
+- [FailureAnalysisMethod](../../07_FailureKnowledge/FailureAnalysisMethod.md)
+- [FailureClassification](../../07_FailureKnowledge/FailureClassification.md)
+- [FailureCode](../../07_FailureKnowledge/FailureCode.md)
 
 ---
 
@@ -217,4 +176,5 @@ Escalate when:
 
 | Version | Date | Description |
 |---------|------|-------------|
+| v1.1 | 2026-08-10 | Replaced obsolete FirmwareUpgradeWorkflow and FirmwareFailure links with existing workflow and generic FailureKnowledge nodes |
 | v1.0 | 2026-08-06 | Initial release |

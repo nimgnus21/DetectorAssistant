@@ -2,149 +2,120 @@
 
 > Module: Communication
 >
-> Category: UDP Error Codes
+> Category: UDP/Image Transmission Error Codes
 
 ---
 
 # Overview
 
-This document describes UDP communication-related error codes.
-
-UDP communication is primarily used for detector image transmission. These errors are generally related to packet integrity, packet sequence, network quality, buffer management, and image transmission reliability.
+This document covers UDP/image-transmission errors related to packet integrity, packet sequence, packet loss, receive-buffer overflow, frame-buffer overflow, and image delivery timeout.
 
 ---
 
-# Related Commands
+# Protocol Diagnostic Boundary
 
-- Cmd_StartAcq
-- Cmd_StopAcq
-- Cmd_ClearAcq
+```text
+UDP / Image Transmission Error
+        ↓
+Preserve original image/RAW + event time
+        ↓
+Determine: packet integrity / packet loss / host buffer / exposure timeout
+        ↓
+ImageLoss / AcquisitionTimeout / NetworkFailure
+        ↓
+Wireshark for packet-level evidence
+        ↓
+Ping only for basic IP reachability
+        ↓
+Detector.log + acquisition parameters + host resource evidence
+```
+
+A successful Ping does not exclude UDP packet loss, receive-buffer overflow, frame loss, or image transmission failure.
 
 ---
 
-# Related Events
+# Error Code → Diagnostic Entry
 
-- Evt_Image
-- Evt_WaitImage_Timeout
-- Evt_TaskResult_Failed
-- Evt_GeneralError
-- Evt_TransactionAborted
+| Error | Primary Entry | Tool / Evidence |
+|---|---|---|
+| `Err_InvalidPacketNo` | [NetworkFailure](../../09_DecisionTree/Connection/NetworkFailure.md) | Wireshark, event time, log |
+| `Err_InvalidPacketFormat` | [NetworkFailure](../../09_DecisionTree/Connection/NetworkFailure.md) | Wireshark, SDK/FW compatibility, log |
+| `Err_PacketDataCheckFailed` | [NetworkFailure](../../09_DecisionTree/Connection/NetworkFailure.md) | Wireshark, physical/network evidence |
+| `Err_PacketLost_BufOverflow` | [NetworkFailure](../../09_DecisionTree/Connection/NetworkFailure.md) | Wireshark, frame rate, host/network state |
+| `Err_FrameLost_BufOverflow` | [ImageLoss](../../09_DecisionTree/Image/ImageLoss.md) | Host CPU/memory/storage, acquisition parameters |
+| `Evt_WaitImage_Timeout` | [AcquisitionTimeout](../../09_DecisionTree/Software/AcquisitionTimeout.md) | Exposure + image/network/log evidence |
 
 ---
 
 # Error Codes
 
----
-
 ## Err_InvalidPacketNo
-
-### Description
 
 Received an invalid packet sequence number.
 
-### Possible Causes
+### Diagnostic Path
 
-- Packet sequence disorder.
-- Packet duplication.
-- Packet loss during transmission.
-- Detector communication interrupted.
-
-### Recommended Actions
-
-1. Verify network stability.
-2. Restart image acquisition.
-3. Reconnect the detector if necessary.
-4. Check Detector.log for abnormal packet sequence.
+1. Preserve the failure timestamp and acquisition parameters.
+2. Check whether the issue is reproducible.
+3. Enter [NetworkFailure](../../09_DecisionTree/Connection/NetworkFailure.md).
+4. Capture packet evidence with [Wireshark](../../17_Tools/Wireshark/README.md).
+5. Correlate packet sequence evidence with `Detector.log`.
 
 ---
 
 ## Err_InvalidPacketFormat
 
-### Description
-
 The received UDP packet format is invalid.
 
-### Possible Causes
+### Diagnostic Path
 
-- Packet header corrupted.
-- Unsupported protocol version.
-- Incomplete packet transmission.
-- Communication protocol mismatch.
-
-### Recommended Actions
-
-1. Verify SDK and firmware compatibility.
-2. Restart detector communication.
-3. Upgrade firmware if necessary.
-4. Verify network integrity.
+1. Preserve the original event and packet evidence.
+2. Verify SDK, firmware, and detector compatibility before changing network settings.
+3. Follow [NetworkFailure](../../09_DecisionTree/Connection/NetworkFailure.md).
+4. Use [Wireshark](../../17_Tools/Wireshark/README.md) when packet-level evidence is required.
+5. If version mismatch evidence exists, continue to [VersionMismatch](../../09_DecisionTree/Firmware/VersionMismatch.md).
 
 ---
 
 ## Err_PacketDataCheckFailed
 
-### Description
+UDP packet integrity validation failed.
 
-UDP packet integrity verification failed.
+### Diagnostic Path
 
-The received packet failed checksum or data validation.
-
-### Possible Causes
-
-- Packet corruption during transmission.
-- Network interference.
-- Hardware communication abnormality.
-- Invalid packet payload.
-
-### Recommended Actions
-
-1. Check Ethernet connection.
-2. Verify network quality.
-3. Restart acquisition.
-4. Capture network packets for further analysis if necessary.
+1. Verify physical link and network path.
+2. Preserve `Detector.log` and failure time.
+3. Enter [NetworkFailure](../../09_DecisionTree/Connection/NetworkFailure.md).
+4. Capture traffic with [Wireshark](../../17_Tools/Wireshark/README.md).
+5. Compare capture evidence before replacing hardware or changing firmware.
 
 ---
 
 ## Err_PacketLost_BufOverflow
 
-### Description
-
 UDP packets were lost because the receive buffer overflowed.
 
-### Possible Causes
+### Diagnostic Path
 
-- Image transmission rate too high.
-- Host computer processing speed insufficient.
-- CPU usage too high.
-- Network receive buffer too small.
-
-### Recommended Actions
-
-1. Reduce acquisition frame rate.
-2. Close unnecessary applications.
-3. Improve host computer performance.
-4. Verify Gigabit Ethernet connection.
+1. Record acquisition frame rate and image size.
+2. Record host CPU/memory and network receive conditions.
+3. Use [Wireshark](../../17_Tools/Wireshark/README.md) to distinguish observed packet loss from host-side overload where possible.
+4. Enter [NetworkFailure](../../09_DecisionTree/Connection/NetworkFailure.md).
+5. Change frame rate or host/network settings only as controlled tests and record results.
 
 ---
 
 ## Err_FrameLost_BufOverflow
 
-### Description
-
 One or more image frames were lost because the frame buffer overflowed.
 
-### Possible Causes
+### Diagnostic Path
 
-- Continuous acquisition speed too high.
-- Image processing slower than acquisition speed.
-- Memory resources insufficient.
-- Disk writing performance insufficient.
-
-### Recommended Actions
-
-1. Reduce acquisition frame rate.
-2. Save images to SSD.
-3. Increase available system memory.
-4. Move image processing to a background thread.
+1. Record continuous-acquisition frame rate and processing pipeline.
+2. Record CPU, memory, storage, and application processing load.
+3. Enter [ImageLoss](../../09_DecisionTree/Image/ImageLoss.md).
+4. Use [Wireshark](../../17_Tools/Wireshark/README.md) only if network loss is still suspected; do not assume every frame-buffer overflow is a network fault.
+5. Preserve the result of one controlled load-reduction test.
 
 ---
 
@@ -152,89 +123,51 @@ One or more image frames were lost because the frame buffer overflowed.
 
 ## Evt_Image
 
-Indicates that a complete image has been received successfully.
-
-Failure to receive this event may indicate:
-
-- Packet loss.
-- Frame loss.
-- Communication interruption.
-
----
+Indicates complete image reception. Missing image events must be correlated with acquisition state, exposure evidence, network evidence, and timeout events.
 
 ## Evt_WaitImage_Timeout
 
-The SDK did not receive a complete image within the configured timeout period.
-
-Possible reasons include:
-
-- UDP packet loss.
-- Exposure not triggered.
-- Detector communication interrupted.
-- Network congestion.
-
----
+The SDK did not receive a complete image within the configured timeout. Follow [AcquisitionTimeout](../../09_DecisionTree/Software/AcquisitionTimeout.md) and distinguish exposure failure from communication/image-delivery failure.
 
 ## Evt_TransactionAborted
 
-The current image transmission transaction has been aborted.
-
-Possible causes include:
-
-- Communication timeout.
-- Packet verification failure.
-- Detector communication interruption.
+Preserve the transaction time and preceding error/event, then select the corresponding network or acquisition branch instead of retrying blindly.
 
 ---
 
-# Diagnostic Checklist
+# Evidence Package
 
-When UDP communication errors occur, verify the following:
+Collect:
 
-- Detector status is **Ready**.
-- Gigabit Ethernet connection is normal.
-- No excessive network latency.
-- No packet loss.
-- No switch or router abnormalities.
-- Host computer performance is sufficient.
-- Detector.log contains no packet-related exceptions.
-
----
-
-# Related DecisionTree
-
-- 09_DecisionTree/Image/ImageLoss.md
-- 09_DecisionTree/Software/AcquisitionTimeout.md
-- 09_DecisionTree/Connection/NetworkFailure.md
+- Exact error/event and timestamp
+- Acquisition mode, frame rate, image size
+- Exposure evidence where applicable
+- Original image/RAW when available
+- Ping result only as basic reachability evidence
+- Wireshark capture for packet/sequence/integrity issues
+- Host CPU, memory, storage evidence for buffer errors
+- `Detector.log`
+- Result after one controlled retry
 
 ---
 
-# Related Case
+# Related DecisionTree / SOP / Tool
 
-- 11_Case/Communication/ImageLoss.md
-- 11_Case/Communication/Timeout.md
-
----
-
-# Related FailureKnowledge
-
-- 07_FailureKnowledge/SystemFailure/CommunicationFailure.md
-- 07_FailureKnowledge/ImageFailure/ImageLoss.md
-
----
-
-# Related Log
-
-```
-Detector.log
-```
-
-UDP communication failures should always be analyzed together with Detector.log, network quality, acquisition parameters, and image transmission status.
+- [ImageLoss](../../09_DecisionTree/Image/ImageLoss.md)
+- [AcquisitionTimeout](../../09_DecisionTree/Software/AcquisitionTimeout.md)
+- [NetworkFailure](../../09_DecisionTree/Connection/NetworkFailure.md)
+- [VersionMismatch](../../09_DecisionTree/Firmware/VersionMismatch.md)
+- [ImageTroubleshooting](../../10_SOP/ImageTroubleshooting.md)
+- [NetworkConfiguration](../../10_SOP/NetworkConfiguration.md)
+- [Ping](../../17_Tools/Ping/README.md)
+- [Wireshark](../../17_Tools/Wireshark/README.md)
+- [LogExport](../../17_Tools/SDKTool/LogExport.md)
 
 ---
 
 # Revision History
 
 | Version | Date | Description |
-|---------|------|-------------|
+|---|---|---|
+| v1.1 | 2026-08-10 | Added UDP packet/buffer diagnostic branching and protocol evidence boundaries |
 | v1.0 | 2026-08-07 | Initial release |

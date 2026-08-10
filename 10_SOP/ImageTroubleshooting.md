@@ -6,7 +6,7 @@
 >
 > Category: Image Troubleshooting
 >
-> Version: v1.2
+> Version: v1.3
 
 ---
 
@@ -57,9 +57,9 @@
 - [SDK Tool / iDetector](../17_Tools/SDKTool/iDetectorQuickTroubleshooting.md)（SDK 状态、连接、采图与日志初步排查）
 - [DTDI Tool](../17_Tools/SDKTool/DTDITool.md)（适用产品的图像/模板处理）
 - [ImageJ](../17_Tools/ImageJ/)（图像形态、位置和重复性比较）
-- [Offset Viewer](../17_Tools/OffsetViewer/)（Offset 相关异常分析，如适用）
+- [Offset Viewer](../17_Tools/Offset%20Viewer/)（Offset 相关异常分析，如适用）
 - [Wireshark](../17_Tools/Wireshark/)（怀疑网络传输异常或数据丢失时）
-- [Log Viewer](../17_Tools/LogViewer/)（日志查看与异常时间点关联）
+- [Log Viewer](../17_Tools/Log%20Viewer/)（日志查看与异常时间点关联）
 
 工具选择原则：只在对应现象分支中使用，工具输出必须与原始图像、日志或验证图像一起保存。
 
@@ -104,7 +104,7 @@
 
 **标准：** 后续操作前原始证据可追溯。
 
-**异常：** 无法获取日志时，记录无法获取的原因，不将缺失信息视为“正常”。必要时使用 [Log Viewer](../17_Tools/LogViewer/) 定位可获取日志中的异常时间点。
+**异常：** 无法获取日志时，记录无法获取的原因，不将缺失信息视为“正常”。必要时使用 [Log Viewer](../17_Tools/Log%20Viewer/) 定位可获取日志中的异常时间点。
 
 ---
 
@@ -146,7 +146,7 @@
 
 ### 4.2 网络丢包
 
-检查网络状态；必要时使用 [Wireshark](../17_Tools/Wireshark/) 或 [Log Viewer](../17_Tools/LogViewer/) 保留传输异常证据，改善网络环境后重新采图验证。
+检查网络状态；必要时使用 [Wireshark](../17_Tools/Wireshark/) 或 [Log Viewer](../17_Tools/Log%20Viewer/) 保留传输异常证据，改善网络环境后重新采图验证。
 
 ### 4.3 失校正
 
@@ -158,7 +158,7 @@
 
 ### 4.5 固定坏线
 
-按照现有 `HorizontalLine.md` 执行 SDK Demo、Offset、Gain 与硬件方向排查；Offset 相关现象可使用 [Offset Viewer](../17_Tools/OffsetViewer/) 辅助分析。
+按照现有 `HorizontalLine.md` 执行 SDK Demo、Offset、Gain 与硬件方向排查；Offset 相关现象可使用 [Offset Viewer](../17_Tools/Offset%20Viewer/) 辅助分析。
 
 ---
 
@@ -215,9 +215,9 @@
 - [Horizontal Line DecisionTree](../09_DecisionTree/Image/HorizontalLine.md)
 - [Failure Index](../00_Project/Index/FailureIndex.md)
 - [ImageJ](../17_Tools/ImageJ/)
-- [Offset Viewer](../17_Tools/OffsetViewer/)
+- [Offset Viewer](../17_Tools/Offset%20Viewer/)
 - [Wireshark](../17_Tools/Wireshark/)
-- [Log Viewer](../17_Tools/LogViewer/)
+- [Log Viewer](../17_Tools/Log%20Viewer/)
 
 ---
 
@@ -225,6 +225,7 @@
 
 | Version | Date | Description |
 |---|---|---|
+| v1.3 | 2026-08-10 | Fixed Log Viewer and Offset Viewer repository paths |
 | v1.2 | 2026-08-10 | Added direct tool links and tool-specific evidence flow |
 | v1.1 | 2026-08-10 | Added image stripe classification and field verification workflow |
 | v1.0 | 2026-08-07 | Initial release |

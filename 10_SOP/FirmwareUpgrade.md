@@ -5,6 +5,8 @@
 > SOP ID: SOP-004
 >
 > Category: Firmware Upgrade
+>
+> Version: v1.1
 
 ---
 
@@ -62,10 +64,11 @@ Hardware
 - Host Computer
 - Stable Power Supply
 
-Software
+Software / Diagnostics
 
-- SDK Tool
-- Firmware Upgrade Tool
+- [Firmware Upgrade Tool](../17_Tools/SDKTool/FirmwareUpgrade.md)
+- [SDK Tool / iDetector](../17_Tools/SDKTool/iDetectorQuickTroubleshooting.md)
+- [Log Viewer](../17_Tools/LogViewer/)（升级失败、超时或回退分析时）
 
 ---
 
@@ -149,6 +152,10 @@ Complete Upgrade
 
 Detector status is Ready.
 
+### Exception Handling
+
+Resolve communication failures first through the [Connection DecisionTree](../09_DecisionTree/Connection/) and preserve logs with [Log Viewer](../17_Tools/LogViewer/) if the state is unstable.
+
 ---
 
 ## Step 2 – Verify Firmware Package
@@ -163,6 +170,10 @@ Detector status is Ready.
 ### Acceptance Criteria
 
 Firmware package matches detector.
+
+### Exception Handling
+
+Do not continue when model, package or compatibility is uncertain. Record the package and version information before escalation.
 
 ---
 
@@ -192,9 +203,7 @@ Backup completed.
 
 ### Process
 
-Execute:
-
-Cmd_UpdateFirmware
+Use the [Firmware Upgrade Tool](../17_Tools/SDKTool/FirmwareUpgrade.md) or applicable [SDK Tool / iDetector](../17_Tools/SDKTool/iDetectorQuickTroubleshooting.md) workflow to execute the upgrade.
 
 Monitor:
 
@@ -205,6 +214,10 @@ Monitor:
 ### Acceptance Criteria
 
 Task completed successfully.
+
+### Exception Handling
+
+On failure, timeout or abnormal rollback, stop repeated retries, preserve `Detector.log` and inspect it with [Log Viewer](../17_Tools/LogViewer/) before escalation.
 
 ---
 
@@ -219,6 +232,10 @@ Reconnect detector.
 ### Acceptance Criteria
 
 Detector reconnects successfully.
+
+### Exception Handling
+
+If the detector cannot reconnect, enter the [Connection DecisionTree](../09_DecisionTree/Connection/) and retain the upgrade log.
 
 ---
 
@@ -252,6 +269,12 @@ Firmware version updated correctly.
 
 Detector operates normally.
 
+### Exception Handling
+
+- Connection abnormal → [Connection DecisionTree](../09_DecisionTree/Connection/)
+- Image abnormal → [Image Troubleshooting SOP](ImageTroubleshooting.md)
+- Calibration abnormal → [Calibration SOP](Calibration.md)
+
 ---
 
 ## Step 8 – Complete Upgrade
@@ -265,6 +288,7 @@ Save:
 - Firmware Version
 - Operator
 - Date
+- Verification result
 
 ---
 
@@ -277,18 +301,19 @@ Save:
 - Communication normal.
 - Image acquisition successful.
 - No abnormal SDK events.
+- Verification evidence retained.
 
 ---
 
 # Exception Matrix
 
-| Symptom | Possible Cause | Action |
-|----------|----------------|--------|
-| Upgrade failed | Wrong firmware | Verify firmware package |
-| Timeout | Communication unstable | Retry after communication recovery |
-| Detector cannot reconnect | Firmware abnormal | Perform recovery procedure |
-| Firmware fallback | Automatic rollback | Verify firmware and retry |
-| Apply firmware failed | Internal upgrade failure | Preserve logs and escalate |
+| Symptom | Direction | Action |
+|----------|-----------|--------|
+| Upgrade failed | Package or internal upgrade failure | Preserve logs and stop repeated retries |
+| Timeout | Communication interruption | Recover communication before retry |
+| Detector cannot reconnect | Upgrade or connection state abnormal | Run Connection DecisionTree |
+| Firmware fallback | Automatic rollback or package/application issue | Preserve all logs before retrying |
+| Apply firmware failed | Upgrade execution failure | Inspect logs and escalate with package/version information |
 
 ---
 
@@ -305,6 +330,8 @@ Record:
 - Upgrade Date
 - Operator
 - Detector.log
+- Firmware package identification
+- Final verification result
 
 ---
 
@@ -320,15 +347,16 @@ Record:
 
 # Related Documents
 
-- 02_SDK
-- 03_Hardware
-- 06_Workflow/FirmwareUpgrade
-- 09_DecisionTree/Firmware
-- 11_Case/Firmware
-- 12_ErrorCode/Firmware
-- 14_Glossary/Firmware
-- SOP/DetectorInstallation
-- SOP/Calibration
+- [Firmware Upgrade Tool](../17_Tools/SDKTool/FirmwareUpgrade.md)
+- [SDK Tool / iDetector](../17_Tools/SDKTool/iDetectorQuickTroubleshooting.md)
+- [Log Viewer](../17_Tools/LogViewer/)
+- [Firmware Upgrade Software Guide](../04_Software/Upgrade/FirmwareUpgrade.md)
+- [Connection DecisionTree](../09_DecisionTree/Connection/)
+- [Firmware DecisionTree](../09_DecisionTree/Firmware/)
+- [Firmware Cases](../11_Case/Firmware/)
+- [Detector Installation SOP](DetectorInstallation.md)
+- [Calibration SOP](Calibration.md)
+- [Image Troubleshooting SOP](ImageTroubleshooting.md)
 
 ---
 
@@ -336,4 +364,5 @@ Record:
 
 | Version | Date | Description |
 |---------|------|-------------|
+| v1.1 | 2026-08-10 | Added direct tool links and post-upgrade recovery flow |
 | v1.0 | 2026-08-07 | Initial release |

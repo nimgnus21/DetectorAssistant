@@ -4,9 +4,9 @@
 >
 > Category: Decision Tree
 >
-> Version: v1.0
+> Version: v1.1
 >
-> Last Updated: 2026-08-06
+> Last Updated: 2026-08-10
 
 ---
 
@@ -192,26 +192,25 @@ Escalate when:
 
 ## Workflow
 
-- 06_Workflow/NetworkConfigurationWorkflow.md
-- 06_Workflow/ConnectionWorkflow.md
+- [Network Configuration](../../10_SOP/NetworkConfiguration.md)
+- [Connection Workflow](../../06_Workflow/ConnectionWorkflow.md)
 
 ## Case
 
-- 11_Case/Communication/NetworkConfiguration.md
-- 11_Case/Communication/ConnectionFailed.md
-- 11_Case/Communication/Timeout.md
+- [Network Configuration Case](../../11_Case/Communication/NetworkConfiguration.md)
+- [Connection Failed Case](../../11_Case/Communication/ConnectionFailed.md)
+- [Timeout Case](../../11_Case/Communication/Timeout.md)
 
 ## Tools
 
-- 17_Tools/SDKTool/README.md
-
-## Reference
-
-- 15_Reference/SDKReference.md
+- [Ping](../../17_Tools/Ping/README.md)
+- [Wireshark](../../17_Tools/Wireshark/README.md)
+- [SDK Tool README](../../17_Tools/SDKTool/README.md)
 
 ## Failure Knowledge
 
-- 07_FailureKnowledge/Communication/
+- [Failure Analysis Method](../../07_FailureKnowledge/FailureAnalysisMethod.md)
+- [Failure Classification](../../07_FailureKnowledge/FailureClassification.md)
 
 ---
 
@@ -219,4 +218,5 @@ Escalate when:
 
 | Version | Date | Description |
 |---------|------|-------------|
+| v1.1 | 2026-08-10 | Repaired obsolete Workflow, Reference and FailureKnowledge paths; added Ping and Wireshark evidence tools |
 | v1.0 | 2026-08-06 | Initial release |

@@ -12,199 +12,122 @@ This document describes error codes that may occur during Offset calibration.
 
 Offset calibration is the foundation of detector image correction. It compensates for detector dark current and electronic offset before Gain and Defect calibration.
 
-An abnormal Offset template will directly affect subsequent image quality and may lead to Gain or Defect calibration failures.
+An abnormal Offset template may affect subsequent image quality and may contribute to Gain or Defect calibration failure. An Offset error code alone does not prove a template, hardware, communication, or ghosting root cause.
 
 ---
 
 # Related Commands
 
-- Cmd_OffsetGeneration
-- Cmd_FinishGenerationProcess
-- Cmd_DownloadCaliFile
-- Cmd_SelectCaliFile
-
----
+- `Cmd_OffsetGeneration`
+- `Cmd_FinishGenerationProcess`
+- `Cmd_DownloadCaliFile`
+- `Cmd_SelectCaliFile`
 
 # Related Events
 
-- Evt_TaskResult_Succeed
-- Evt_TaskResult_Failed
-- Evt_GeneralError
+- `Evt_TaskResult_Succeed`
+- `Evt_TaskResult_Failed`
+- `Evt_GeneralError`
+
+---
+
+# Error Code → Diagnostic Entry
+
+| Error | Primary Path | Tool / Evidence |
+|---|---|---|
+| `Err_Cali_GeneralError` | [OffsetFailure](../../09_DecisionTree/Calibration/OffsetFailure.md) | Detector state, `Detector.log`, [CalibrationTools](../../17_Tools/SDKTool/CalibrationTools.md) |
+| `Err_Cali_DataNotReadyForGen` | [OffsetFailure](../../09_DecisionTree/Calibration/OffsetFailure.md) | Required image set, acquisition result, log |
+| `Err_Cali_NotEnoughIntervalTime_OffsetTmpl` | [OffsetFailure](../../09_DecisionTree/Calibration/OffsetFailure.md) | Exposure history, recovery interval, Offset evidence |
 
 ---
 
 # Error Codes
 
----
-
 ## Err_Cali_GeneralError
 
-### Description
+A general error occurred during Offset calibration.
 
-General error occurred during Offset calibration.
+### Diagnostic Procedure
 
-### Possible Causes
-
-- Calibration process interrupted.
-- Detector communication abnormal.
-- Detector state changed during calibration.
-- Internal calibration algorithm failed.
-
-### Recommended Actions
-
-1. Verify detector status is **Ready**.
-2. Restart the Offset calibration process.
-3. Check Detector.log.
-4. Restart the detector if necessary.
+1. Preserve the current log and calibration context before restart.
+2. Verify detector state is `Ready`.
+3. Verify the calibration acquisition completed without interruption.
+4. Check whether a communication or detector-state error occurred at the same timestamp.
+5. Follow [OffsetFailure](../../09_DecisionTree/Calibration/OffsetFailure.md).
+6. Execute the applicable [Calibration](../../10_SOP/Calibration.md) recovery step.
+7. Use [CalibrationTools](../../17_Tools/SDKTool/CalibrationTools.md) only after the input evidence is complete.
 
 ---
 
 ## Err_Cali_DataNotReadyForGen
 
-### Description
-
 The SDK has not received sufficient image data to generate the Offset template.
 
-### Possible Causes
+### Diagnostic Procedure
 
-- Offset image acquisition not completed.
-- Calibration interrupted.
-- Image acquisition failed.
-- Selected images are insufficient.
-
-### Recommended Actions
-
-1. Complete the required Offset image acquisition.
-2. Verify all images were received successfully.
-3. Restart Offset calibration.
-4. Execute template generation again.
+1. Verify the required Offset image count and acquisition completion.
+2. Check for image loss, interruption, or task failure before generation.
+3. Preserve the acquisition result and `Detector.log`.
+4. Reacquire only the missing or invalid dataset according to the calibration procedure.
+5. Regenerate after a complete dataset is confirmed.
 
 ---
 
 ## Err_Cali_NotEnoughIntervalTime_OffsetTmpl
 
-### Description
+Insufficient idle time elapsed before generating a valid Offset template. Residual signal may still be present.
 
-Insufficient idle time has elapsed since the previous acquisition to generate a valid Offset template.
+### Diagnostic Procedure
 
-Residual signal (ghost image) may still exist in the detector.
-
-### Possible Causes
-
-- Offset calibration started immediately after exposure.
-- Detector has not completely recovered.
-- Previous exposure dose was high.
-- Detector temperature has not stabilized.
-
-### Recommended Actions
-
-1. Wait several minutes before generating the Offset template.
-2. Ensure no residual exposure exists.
-3. Restart Offset calibration.
-4. If necessary, perform additional dark acquisitions.
+1. Record the preceding exposure condition and timestamp.
+2. Check whether the symptom followed high-dose exposure or repeated acquisition.
+3. Allow the required recovery interval defined by the applicable product procedure; do not invent a fixed interval in this error-code reference.
+4. Acquire new Offset evidence only after recovery.
+5. If the problem persists, inspect the Offset pattern using [Offset Viewer](../../17_Tools/Offset%20Viewer/README.md) and continue through [OffsetFailure](../../09_DecisionTree/Calibration/OffsetFailure.md).
 
 ---
 
-# Field Experience
+# Verification Rule
 
-## Residual Image (Ghost)
+Do not treat successful template generation as sufficient closure. Verify:
 
-If Offset calibration is started immediately after a high-dose exposure, detector residual signal may remain.
-
-Typical symptoms include:
-
-- Ghost artifacts after Offset correction.
-- Offset template instability.
-- Increased image noise.
-
-Always allow sufficient recovery time before generating the Offset template.
+- template generation completed;
+- selected/downloaded template is the intended one where hardware calibration is used;
+- detector reconnect/reinitialization succeeded where required;
+- controlled acquisition no longer shows the original symptom.
 
 ---
 
-## Generation Process
+# Evidence Package
 
-A complete Offset calibration workflow should be:
+Collect before escalation or template replacement:
 
-```
-Cmd_OffsetGeneration
+- exact error/event and timestamp;
+- detector state;
+- Offset acquisition completion status and image count where applicable;
+- preceding exposure history;
+- detector temperature/state if available;
+- original Offset/template evidence;
+- `Detector.log`;
+- result after one controlled regeneration.
 
-↓
-
-Acquire Offset Images
-
-↓
-
-Evt_TaskResult_Succeed
-
-↓
-
-Generate Offset Template
-
-↓
-
-Cmd_FinishGenerationProcess
-```
-
-Do **not** interrupt the process before `Cmd_FinishGenerationProcess` completes.
+Use [LogExport](../../17_Tools/SDKTool/LogExport.md) for log preservation.
 
 ---
 
-## Hardware Calibration
+# Related DecisionTree / SOP / Tool
 
-When using hardware calibration:
+- [OffsetFailure](../../09_DecisionTree/Calibration/OffsetFailure.md)
+- [Calibration](../../10_SOP/Calibration.md)
+- [CalibrationTools](../../17_Tools/SDKTool/CalibrationTools.md)
+- [DTDITool](../../17_Tools/SDKTool/DTDITool.md)
+- [Offset Viewer](../../17_Tools/Offset%20Viewer/README.md)
+- [LogExport](../../17_Tools/SDKTool/LogExport.md)
 
-1. Generate the Offset template.
-2. Download the template using `Cmd_DownloadCaliFile`.
-3. Select the template using `Cmd_SelectCaliFile`.
-4. Verify the template has been loaded successfully before acquisition.
+# Related Case / Knowledge
 
----
-
-# Diagnostic Checklist
-
-Verify the following items before regenerating the Offset template:
-
-- Detector status is **Ready**.
-- Detector temperature is stable.
-- No recent high-dose exposure.
-- Offset image acquisition completed.
-- Detector communication is stable.
-- Detector.log contains no calibration exceptions.
-
----
-
-# Related DecisionTree
-
-- 09_DecisionTree/Calibration/OffsetFailure.md
-
----
-
-# Related Case
-
-- 11_Case/Calibration/OffsetGenerationFailed.md
-
----
-
-# Related Workflow
-
-- 05_Calibration/OffsetCalibration.md
-- 06_Workflow/CalibrationWorkflow.md
-
----
-
-# Related FailureKnowledge
-
-- 07_FailureKnowledge/CalibrationFailure/OffsetFailure.md
-
----
-
-# Related Log
-
-```
-Detector.log
-```
-
-Offset calibration failures should always be analyzed together with Detector.log, detector temperature, exposure history, and calibration image completeness.
+- [OffsetGenerationFailed](../../11_Case/Calibration/OffsetGenerationFailed.md)
+- [OffsetFailure](../../07_FailureKnowledge/CalibrationFailure/OffsetFailure.md)
 
 ---
 
@@ -212,4 +135,5 @@ Offset calibration failures should always be analyzed together with Detector.log
 
 | Version | Date | Description |
 |---------|------|-------------|
+| v1.1 | 2026-08-10 | Added direct diagnostic links, evidence package, and controlled verification rules |
 | v1.0 | 2026-08-07 | Initial release |

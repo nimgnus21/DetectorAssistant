@@ -5,417 +5,215 @@
 > SOP ID: SOP-005
 >
 > Category: Image Troubleshooting
+>
+> Version: v1.1
 
 ---
 
 # Scope
 
-This SOP describes the standard troubleshooting procedure for detector image abnormalities.
+本 SOP 适用于探测器采图过程中的图像异常现场排查，包括：
 
-This procedure applies to:
-
-- Image artifacts
-- Image quality degradation
-- Calibration-related image issues
-- Communication-related image abnormalities
-- Hardware-related image abnormalities
+- 横纹、条带和线状异常
+- 丢失数据导致的条带
+- 校正相关图像异常
+- 坏点、坏线和局部异常
+- 黑点伪影
+- TFT 损伤相关异常
+- 采图失败
 
 ---
 
 # Objective
 
-Quickly identify the root cause of image abnormalities using a standardized troubleshooting process while minimizing unnecessary detector replacement.
+按照统一的“输入 → 过程 → 输出 → 标准 → 异常”流程完成图像故障分流，先区分现象，再执行对应排查，减少不必要的重复校正和硬件更换。
 
 ---
 
 # Responsibility
 
 | Role | Responsibility |
-|------|----------------|
-| FAE | Perform on-site troubleshooting |
-| Technical Support Engineer | Analyze logs and support remotely |
-| R&D Engineer | Analyze unresolved image abnormalities |
+|---|---|
+| FAE | 现场信息采集、复现、执行标准排查和验证 |
+| Technical Support Engineer | 远程分析、日志与图像支持 |
+| R&D Engineer | 标准流程无法定位时进行深入分析 |
 
 ---
 
 # Preconditions
 
-Before troubleshooting, confirm:
+开始前确认：
 
-- Detector communication is normal.
-- Detector status is Ready.
-- SDK version is confirmed.
-- Firmware version is confirmed.
-- Generator operates normally.
-- Detector has completed initialization.
+- 探测器型号与 SN 已记录。
+- Firmware Version 与 SDK Version 已记录。
+- 原始异常图像已保存。
+- 未覆盖原有校正文件。
+- 如需重启或修改配置，先保存日志。
 
 ---
 
 # Required Tools
 
-Hardware
-
-- Detector
-- Host Computer
-- X-ray Generator
-- Network Cable (if applicable)
-
-Software
-
-- SDK Tool
-- DTDI Tool
-- Image Viewer
+- SDK Tool / iDetector（适用时）
+- DTDI Tool（适用时）
+- 图像查看工具
+- 网络连接与测试工具（适用时）
 
 ---
 
-# Required Files
-
-- Detector.log
-- Test Images
-- Calibration Templates (if applicable)
-
----
-
-# Safety Precautions
-
-Before troubleshooting:
-
-- Preserve the original image.
-- Do not overwrite calibration templates.
-- Save Detector.log before restarting the detector.
-- Record detector firmware and SDK version.
-
----
-
-# Troubleshooting Workflow
+# Standard Workflow
 
 ```text
-Receive Image
-
-↓
-
-Identify Image Symptom
-
-↓
-
-Classify Image Abnormality
-
-↓
-
-Check Detector Status
-
-↓
-
-Check Communication
-
-↓
-
-Check Generator
-
-↓
-
-Check Calibration
-
-↓
-
-Acquire Verification Image
-
-↓
-
-Issue Resolved?
-
-↓
-
-YES → Record Result
-
-NO
-
-↓
-
-DecisionTree
-
-↓
-
-Case Reference
-
-↓
-
-Escalate to R&D
+异常图像
+   ↓
+保存原始证据
+   ↓
+识别异常特征
+   ↓
+按现象分流
+   ├── 横纹/条带
+   ├── 固定坏点/坏线
+   ├── 黑点伪影
+   ├── TFT/物理损伤
+   └── 无法正常采图
+   ↓
+执行对应排查
+   ↓
+验证图像
+   ↓
+记录结果
+   ↓
+未解决 → DecisionTree / Escalation
 ```
 
 ---
 
 # Procedure
 
-## Step 1 – Collect Information
+## Step 1 — 保存原始证据
 
-### Process
+**输入：** 客户异常图像。
 
-Record:
+**过程：** 保存原始图像、异常截图、Detector.log（如适用），并记录 Detector Model、SN、Firmware、SDK Version。
 
-- Detector Model
-- Detector SN
-- Firmware Version
-- SDK Version
-- Customer Description
-- Detector.log
+**输出：** 完整初始证据集。
 
-Collect:
+**标准：** 后续操作前原始证据可追溯。
 
-- Original Image
-- Test Image
-- Error Screenshot (if available)
-
-### Acceptance Criteria
-
-Required information collected.
+**异常：** 无法获取日志时，记录无法获取的原因，不将缺失信息视为“正常”。
 
 ---
 
-## Step 2 – Identify Image Symptom
+## Step 2 — 识别异常特征
 
-### Process
+**输入：** 原始异常图像。
 
-Determine the primary symptom.
+**过程：** 判断异常是否固定、是否每幅重复、是否存在于暗场、是否随探测器位置变化、是否表现为数据缺失。
 
-Typical categories include:
+**输出：** 明确的现象分类。
 
-- No Image
-- Black Image
-- White Image
-- Noise
-- Lines
-- Banding
-- Ghost
-- Defect Pixels
-- Image Shift
-- Image Distortion
-- Low Contrast
-- Uniformity Issue
+**标准：** 至少完成“重复性 + 位置固定性 + 图像形态”三项判断。
 
-### Acceptance Criteria
-
-Symptom classified.
+**异常：** 现象无法稳定复现时，保留多张样本并记录发生条件。
 
 ---
 
-## Step 3 – Verify Detector Status
+## Step 3 — 横纹/条带分流
 
-### Process
+| 观察结果 | 处理方向 |
+|---|---|
+| 暗场也存在，移动探测器后条纹变化或消失 | 环境干扰 → `InterferenceStripe.md` |
+| 多段数据缺失，条带宽度一致 | 网络方向 → `PacketLoss.md` |
+| 每幅图出现等宽、亮暗相间规则条纹 | 校正方向 → `CalibrationStripe.md` |
+| Mercu0606X1 出现 Defective Bar | 先重新校正 → `DefectiveBar.md` |
+| 固定位置线状异常 | `09_DecisionTree/Image/HorizontalLine.md` |
 
-Verify:
+**输出：** 进入唯一的优先排查方向。
 
-- Detector Ready
-- Detector Temperature
-- Detector Communication
-
-### Acceptance Criteria
-
-Detector operates normally.
-
-### Exception Handling
-
-Refer to:
-
-- DecisionTree/Device
+**标准：** 不将所有横纹直接归因于硬件。
 
 ---
 
-## Step 4 – Verify Communication
+## Step 4 — 执行对应处理
 
-### Process
+### 4.1 环境干扰
 
-Check:
+在多个位置重复采集暗场，比较条纹变化。
 
-- Ethernet
-- SDK Connection
-- Packet Loss
-- Detector Response
+### 4.2 网络丢包
 
-### Acceptance Criteria
+检查网络状态，改善网络环境后重新采图验证。
 
-Communication stable.
+### 4.3 失校正
 
-### Exception Handling
+检查校正模板加载与有效状态，按产品适用流程恢复或重新执行相关校正。
 
-Refer to:
+### 4.4 Defective Bar
 
-- DecisionTree/Connection
-- ErrorCode/Communication
+优先重新执行校正；仍存在时保留证据并升级处理。
 
----
+### 4.5 固定坏线
 
-## Step 5 – Verify Generator
-
-### Process
-
-Check:
-
-- Exposure
-- Trigger
-- Generator Ready
-- Exposure Timing
-
-### Acceptance Criteria
-
-Generator operates normally.
-
-### Exception Handling
-
-Refer to:
-
-- DecisionTree/Generator
+按照现有 `HorizontalLine.md` 执行 SDK Demo、Offset、Gain 与硬件方向排查。
 
 ---
 
-## Step 6 – Verify Calibration
+## Step 5 — 验证
 
-### Process
+**输入：** 处理后的探测器状态。
 
-Check:
+**过程：** 重新采集验证图像，并与原始异常图比较。
 
-- Offset
-- Gain
-- Defect
-- Selected SubSet
-- Calibration Version
+**输出：** 已恢复 / 未恢复 / 现象变化。
 
-### Acceptance Criteria
+**标准：** 验证结果必须保存，不仅记录文字结论。
 
-Calibration valid.
-
-### Exception Handling
-
-Repeat calibration if required.
+**异常：** 未恢复时进入对应 DecisionTree，并保留已执行步骤。
 
 ---
 
-## Step 7 – Acquire Verification Image
+## Step 6 — 记录与升级
 
-### Process
+记录：
 
-Acquire a new test image using standard exposure conditions.
+- 现象
+- 发生条件
+- 已执行操作
+- 验证结果
+- 原始图像与验证图像
+- Firmware / SDK Version
+- 日志（如可获取）
 
-Compare:
-
-- Original Image
-- Verification Image
-
-### Acceptance Criteria
-
-Image quality verified.
-
----
-
-## Step 8 – Determine Root Cause
-
-### Process
-
-Determine whether the issue is related to:
-
-- Detector Hardware
-- Calibration
-- Communication
-- Generator
-- SDK
-- Firmware
-- Environment
-
-### Acceptance Criteria
-
-Root cause identified.
-
----
-
-## Step 9 – Complete Troubleshooting
-
-### Process
-
-Record:
-
-- Cause
-- Solution
-- Verification Result
-- Attached Images
-- Detector.log
-
----
-
-# Image Classification Guide
-
-| Symptom | Primary Inspection |
-|----------|--------------------|
-| No Image | Communication / Exposure |
-| Black Image | Generator / Exposure |
-| White Image | Calibration / Exposure |
-| Horizontal Line | Gate Driver / Readout |
-| Vertical Line | Readout Circuit |
-| Banding | Calibration / Readout |
-| Ghost | Offset / Ghost Correction |
-| Dead Pixels | Defect Template |
-| Noise | Offset / Exposure |
-| Uniformity | Gain Template |
-| Image Shift | Synchronization |
-| Distortion | Communication / Firmware |
+只有在标准排查无法解决，或怀疑硬件损伤时升级至进一步分析。
 
 ---
 
 # Acceptance Checklist
 
-- Root cause identified.
-- Image verified.
-- Detector.log archived.
-- Verification image saved.
-- Customer issue reproduced or resolved.
-- Troubleshooting record completed.
-
----
-
-# Records
-
-Record:
-
-- Customer
-- Detector Model
-- Detector SN
-- Firmware Version
-- SDK Version
-- Detector.log
-- Original Image
-- Verification Image
-- Root Cause
-- Corrective Action
-- Operator
-- Date
-
----
-
-# Notes
-
-- Always preserve the original image before applying corrective actions.
-- If recalibration is required, back up existing calibration templates.
-- When troubleshooting communication-related image issues, verify the network before replacing hardware.
-- Use the DecisionTree to avoid skipping standard diagnostic steps.
-- Escalate to R&D only after completing the standard troubleshooting workflow and collecting all required evidence.
+- 原始证据已保存。
+- 现象已分类。
+- 横纹已完成特征分流（如适用）。
+- 校正文件未被无备份覆盖。
+- 验证图像已保存。
+- 处理结果可追溯。
 
 ---
 
 # Related Documents
 
-- 05_Calibration
-- 06_Workflow/ImageGenerationWorkflow
-- 07_FailureKnowledge
-- 08_ImageDiagnosis
-- 09_DecisionTree/Image
-- 11_Case/Image
-- 12_ErrorCode/Image
-- 14_Glossary/Image
-- SOP/Calibration
+- `07_FailureKnowledge/ImageFailure/InterferenceStripe.md`
+- `07_FailureKnowledge/ImageFailure/PacketLoss.md`
+- `07_FailureKnowledge/ImageFailure/CalibrationStripe.md`
+- `07_FailureKnowledge/ImageFailure/DefectiveBar.md`
+- `07_FailureKnowledge/ImageFailure/DefectPixelLine.md`
+- `09_DecisionTree/Image/HorizontalLine.md`
+- `00_Project/Index/FailureIndex.md`
 
 ---
 
 # Revision History
 
 | Version | Date | Description |
-|---------|------|-------------|
+|---|---|---|
+| v1.1 | 2026-08-10 | Added image stripe classification and field verification workflow |
 | v1.0 | 2026-08-07 | Initial release |

@@ -4,9 +4,9 @@
 >
 > Category: Decision Tree
 >
-> Version: v2.0
+> Version: v2.1
 >
-> Last Updated: 2026-08-06
+> Last Updated: 2026-08-10
 
 ---
 
@@ -162,33 +162,22 @@ Collect:
 ## Pixel Defect
 
 - Dead Pixel
-
 - Pixel Leakage
-
 - Pixel Short
-
----
 
 ## TFT
 
 - TFT Switching Failure
-
 - TFT Leakage
-
----
 
 ## Calibration
 
 - Offset abnormal
-
 - Gain abnormal
-
----
 
 ## Readout
 
 - Pixel Readout Failure
-
 - ADC Sampling Error
 
 ---
@@ -233,21 +222,22 @@ Escalate when:
 
 ## Workflow
 
-- 06_Workflow/ImageWorkflow.md
+- [Image Generation Workflow](../../06_Workflow/ImageGenerationWorkflow.md)
 
 ## Case
 
-- 11_Case/Image/BlackDots.md
+- [Fixed Black Point Case](../../11_Case/Image/FixedBlackPoint.md)
 
 ## Failure Knowledge
 
-- 07_FailureKnowledge/TFT/
-- 07_FailureKnowledge/Pixel/
-- 07_FailureKnowledge/Readout/
+- [Failure Analysis Method](../../07_FailureKnowledge/FailureAnalysisMethod.md)
+- [Failure Classification](../../07_FailureKnowledge/FailureClassification.md)
 
-## Reference
+## Decision Tree
 
-- 15_Reference/ImageReference.md
+- [Defect Failure](../Calibration/DefectFailure.md)
+- [Offset Failure](../Calibration/OffsetFailure.md)
+- [Gain Failure](../Calibration/GainFailure.md)
 
 ---
 
@@ -255,4 +245,5 @@ Escalate when:
 
 | Version | Date | Description |
 |---------|------|-------------|
+| v2.1 | 2026-08-10 | Repaired obsolete Case, FailureKnowledge and Reference paths; linked current calibration decision trees |
 | v2.0 | 2026-08-06 | Initial release |

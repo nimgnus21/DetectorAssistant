@@ -4,9 +4,9 @@
 >
 > Category: Decision Tree
 >
-> Version: v1.0
+> Version: v1.1
 >
-> Last Updated: 2026-08-06
+> Last Updated: 2026-08-10
 
 ---
 
@@ -181,27 +181,25 @@ Escalate when:
 
 ## Workflow
 
-- 06_Workflow/ConnectionWorkflow.md
-- 06_Workflow/ConfigurationWorkflow.md
+- [Connection Workflow](../../06_Workflow/ConnectionWorkflow.md)
+- [Configuration Workflow](../../06_Workflow/ConfigurationWorkflow.md)
 
 ## Case
 
-- 11_Case/Communication/Timeout.md
-- 11_Case/Communication/ConnectionFailed.md
-- 11_Case/Communication/NetworkConfiguration.md
+- [Timeout Case](../../11_Case/Communication/Timeout.md)
+- [Connection Failed Case](../../11_Case/Communication/ConnectionFailed.md)
+- [Network Configuration Case](../../11_Case/Communication/NetworkConfiguration.md)
 
 ## Tools
 
-- 17_Tools/SDKTool/README.md
-- 17_Tools/SDKTool/ModeConfiguration.md
-
-## Reference
-
-- 15_Reference/SDKReference.md
+- [SDK Tool README](../../17_Tools/SDKTool/README.md)
+- [Mode Configuration](../../17_Tools/SDKTool/ModeConfiguration.md)
+- [Ping](../../17_Tools/Ping/README.md)
 
 ## Failure Knowledge
 
-- 07_FailureKnowledge/Communication/
+- [Failure Analysis Method](../../07_FailureKnowledge/FailureAnalysisMethod.md)
+- [Failure Classification](../../07_FailureKnowledge/FailureClassification.md)
 
 ---
 
@@ -209,4 +207,5 @@ Escalate when:
 
 | Version | Date | Description |
 |---------|------|-------------|
+| v1.1 | 2026-08-10 | Repaired obsolete Reference and FailureKnowledge paths; converted valid related documents to Markdown links |
 | v1.0 | 2026-08-06 | Initial release |

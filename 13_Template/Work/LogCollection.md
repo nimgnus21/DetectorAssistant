@@ -18,20 +18,15 @@ Unless otherwise specified, Detector.log should always be collected before escal
 
 # Collection Principles
 
-When collecting troubleshooting information:
-
-- Collect only information related to the current issue.
+- Collect evidence from the affected detector and the affected software environment.
 - Preserve original files whenever possible.
-- Do not modify Detector.log.
-- Record software and firmware versions.
-- Record detector identification information.
-- Keep screenshots and images in their original resolution.
+- Do not modify Detector.log, RAW images, templates, or original screenshots.
+- Record software, SDK and firmware versions together with detector identification.
+- Record the symptom and the acquisition conditions before performing corrective actions.
 
 ---
 
 # Basic Information
-
-Always collect the following information.
 
 | Item | Required |
 |------|----------|
@@ -45,54 +40,34 @@ Always collect the following information.
 
 ---
 
-# Detector Information
+# Image Abnormality Evidence
 
-Please record:
+For image-related issues, collect:
 
-- Detector Model
-- Detector SN
-- Detector IP Address
-- Detector Status
-- Detector Interface Screenshot
+- Original RAW image
+- Corrected image
+- Dark image when applicable
+- Detector interface screenshot
+- Software acquisition screenshot
+- Exposure parameters
+- Image resolution
+- Current calibration/template status
+- Reproduction frequency
 
----
+For stripe, banding or line artifacts, additionally record:
 
-# Software Information
+- Whether the artifact appears in every image
+- Whether the artifact appears in the dark image
+- Whether the position is fixed or changes
+- Whether moving the detector changes or removes the artifact
+- Whether the image contains missing data segments
+- Whether the pattern is equal-width and regularly alternating bright/dark
 
-Please record:
-
-- SDK Version
-- Application Version
-- Operating System
-- Driver Version (if applicable)
-
----
-
-# Detector.log
-
-## Location
-
-Detector.log is generated automatically in the detector working directory.
-
-Typical file name:
-
-```text
-Detector.log
-```
+These observations support initial differentiation between fixed line artifacts, environmental interference, packet loss and calibration-related stripe patterns.
 
 ---
 
-## Requirements
-
-Always provide:
-
-- Original Detector.log
-- Complete log file
-- Do not edit the log
-
----
-
-# Network Information
+# Connection and Network Evidence
 
 For communication-related issues, collect:
 
@@ -100,72 +75,63 @@ For communication-related issues, collect:
 - Computer IP
 - Network Mask
 - Gateway
-- Switch Model
-- Ping Result
-- Network Topology (if available)
+- Connection mode
+- Switch or network equipment model when used
+- Ping result
+- Network topology when available
+- Detector interface screenshot
+
+For wireless products, additionally record the configured AP/Client mode and the connection result after applying the configuration.
 
 ---
 
-# Image Information
-
-For image-related issues, collect:
-
-- Original Image (Raw)
-- Corrected Image
-- Error Image
-- Exposure Parameters
-- Image Resolution
-- Detector Interface Screenshot
-
----
-
-# Exposure Information
-
-Record:
-
-- Generator Model
-- Trigger Mode
-- Exposure Mode
-- kV
-- mA
-- Exposure Time
-- Number of Exposures
-
----
-
-# Calibration Information
+# Calibration Evidence
 
 For calibration issues, provide:
 
-- Calibration Type
-- Offset Template
-- Gain Template
-- Defect Template
-- Calibration Images
-- Calibration Result Screenshot
+- Calibration type
+- Offset data/template
+- Gain data/template
+- Defect template
+- Calibration images
+- Calibration result screenshot
+- Calibration log
+- SDK version
+- Firmware version
+
+Do not replace or overwrite the original calibration files before the failure evidence is preserved.
 
 ---
 
-# Firmware Information
+# Firmware Upgrade Evidence
 
-Record:
+Record before and after the operation:
 
-- Current Firmware Version
-- Target Firmware Version (if upgrading)
-- Upgrade Tool Version
-- Upgrade Package Name
+- Detector model
+- Detector SN
+- Current firmware version
+- Target firmware version
+- SDK version
+- Upgrade tool version
+- Upgrade package name
+- Upgrade screenshot or status
+- Detector.log
+- Upgrade stage at which the failure occurred
+- Whether the detector can reconnect after the operation
 
 ---
 
 # Error Information
 
-Please provide:
+Provide:
 
-- Error Code
-- Error Message
+- Error code
+- Error message
 - Screenshot
-- Time of Occurrence
-- Reproduction Frequency
+- Time of occurrence
+- Operation stage
+- Reproduction frequency
+- Detector status at the time of failure
 
 ---
 
@@ -173,73 +139,64 @@ Please provide:
 
 Describe:
 
-- Operating Procedure
-- Expected Result
-- Actual Result
+- Operating procedure
+- Expected result
+- Actual result
 - Whether the issue is reproducible
 - Frequency of occurrence
+- Whether another detector or another software environment reproduces the same issue
 
 ---
 
-# Required Information by Scenario
+# Scenario Checklists
 
 ## Connection Failure
 
 - Detector.log
 - Detector IP
 - Computer IP
-- Ping Result
-- Detector Interface Screenshot
-
----
+- Connection mode
+- Ping result
+- Detector interface screenshot
 
 ## Image Abnormality
 
-- Original Image
-- Corrected Image
+- RAW image
+- Corrected image
+- Dark image when applicable
 - Detector.log
-- Exposure Parameters
-- Calibration Templates
-
----
+- Exposure parameters
+- Calibration/template information
+- Detector interface screenshot
+- Stripe/line characteristics when applicable
 
 ## Calibration Failure
 
 - Detector.log
-- Calibration Images
-- Template Files
-- SDK Version
-- Firmware Version
-
----
+- Calibration images
+- Template files
+- SDK version
+- Firmware version
+- Calibration result screenshot
 
 ## Firmware Upgrade Failure
 
 - Detector.log
-- Upgrade Package
-- Firmware Version
-- Upgrade Screenshot
-
----
-
-## License Issue
-
-- Detector SN
-- Detector.log
-- License File
-- Error Screenshot
+- Upgrade package name
+- Current and target firmware versions
+- Upgrade tool/SDK version
+- Upgrade screenshot
+- Failure stage
+- Post-upgrade reconnection result
 
 ---
 
 # File Naming Recommendation
 
-Collected files should use a consistent naming format.
-
 ```text
 SN_Date_Type
 
 Example:
-
 P1717A001_20260807_Detector.log
 P1717A001_20260807_Raw.raw
 P1717A001_20260807_Image.png
@@ -247,45 +204,17 @@ P1717A001_20260807_Image.png
 
 ---
 
-# Recommended Attachment Checklist
+# Escalation Standard
 
-Before submitting a support request, verify the following:
-
-□ Detector.log
-
-□ Detector Model
-
-□ Detector SN
-
-□ SDK Version
-
-□ Firmware Version
-
-□ Original Image
-
-□ Corrected Image
-
-□ Detector Interface Screenshot
-
-□ Software Screenshot
-
-□ Error Screenshot
-
-□ Exposure Parameters
-
-□ Network Configuration
-
-□ Reproduction Steps
+Before escalation, verify that the scenario-specific checklist is complete. Missing original evidence should be marked explicitly rather than replaced with reconstructed files or descriptions.
 
 ---
 
 # Related Modules
 
-- CustomerReply.md
-- InternalReply.md
-- EmailTemplate.md
-- ChatTemplate.md
-- Checklist.md
+- 04_Software/Log
+- 05_Calibration
+- 07_FailureKnowledge
 - 09_DecisionTree
 - 11_Case
 - 12_ErrorCode
@@ -296,4 +225,5 @@ Before submitting a support request, verify the following:
 
 | Version | Date | Description |
 |---------|------|-------------|
+| v1.1 | 2026-08-10 | Added image stripe, wireless, calibration and firmware evidence requirements |
 | v1.0 | 2026-08-07 | Initial release |

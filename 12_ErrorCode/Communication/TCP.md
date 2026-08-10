@@ -8,105 +8,82 @@
 
 # Overview
 
-This document describes TCP communication-related error codes.
-
-These errors occur during detector connection establishment, command transmission, detector response, and TCP session maintenance.
+This document covers TCP/session-level errors during detector connection establishment, command transmission, detector response, and session maintenance.
 
 ---
 
-# Related Commands
+# Protocol Diagnostic Boundary
 
-- Cmd_Connect
-- Cmd_Disconnect
-- Cmd_Reset
+```text
+TCP Error
+   ↓
+Physical link + IP reachability
+   ↓
+Ping: basic IP reachability only
+   ↓
+Connection DecisionTree
+   ↓
+Wireshark when TCP/session timing or disconnect evidence is required
+   ↓
+Detector.log + event timestamp
+```
+
+Ping success does not prove the required TCP service, port, SDK session, or detector command path is healthy.
 
 ---
 
-# Related Events
+# Error Code → Diagnostic Entry
 
-- Evt_ConnectProcess
-- Evt_TaskResult_Failed
-- Evt_GeneralError
-- Evt_TransactionAborted
+| Error | Primary Entry | Tool | Evidence |
+|---|---|---|---|
+| `Err_GeneralSocketErr` | [UnableToConnect](../../09_DecisionTree/Connection/UnableToConnect.md) | Ping → Wireshark if session fails | IP/subnet, socket event, log |
+| `Err_DetectorRespTimeout` | [ConnectionTimeout](../../09_DecisionTree/Connection/ConnectionTimeout.md) | Ping + Wireshark when intermittent | Command/API, timing, response/log |
+| `Err_DetectorNotFound` | [DetectorNotFound](../../09_DecisionTree/Software/DetectorNotFound.md) / [DetectorOffline](../../09_DecisionTree/Connection/DetectorOffline.md) | Ping | Detector identity, IP, power/link |
 
 ---
 
 # Error Codes
 
----
-
 ## Err_GeneralSocketErr
 
-### Description
+Failed to establish a socket connection, or an existing TCP/UDP connection disconnected unexpectedly.
 
-Failed to establish a TCP/UDP connection, or an existing connection was unexpectedly disconnected.
+### Diagnostic Path
 
-### Possible Causes
-
-- Detector is powered off.
-- Ethernet cable is disconnected.
-- Detector network service is unavailable.
-- Firewall blocks communication.
-- Network adapter malfunction.
-- TCP session disconnected unexpectedly.
-
-### Recommended Actions
-
-1. Verify detector power status.
-2. Check Ethernet cable connection.
-3. Confirm detector network configuration.
-4. Temporarily disable the firewall for testing.
-5. Restart the network adapter.
-6. Reconnect the detector.
+1. Record the failing command and timestamp.
+2. Verify detector power, link, IP configuration, and subnet.
+3. Test basic reachability with [Ping](../../17_Tools/Ping/README.md).
+4. Follow [UnableToConnect](../../09_DecisionTree/Connection/UnableToConnect.md).
+5. If the connection is reachable but session establishment/disconnect remains abnormal, capture traffic with [Wireshark](../../17_Tools/Wireshark/README.md).
+6. Correlate the capture with `Detector.log` using the same failure time.
 
 ---
 
 ## Err_DetectorRespTimeout
 
-### Description
+The SDK did not receive a detector response within the configured timeout.
 
-The SDK did not receive a response from the detector within the specified timeout period.
+### Diagnostic Path
 
-### Possible Causes
-
-- Detector firmware is busy.
-- Detector is rebooting.
-- Network latency is excessive.
-- Detector communication has been interrupted.
-- Command execution exceeds the timeout period.
-
-### Recommended Actions
-
-1. Verify detector is online.
-2. Confirm detector status is **Ready**.
-3. Retry the command.
-4. Reconnect the detector.
-5. Restart the detector if the problem persists.
+1. Record the command/API and timeout time.
+2. Verify detector state before retry.
+3. Use [Ping](../../17_Tools/Ping/README.md) to establish basic reachability.
+4. Enter [ConnectionTimeout](../../09_DecisionTree/Connection/ConnectionTimeout.md).
+5. If Ping is normal but command responses time out, collect TCP/session evidence with [Wireshark](../../17_Tools/Wireshark/README.md).
+6. Preserve the related `Detector.log` interval.
 
 ---
 
 ## Err_DetectorNotFound
 
-### Description
+The detector with the requested identity could not be found during connection.
 
-The detector with the specified serial number could not be found during the connection process.
+### Diagnostic Path
 
-### Possible Causes
-
-- Detector is powered off.
-- Detector is disconnected from the network.
-- Incorrect detector serial number.
-- Detector and PC are located on different network segments.
-- Detector IP configuration is incorrect.
-
-### Recommended Actions
-
-1. Verify detector power.
-2. Verify Ethernet connection.
-3. Confirm detector serial number.
-4. Verify detector IP address.
-5. Verify PC and detector are on the same subnet.
-6. Reconnect the detector.
+1. Verify detector power and Ethernet link.
+2. Verify the requested detector identity and connection configuration.
+3. Verify detector/PC network reachability with [Ping](../../17_Tools/Ping/README.md) where the detector IP is known.
+4. Follow [DetectorNotFound](../../09_DecisionTree/Software/DetectorNotFound.md) or [DetectorOffline](../../09_DecisionTree/Connection/DetectorOffline.md) according to whether identity/configuration or network availability is the primary symptom.
 
 ---
 
@@ -114,85 +91,49 @@ The detector with the specified serial number could not be found during the conn
 
 ## Evt_ConnectProcess
 
-Reports the progress of detector connection.
-
-When connection fails, this event is usually followed by **Evt_TaskResult_Failed** with one of the TCP-related error codes.
-
----
+Reports connection progress. On failure, preserve the progress stage and subsequent failure code.
 
 ## Evt_TaskResult_Failed
 
-Indicates that a TCP communication command failed.
-
-- **nParam1** — Command ID
-- **nParam2** — Error Code
-
----
+Use the command ID and error code together to select the diagnostic branch. Do not diagnose from the event name alone.
 
 ## Evt_TransactionAborted
 
-Indicates that the current communication transaction has been aborted.
-
-Possible reasons include:
-
-- Connection timeout.
-- Detector response timeout.
-- Communication interruption.
-- Network exception.
+Preserve transaction time and preceding events, then check timeout, response, and communication evidence before reconnecting repeatedly.
 
 ---
 
-# Diagnostic Checklist
+# Evidence Package
 
-When TCP communication errors occur, verify the following:
+Collect:
 
-- Detector is powered on.
-- Detector status is **Ready**.
-- Ethernet cable is connected.
-- Detector IP address is correct.
-- PC IP configuration is correct.
-- TCP port is not blocked.
-- Firewall allows detector communication.
-- Detector responds to Ping.
-- Detector.log contains no socket exceptions.
-
----
-
-# Related DecisionTree
-
-- 09_DecisionTree/Connection/DetectorOffline.md
-- 09_DecisionTree/Connection/ConnectionTimeout.md
-- 09_DecisionTree/Software/DetectorNotFound.md
+- Exact error/event and timestamp
+- Command/API and connection stage
+- Detector power/link state
+- Detector IP, PC IP, subnet
+- Ping result
+- Wireshark capture when session-level failure persists
+- `Detector.log`
+- Result after one controlled reconnect
 
 ---
 
-# Related Case
+# Related DecisionTree / SOP / Tool
 
-- 11_Case/Communication/ConnectionFailed.md
-- 11_Case/Communication/NetworkConfiguration.md
-- 11_Case/Communication/Timeout.md
-
----
-
-# Related FailureKnowledge
-
-- 07_FailureKnowledge/SystemFailure/CommunicationFailure.md
-- 07_FailureKnowledge/SystemFailure/StartupFailure.md
-
----
-
-# Related Log
-
-```
-Detector.log
-```
-
-TCP communication failures should always be analyzed together with the SDK runtime log, detector connection status, network configuration, and detector response status.
+- [DetectorOffline](../../09_DecisionTree/Connection/DetectorOffline.md)
+- [UnableToConnect](../../09_DecisionTree/Connection/UnableToConnect.md)
+- [ConnectionTimeout](../../09_DecisionTree/Connection/ConnectionTimeout.md)
+- [DetectorNotFound](../../09_DecisionTree/Software/DetectorNotFound.md)
+- [NetworkConfiguration](../../10_SOP/NetworkConfiguration.md)
+- [Ping](../../17_Tools/Ping/README.md)
+- [Wireshark](../../17_Tools/Wireshark/README.md)
+- [LogExport](../../17_Tools/SDKTool/LogExport.md)
 
 ---
 
 # Revision History
 
 | Version | Date | Description |
-|---------|------|-------------|
+|---|---|---|
+| v1.1 | 2026-08-10 | Added TCP-level decision/tool/evidence chain and Ping boundary |
 | v1.0 | 2026-08-07 | Initial release |

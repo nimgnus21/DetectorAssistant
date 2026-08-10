@@ -6,7 +6,7 @@
 >
 > Category: Firmware Upgrade
 >
-> Version: v1.1
+> Version: v1.2
 
 ---
 
@@ -68,7 +68,8 @@ Software / Diagnostics
 
 - [Firmware Upgrade Tool](../17_Tools/SDKTool/FirmwareUpgrade.md)
 - [SDK Tool / iDetector](../17_Tools/SDKTool/iDetectorQuickTroubleshooting.md)
-- [Log Viewer](../17_Tools/LogViewer/)（升级失败、超时或回退分析时）
+- [Log Viewer](../17_Tools/Log%20Viewer/)（升级失败、超时或回退分析时）
+- [SDK Log Export](../17_Tools/SDKTool/LogExport.md)（需要导出 SDK、Detector 或 Upgrade Log 时）
 
 ---
 
@@ -154,7 +155,7 @@ Detector status is Ready.
 
 ### Exception Handling
 
-Resolve communication failures first through the [Connection DecisionTree](../09_DecisionTree/Connection/) and preserve logs with [Log Viewer](../17_Tools/LogViewer/) if the state is unstable.
+Resolve communication failures first through the [Connection DecisionTree](../09_DecisionTree/Connection/) and preserve logs with [Log Viewer](../17_Tools/Log%20Viewer/) if the state is unstable.
 
 ---
 
@@ -217,7 +218,7 @@ Task completed successfully.
 
 ### Exception Handling
 
-On failure, timeout or abnormal rollback, stop repeated retries, preserve `Detector.log` and inspect it with [Log Viewer](../17_Tools/LogViewer/) before escalation.
+On failure, timeout or abnormal rollback, stop repeated retries, preserve `Detector.log` and inspect it with [Log Viewer](../17_Tools/Log%20Viewer/). When a packageable SDK/Detector/Upgrade log set is required, follow [SDK Log Export](../17_Tools/SDKTool/LogExport.md) before escalation.
 
 ---
 
@@ -349,7 +350,8 @@ Record:
 
 - [Firmware Upgrade Tool](../17_Tools/SDKTool/FirmwareUpgrade.md)
 - [SDK Tool / iDetector](../17_Tools/SDKTool/iDetectorQuickTroubleshooting.md)
-- [Log Viewer](../17_Tools/LogViewer/)
+- [Log Viewer](../17_Tools/Log%20Viewer/)
+- [SDK Log Export](../17_Tools/SDKTool/LogExport.md)
 - [Firmware Upgrade Software Guide](../04_Software/Upgrade/FirmwareUpgrade.md)
 - [Connection DecisionTree](../09_DecisionTree/Connection/)
 - [Firmware DecisionTree](../09_DecisionTree/Firmware/)
@@ -364,5 +366,6 @@ Record:
 
 | Version | Date | Description |
 |---------|------|-------------|
+| v1.2 | 2026-08-10 | Fixed Log Viewer path and linked SDK Log Export for upgrade evidence |
 | v1.1 | 2026-08-10 | Added direct tool links and post-upgrade recovery flow |
 | v1.0 | 2026-08-07 | Initial release |

@@ -26,10 +26,11 @@ Applicable Products:
 
 Related Documents:
 
-- [BlackDotsArtifact](../../08_ImageDiagnosis/BlackDotsArtifact/)
-- [PixelFailure](../../07_FailureKnowledge/ImageFailure/PixelFailure.md)
-- [BlackDots DecisionTree](../../09_DecisionTree/Image/BlackDots.md)
-- [DefectCalibration](../../05_Calibration/DefectCalibration.md)
+- [DeadPixel](../../08_ImageDiagnosis/DeadPixel/)
+- [BadPixelArtifact](../../07_FailureKnowledge/ImageFailure/BadPixelArtifact.md)
+- [BlackDotArtifact](../../07_FailureKnowledge/ImageFailure/BlackDotArtifact.md)
+- [BlackDot DecisionTree](../../09_DecisionTree/Image/BlackDot.md)
+- [Defect Calibration](../../05_Calibration/Defect/)
 - [Calibration SOP](../../10_SOP/Calibration.md)
 - [CalibrationTools](../../17_Tools/SDKTool/CalibrationTools.md)
 - [Case Admission Checklist](../CaseAdmissionChecklist.md)
@@ -268,9 +269,9 @@ For future verification preserve:
 
 | Layer | Result | Action / Reason |
 |---|---|---|
-| FailureKnowledge | No direct update required | PixelFailure remains the generic mechanism layer |
-| DecisionTree | No direct update required | BlackDots DecisionTree remains the routing entry |
-| Calibration | No direct update required | DefectCalibration remains the execution path |
+| FailureKnowledge | No direct update required | BadPixelArtifact and BlackDotArtifact provide the existing generic mechanism layer |
+| DecisionTree | No direct update required | BlackDot DecisionTree remains the routing entry |
+| Calibration | No direct update required | Defect calibration directory remains the execution entry |
 | Tools | No direct update required | CalibrationTools remains the evidence/operation entry |
 | Case | Updated | Direct root-cause claim replaced by template evidence and suspected mechanism |
 
@@ -297,5 +298,5 @@ Without these, the Case remains `Resolved` rather than `Verified`.
 
 | Version | Date | Description |
 |---|---|---|
-| V1.1 | 2026-08-10 | Batch 5 paired audit: aligned BlackDots with fixed-coordinate evidence chain, separated active compensation evidence from underlying pixel mechanism |
+| V1.1 | 2026-08-10 | Batch 5 paired audit: aligned BlackDots with fixed-coordinate evidence chain, separated active compensation evidence from underlying pixel mechanism; repaired Related Documents links to existing repository nodes |
 | V1.0 | 2026-08 | Initial Black Dots field case |

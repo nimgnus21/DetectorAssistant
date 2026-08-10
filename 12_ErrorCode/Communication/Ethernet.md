@@ -8,157 +8,114 @@
 
 # Overview
 
-This document describes Ethernet communication-related error codes.
-
-These errors occur before or during detector communication and are primarily related to the local Ethernet interface, communication device selection, and network parameter configuration.
+This document covers errors related to the local Ethernet interface, communication-device selection, and network parameter configuration before or during detector communication.
 
 ---
 
-# Related Commands
+# Protocol Diagnostic Boundary
 
-- Cmd_Connect
-- Cmd_Disconnect
+```text
+Ethernet Adapter / Link / IP Configuration Error
+        ↓
+Physical and OS Adapter Verification
+        ↓
+Ping: basic IP reachability
+        ↓
+NetworkConfiguration / NetworkFailure
+        ↓
+Wireshark only when intermittent packet-level evidence is needed
+        ↓
+Detector.log + configuration evidence
+```
+
+A successful Ping does not prove TCP command communication or image transmission is normal.
 
 ---
 
-# Related Events
+# Error Code → Diagnostic Entry
 
-- Evt_ConnectProcess
-- Evt_TaskResult_Failed
-- Evt_GeneralError
+| Error | Primary Entry | Tool | Evidence |
+|---|---|---|---|
+| `Err_CommDeviceNotFound` | [DetectorOffline](../../09_DecisionTree/Connection/DetectorOffline.md) | [Ping](../../17_Tools/Ping/README.md) after adapter recovery | Adapter/driver state, selected interface, log |
+| `Err_CommDeviceOccupied` | [DetectorBusy](../../09_DecisionTree/Software/DetectorBusy.md) | [Log Viewer](../../17_Tools/Log%20Viewer/README.md) | Active client/session, runtime log |
+| `Err_CommParamNotMatch` | [NetworkFailure](../../09_DecisionTree/Connection/NetworkFailure.md) | [Ping](../../17_Tools/Ping/README.md) | Detector/PC IP, subnet, configuration |
 
 ---
 
 # Error Codes
 
----
-
 ## Err_CommDeviceNotFound
-
-### Description
 
 The SDK cannot find the specified communication device.
 
-### Possible Causes
+### Diagnostic Path
 
-- Ethernet adapter is disabled.
-- Ethernet driver is not installed correctly.
-- USB-to-Ethernet adapter is disconnected.
-- Incorrect communication interface selected.
-- Network adapter failed to initialize.
-
-### Recommended Actions
-
-1. Verify that the Ethernet adapter is enabled.
-2. Check Device Manager for abnormal devices.
-3. Reconnect the USB-to-Ethernet adapter if used.
-4. Restart the network adapter.
-5. Restart the SDK and reconnect the detector.
+1. Identify the expected Ethernet adapter.
+2. Verify the adapter is enabled and recognized by the operating system.
+3. Verify driver state and reconnect external USB-Ethernet hardware where applicable.
+4. Restart the adapter only after recording its state.
+5. Verify basic detector reachability with [Ping](../../17_Tools/Ping/README.md) after adapter recovery.
+6. Continue through [DetectorOffline](../../09_DecisionTree/Connection/DetectorOffline.md).
 
 ---
 
 ## Err_CommDeviceOccupied
 
-### Description
+The communication device or interface is occupied.
 
-The communication device is currently occupied.
+### Diagnostic Path
 
-### Possible Causes
-
-- Another application is using the communication interface.
-- Another SDK instance is connected to the detector.
-- Previous connection was not released correctly.
-- Detector communication service has not exited normally.
-
-### Recommended Actions
-
-1. Close all detector-related applications.
-2. Disconnect the previous detector connection.
-3. Restart the SDK.
-4. Restart the detector if necessary.
+1. Identify other detector software or SDK instances.
+2. Close conflicting clients using the normal shutdown path.
+3. Verify the previous connection was released.
+4. Follow [DetectorBusy](../../09_DecisionTree/Software/DetectorBusy.md) if runtime state remains occupied.
+5. Preserve relevant evidence using [Log Viewer](../../17_Tools/Log%20Viewer/README.md) or [LogExport](../../17_Tools/SDKTool/LogExport.md).
 
 ---
 
 ## Err_CommParamNotMatch
 
-### Description
-
 Communication parameters do not match the detector configuration.
 
-Typical mismatched parameters include:
+### Diagnostic Path
 
-- IP Address
-- Subnet Mask
-- Network Configuration
-
-### Possible Causes
-
-- Incorrect detector IP configuration.
-- Incorrect PC network configuration.
-- Detector and PC are on different subnets.
-- Incorrect SDK configuration file.
-- Detector network parameters have been modified.
-
-### Recommended Actions
-
-1. Verify detector IP address.
-2. Verify PC IP address.
-3. Confirm both devices are on the same subnet.
-4. Verify SDK working directory configuration.
-5. Reconnect the detector.
+1. Record detector IP, PC IP, subnet mask, and SDK network configuration.
+2. Compare values before changing them.
+3. Correct the configuration through [NetworkConfiguration](../../10_SOP/NetworkConfiguration.md).
+4. Verify reachability with [Ping](../../17_Tools/Ping/README.md).
+5. If instability remains, enter [NetworkFailure](../../09_DecisionTree/Connection/NetworkFailure.md).
 
 ---
 
-# Diagnostic Checklist
+# Evidence Package
 
-When Ethernet communication errors occur, verify the following:
+Collect:
 
-- Ethernet cable connected correctly.
-- Detector powered on.
-- Network adapter enabled.
-- Network adapter driver installed correctly.
-- Detector IP configuration correct.
-- PC IP configuration correct.
-- Same subnet between PC and detector.
-- No IP address conflict.
-- Detector responds to Ping.
-- Detector.log contains no communication exceptions.
+- Exact error/event and timestamp
+- Adapter/interface name
+- Adapter enable/driver state
+- Detector IP, PC IP, subnet, and relevant configuration
+- Ping result
+- `Detector.log`
+- Result after one controlled reconnect
 
 ---
 
-# Related DecisionTree
+# Related DecisionTree / SOP / Tool
 
-- 09_DecisionTree/Connection/DetectorOffline.md
-- 09_DecisionTree/Connection/ConnectionTimeout.md
-- 09_DecisionTree/Connection/NetworkFailure.md
-
----
-
-# Related Case
-
-- 11_Case/Communication/ConnectionFailed.md
-- 11_Case/Communication/NetworkConfiguration.md
-
----
-
-# Related FailureKnowledge
-
-- 07_FailureKnowledge/SystemFailure/CommunicationFailure.md
-
----
-
-# Related Log
-
-```
-Detector.log
-```
-
-Ethernet communication failures should always be analyzed together with the SDK runtime log, detector network configuration, and PC network configuration.
+- [DetectorOffline](../../09_DecisionTree/Connection/DetectorOffline.md)
+- [DetectorBusy](../../09_DecisionTree/Software/DetectorBusy.md)
+- [NetworkFailure](../../09_DecisionTree/Connection/NetworkFailure.md)
+- [NetworkConfiguration](../../10_SOP/NetworkConfiguration.md)
+- [Ping](../../17_Tools/Ping/README.md)
+- [Log Viewer](../../17_Tools/Log%20Viewer/README.md)
+- [LogExport](../../17_Tools/SDKTool/LogExport.md)
 
 ---
 
 # Revision History
 
 | Version | Date | Description |
-|---------|------|-------------|
+|---|---|---|
+| v1.1 | 2026-08-10 | Added protocol-level DecisionTree/tool/evidence mapping |
 | v1.0 | 2026-08-07 | Initial release |

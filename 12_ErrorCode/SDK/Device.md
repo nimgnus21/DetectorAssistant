@@ -8,306 +8,79 @@
 
 # Overview
 
-This document describes SDK device-related error codes.
+This document describes errors returned while identifying, connecting, controlling, or operating the detector, including device identity, state, firmware compatibility, storage, detector-side command execution, and calibration-file availability.
 
-These errors occur when communicating with the detector hardware, including detector identification, device status, firmware compatibility, storage resources, and detector-side command execution.
+A device error must be evaluated with detector state, model/SN, firmware version, working-directory configuration, and `Detector.log`.
 
 ---
 
 # Related Commands
 
-- Cmd_Connect
-- Cmd_Disconnect
-- Cmd_Reset
-- Cmd_ReadUserRAM
-- Cmd_WriteUserRAM
-- Cmd_WriteUserROM
-- Cmd_ReadTemperature
-- Cmd_ReadHumidity
+- `Cmd_Connect`
+- `Cmd_Disconnect`
+- `Cmd_Reset`
+- `Cmd_ReadUserRAM`
+- `Cmd_WriteUserRAM`
+- `Cmd_WriteUserROM`
+- `Cmd_ReadTemperature`
+- `Cmd_ReadHumidity`
 
 ---
 
-# Related Events
+# Error Code → Diagnostic Entry
 
-- Evt_GeneralError
-- Evt_TaskResult_Failed
-- Evt_ConnectProcess
-- Evt_TransactionAborted
-
----
-
-# Error Codes
-
----
-
-## Err_DetectorIdNotFound
-
-### Description
-
-Detector ID could not be found.
-
-### Possible Causes
-
-- Detector configuration is incorrect.
-- Detector ID does not exist.
-- Configuration file is damaged.
-
-### Recommended Actions
-
-- Verify detector configuration.
-- Check detector information.
-- Reload detector configuration.
+| Error | Primary Diagnostic Entry | Required Evidence |
+|---|---|---|
+| `Err_DetectorIdNotFound` | [DetectorNotFound](../../09_DecisionTree/Software/DetectorNotFound.md) | Configuration, detector identity |
+| `Err_DetectorNotFound` | [DetectorOffline](../../09_DecisionTree/Connection/DetectorOffline.md) | Power, IP/SN, network state |
+| `Err_ProdInfoMismatch` / `Err_DetectorSN_Mismatch` | [VersionMismatch](../../09_DecisionTree/Firmware/VersionMismatch.md) or working-directory verification | Model/SN, SDK/FW, working directory |
+| `Err_FPD_General_Detector_Error` | [SDKException](../../09_DecisionTree/Software/SDKException.md) | Exact operation, log, device state |
+| `Err_FPD_Busy` / `Err_FPD_Occupied` | [DetectorBusy](../../09_DecisionTree/Software/DetectorBusy.md) | Current task/client/session |
+| `Err_FPD_CmdExecuteTimeout` | [ConnectionTimeout](../../09_DecisionTree/Connection/ConnectionTimeout.md) | Command, device state, network/log |
+| `Err_FPD_NotSupportInCurrMode` | [ConfigurationWorkflow](../../06_Workflow/ConfigurationWorkflow.md) | Current mode/trigger/ROI configuration |
+| `Err_FPD_NotImplemented` | [VersionMismatch](../../09_DecisionTree/Firmware/VersionMismatch.md) | Firmware/model/API compatibility |
+| `Err_FPD_NoEnoughStorageSpace` / `Err_FPD_FileNotExist` | Calibration/file-state verification | File list, operation, detector log |
+| `Err_FPD_HWCaliFileError` | [Calibration](../../10_SOP/Calibration.md) | Template identity, generation/download result |
 
 ---
 
-## Err_DetectorNotFound
+# Diagnostic Rules
 
-### Description
+## Identity and Configuration Errors
 
-The detector with the specified serial number could not be found.
+For `Err_DetectorIdNotFound`, `Err_DetectorNotFound`, `Err_ProdInfoMismatch`, and `Err_DetectorSN_Mismatch`:
 
-### Possible Causes
+1. Do not overwrite the working directory or calibration files first.
+2. Record detector model, SN, SDK version, firmware version, and working-directory identity.
+3. Confirm the connected detector before applying calibration or configuration files.
+4. Use the linked DecisionTree before attempting recovery.
 
-- Detector is powered off.
-- Detector is disconnected.
-- Incorrect detector SN.
-- Detector is on another subnet.
+## State Errors
 
-### Recommended Actions
+For `Err_FPD_Busy` and `Err_FPD_Occupied`:
 
-- Verify detector power.
-- Verify Ethernet connection.
-- Verify detector serial number.
-- Reconnect the detector.
+1. Identify the current task or connected client.
+2. Wait for task completion where supported.
+3. Do not send duplicate commands as a recovery shortcut.
+4. If the state does not clear, preserve logs and follow [DetectorBusy](../../09_DecisionTree/Software/DetectorBusy.md).
 
----
+## Firmware / Mode Errors
 
-## Err_ProdInfoMismatch
+For `Err_FPD_NotSupportInCurrMode` and `Err_FPD_NotImplemented`:
 
-### Description
+1. Record the exact command and current mode.
+2. Verify configuration through [ModeConfiguration](../../17_Tools/SDKTool/ModeConfiguration.md).
+3. Verify firmware/model compatibility before upgrading or changing mode.
 
-Detector product information or protocol version does not match the working directory configuration.
+## Calibration File Errors
 
-### Possible Causes
+For `Err_FPD_NoEnoughStorageSpace`, `Err_FPD_FileNotExist`, and `Err_FPD_HWCaliFileError`:
 
-- Incorrect detector configuration.
-- SDK version incompatible.
-- Firmware version incompatible.
-- Wrong product directory selected.
-
-### Recommended Actions
-
-- Verify detector model.
-- Verify SDK version.
-- Verify firmware version.
-- Confirm correct working directory.
-
----
-
-## Err_DetectorSN_Mismatch
-
-### Description
-
-The connected detector serial number does not match the serial number stored in the working directory.
-
-Using existing calibration files may result in incorrect image correction.
-
-### Possible Causes
-
-- Different detector connected.
-- Detector replaced.
-- Working directory copied from another detector.
-
-### Recommended Actions
-
-- Verify detector serial number.
-- Use the correct working directory.
-- Recreate calibration templates if necessary.
-
----
-
-## Err_FPD_General_Detector_Error
-
-### Description
-
-General detector error returned by the detector.
-
-### Possible Causes
-
-- Internal detector exception.
-- Detector firmware error.
-- Detector hardware fault.
-
-### Recommended Actions
-
-- Restart detector.
-- Reconnect detector.
-- Check Detector.log.
-- Contact technical support if the issue persists.
-
----
-
-## Err_FPD_Busy
-
-### Description
-
-Detector is busy executing another task.
-
-### Possible Causes
-
-- Image acquisition in progress.
-- Calibration in progress.
-- Firmware update in progress.
-- Previous command has not completed.
-
-### Recommended Actions
-
-- Wait for the current task to finish.
-- Wait for Evt_TaskResult_Succeed.
-- Do not send duplicate commands.
-
----
-
-## Err_FPD_Occupied
-
-### Description
-
-Detector is occupied by another operation or client.
-
-### Possible Causes
-
-- Another SDK instance is connected.
-- Another application is controlling the detector.
-- Previous connection was not released.
-
-### Recommended Actions
-
-- Close other detector software.
-- Disconnect previous session.
-- Restart detector if necessary.
-
----
-
-## Err_FPD_CmdExecuteTimeout
-
-### Description
-
-Detector command execution timed out.
-
-### Possible Causes
-
-- Detector firmware response delayed.
-- Detector busy.
-- Communication interrupted.
-
-### Recommended Actions
-
-- Retry the command.
-- Verify detector communication.
-- Restart detector if necessary.
-
----
-
-## Err_FPD_NotSupportInCurrMode
-
-### Description
-
-The requested operation is not supported in the current detector mode.
-
-### Possible Causes
-
-- Incorrect acquisition mode.
-- Incorrect trigger mode.
-- Current application mode does not support the command.
-
-### Recommended Actions
-
-- Verify detector operating mode.
-- Change to the appropriate mode.
-- Retry the operation.
-
----
-
-## Err_FPD_NotImplemented
-
-### Description
-
-Detector received the command successfully, but the command is not implemented in the current firmware.
-
-### Possible Causes
-
-- Firmware version does not support the command.
-- Unsupported detector model.
-
-### Recommended Actions
-
-- Verify firmware version.
-- Upgrade firmware if applicable.
-- Use supported SDK commands.
-
----
-
-## Err_FPD_NoEnoughStorageSpace
-
-### Description
-
-Detector internal storage space is insufficient.
-
-### Possible Causes
-
-- Calibration storage full.
-- Temporary files occupy storage.
-- Internal flash memory capacity exceeded.
-
-### Recommended Actions
-
-- Remove unused calibration files.
-- Check detector storage usage.
-- Restart detector if necessary.
-
----
-
-## Err_FPD_FileNotExist
-
-### Description
-
-The specified file does not exist inside the detector.
-
-### Possible Causes
-
-- Calibration file missing.
-- Incorrect file index.
-- File deleted accidentally.
-
-### Recommended Actions
-
-- Verify calibration file exists.
-- Upload the required file again.
-- Check selected file index.
-
----
-
-## Err_FPD_HWCaliFileError
-
-### Description
-
-Hardware calibration file is unavailable or invalid.
-
-The detector cannot perform hardware calibration because the required calibration template has not been prepared.
-
-### Possible Causes
-
-- Hardware Gain template not downloaded.
-- Hardware Defect template not downloaded.
-- Calibration template corrupted.
-- Incorrect calibration file selected.
-
-### Recommended Actions
-
-- Verify calibration templates.
-- Download calibration files again.
-- Select the correct hardware calibration template.
-- Confirm template download completed successfully.
+1. Preserve current calibration and log evidence.
+2. Verify file existence and selected index.
+3. Verify template identity matches the detector and intended calibration type.
+4. Follow [Calibration](../../10_SOP/Calibration.md).
+5. Use [CalibrationTools](../../17_Tools/SDKTool/CalibrationTools.md) or [DTDITool](../../17_Tools/SDKTool/DTDITool.md) only where applicable.
 
 ---
 
@@ -315,81 +88,47 @@ The detector cannot perform hardware calibration because the required calibratio
 
 ## Unknown
 
-Detector object has been created but is not connected.
-
-Available operations include:
-
-- Read/write configuration.
-- Scan online detectors.
-- Open local image files.
-
-Hardware-related operations are unavailable.
-
----
+Detector object exists but is not connected. Hardware operations are unavailable.
 
 ## Ready
 
-Detector is connected and ready for operation.
-
-Available operations include:
-
-- Image acquisition.
-- Calibration.
-- Detector parameter configuration.
-- Firmware management.
-
----
+Detector is connected and ready for acquisition, calibration, configuration, and supported firmware operations.
 
 ## Busy
 
-Detector is executing a task.
-
-Most device commands will be rejected until the current task is completed.
+Detector is executing a task. Most device commands should not be retried until task completion or an explicit recovery path is reached.
 
 ---
 
-# Diagnostic Checklist
+# Evidence Package
 
-Verify the following items:
+Collect:
 
-- Detector power is normal.
-- Detector serial number is correct.
-- Detector firmware version is compatible.
-- Detector state is Ready.
-- Required calibration files exist.
-- Detector internal storage is sufficient.
-- Detector.log contains no device exceptions.
+- Exact error code and timestamp
+- Command/API that triggered the error
+- Detector state (`Unknown` / `Ready` / `Busy`)
+- Detector model and SN where permitted
+- SDK version and firmware version
+- Working-directory/configuration identity
+- Relevant calibration/template information
+- `Detector.log`
+- Result after controlled reconnect or retry
 
----
-
-# Related DecisionTree
-
-- 09_DecisionTree/Connection/DetectorOffline.md
-- 09_DecisionTree/Software/DetectorBusy.md
-- 09_DecisionTree/Firmware/VersionMismatch.md
-- 09_DecisionTree/Calibration/GainFailure.md
-- 09_DecisionTree/Calibration/OffsetFailure.md
-- 09_DecisionTree/Calibration/DefectFailure.md
+For export, use [LogExport](../../17_Tools/SDKTool/LogExport.md).
 
 ---
 
-# Related Case
+# Related DecisionTree / SOP / Tool
 
-- 11_Case/Communication/ConnectionFailed.md
-- 11_Case/Firmware/VersionMismatch.md
-- 11_Case/Calibration/GainGenerationFailed.md
-- 11_Case/Calibration/OffsetGenerationFailed.md
-- 11_Case/Calibration/DefectGenerationFailed.md
-
----
-
-# Related Log
-
-```
-Detector.log
-```
-
-Device-related problems should always be analyzed together with Detector.log, detector status, firmware version, and calibration file status.
+- [DetectorOffline](../../09_DecisionTree/Connection/DetectorOffline.md)
+- [DetectorBusy](../../09_DecisionTree/Software/DetectorBusy.md)
+- [SDKException](../../09_DecisionTree/Software/SDKException.md)
+- [VersionMismatch](../../09_DecisionTree/Firmware/VersionMismatch.md)
+- [Calibration](../../10_SOP/Calibration.md)
+- [ConfigurationWorkflow](../../06_Workflow/ConfigurationWorkflow.md)
+- [ModeConfiguration](../../17_Tools/SDKTool/ModeConfiguration.md)
+- [CalibrationTools](../../17_Tools/SDKTool/CalibrationTools.md)
+- [LogExport](../../17_Tools/SDKTool/LogExport.md)
 
 ---
 
@@ -397,4 +136,5 @@ Device-related problems should always be analyzed together with Detector.log, de
 
 | Version | Date | Description |
 |---------|------|-------------|
+| v1.1 | 2026-08-10 | Added error-to-decision mapping, evidence rules, and direct SOP/tool links |
 | v1.0 | 2026-08-07 | Initial release |

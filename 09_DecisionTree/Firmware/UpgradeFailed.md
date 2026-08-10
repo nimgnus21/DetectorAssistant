@@ -4,9 +4,9 @@
 >
 > Category: Decision Tree
 >
-> Version: v1.0
+> Version: v1.1
 >
-> Last Updated: 2026-08-06
+> Last Updated: 2026-08-10
 
 ---
 
@@ -28,60 +28,19 @@ Typical symptoms include:
 # Diagnostic Flow
 
 ```
-                  Firmware Upgrade Failed
-                               │
-                 Detector Communication OK?
-                               │
-                ┌──────────────┴──────────────┐
-                │                             │
-               NO                            YES
-                │                             │
-     Go to Connection Tree            Continue
-                                      │
-                                      ▼
-                      Firmware Package Correct?
-                                      │
-                      ┌───────────────┴───────────────┐
-                      │                               │
-                     NO                              YES
-                      │                               │
-             Verify Firmware File             Continue
-                                              │
-                                              ▼
-                       Firmware Version Compatible?
-                                              │
-                      ┌───────────────┴───────────────┐
-                      │                               │
-                     NO                              YES
-                      │                               │
-               Select Correct Package        Continue
-                                              │
-                                              ▼
-                     Detector Battery / Power Stable?
-                                              │
-                      ┌───────────────┴───────────────┐
-                      │                               │
-                     NO                              YES
-                      │                               │
-              Verify Power Supply           Continue
-                                              │
-                                              ▼
-                         Upgrade Interrupted?
-                                              │
-                      ┌───────────────┴───────────────┐
-                      │                               │
-                     YES                             NO
-                      │                               │
-              Restart Upgrade                 Continue
-                                              │
-                                              ▼
-                     Firmware Verification Passed?
-                                              │
-                      ┌───────────────┴───────────────┐
-                      │                               │
-                     NO                              YES
-                      │                               │
-             Retry Upgrade / Recovery      Upgrade Successful
+Firmware Upgrade Failed
+    ↓
+Communication OK?
+    ├─ No → NetworkFailure / connection branch
+    └─ Yes → Package correct?
+                 ├─ No → Verify approved package
+                 └─ Yes → Version compatible?
+                              ├─ No → VersionMismatch
+                              └─ Yes → Power stable?
+                                           ├─ No → Correct power condition
+                                           └─ Yes → Interrupted?
+                                                        ├─ Yes → Controlled recovery/retry
+                                                        └─ No → Verification/recovery branch
 ```
 
 ---
@@ -109,22 +68,16 @@ Verify the following items:
 - Corrupted firmware file
 - Version incompatibility
 
----
-
 ## Communication
 
 - Network interruption
 - Timeout during programming
 - Unstable connection
 
----
-
 ## Power
 
 - Power interruption
 - Unstable power adapter
-
----
 
 ## Software
 
@@ -147,12 +100,12 @@ Priority 2
 
 Priority 3
 
-- Restart upgrade procedure.
-- Perform firmware recovery if supported.
+- Preserve failed-stage evidence.
+- Perform approved firmware recovery if supported.
 
 Priority 4
 
-- Replace firmware package.
+- Retry only after the failure branch is identified.
 - Escalate if repeated failures occur.
 
 ---
@@ -173,25 +126,29 @@ Escalate when:
 
 ## Workflow
 
-- 06_Workflow/FirmwareUpgradeWorkflow.md
+- [InitializationWorkflow](../../06_Workflow/InitializationWorkflow.md)
+- [ConfigurationWorkflow](../../06_Workflow/ConfigurationWorkflow.md)
 
 ## Case
 
-- 11_Case/Firmware/FirmwareUpgradeFailed.md
-- 11_Case/Firmware/VersionMismatch.md
-- 11_Case/Firmware/ParameterRecovery.md
+- [FirmwareUpgradeFailed](../../11_Case/Firmware/FirmwareUpgradeFailed.md)
+- [VersionMismatch](../../11_Case/Firmware/VersionMismatch.md)
+- [ParameterRecovery](../../11_Case/Firmware/ParameterRecovery.md)
 
 ## Tools
 
-- 17_Tools/SDKTool/FirmwareUpgrade.md
+- [FirmwareUpgrade](../../17_Tools/SDKTool/FirmwareUpgrade.md)
+- [LogExport](../../17_Tools/SDKTool/LogExport.md)
 
 ## Reference
 
-- 15_Reference/SDKReference.md
+- [SDKReference](../../15_Reference/SDKReference.md)
 
 ## Failure Knowledge
 
-- 07_FailureKnowledge/Firmware/
+- [FailureAnalysisMethod](../../07_FailureKnowledge/FailureAnalysisMethod.md)
+- [FailureClassification](../../07_FailureKnowledge/FailureClassification.md)
+- [FailureCode](../../07_FailureKnowledge/FailureCode.md)
 
 ---
 
@@ -199,4 +156,5 @@ Escalate when:
 
 | Version | Date | Description |
 |---------|------|-------------|
+| v1.1 | 2026-08-10 | Replaced obsolete FirmwareUpgradeWorkflow and FirmwareFailure links with existing workflow and generic FailureKnowledge nodes |
 | v1.0 | 2026-08-06 | Initial release |

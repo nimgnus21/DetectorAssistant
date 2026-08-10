@@ -1,10 +1,16 @@
 # Noise
 
-Version: V1.0
+Version: V1.1
 
 Module: 11_Case / Image
 
-Status: Released
+Status: Resolved
+
+Case Classification: Field Case Record
+
+Evidence Level: Resolved Event Evidence — the primary event records spatially non-fixed random noise, abnormal calibration environment, recovery after controlled recalibration, and successful repeated verification. The exact environmental interference mechanism was not instrumented or independently measured.
+
+Promotion Rule: Promote the root-cause conclusion to `Verified` only when the interfering source or calibration-input abnormality is directly evidenced and the causal relationship is confirmed by controlled comparison.
 
 Severity: ★★★☆☆
 
@@ -18,318 +24,316 @@ Applicable Products:
 
 Related Documents:
 
-- ../../08_ImageDiagnosis/NoiseArtifact/
-- ../../07_FailureKnowledge/ImageFailure/NoiseFailure.md
-- ../../09_DecisionTree/Image/Noise.md
-- ../../17_Tools/SDKTool/CalibrationTools.md
+- [NoiseArtifact](../../08_ImageDiagnosis/NoiseArtifact/)
+- [NoiseFailure](../../07_FailureKnowledge/ImageFailure/NoiseFailure.md)
+- [Noise DecisionTree](../../09_DecisionTree/Image/Noise.md)
+- [Calibration SOP](../../10_SOP/Calibration.md)
+- [ImageTroubleshooting SOP](../../10_SOP/ImageTroubleshooting.md)
+- [CalibrationTools](../../17_Tools/SDKTool/CalibrationTools.md)
+- [Case Admission Checklist](../CaseAdmissionChecklist.md)
+- [Knowledge Feedback Record](../KnowledgeFeedbackRecord.md)
 
 ---
 
-# 1. Case Summary
+# 1. Admission Audit Result
+
+The primary record describes one field event: excessive spatially random image noise after calibration on a Pluto1717 installation, with non-fixed noise behavior, abnormal calibration environment, recovery after recalibration, and repeated customer verification.
+
+The original file also contained a separate Mercu1724 anti-scatter grid installation case, duplicated as both `Case 03` and `Field Experience 01`. That experience describes image non-uniformity caused by an external imaging component and is not a Noise case.
+
+The Grid material is intentionally removed from this Noise record to prevent incorrect symptom-to-root-cause retrieval. It should be retained or reconstructed as an independent external-system / image-uniformity Case only if a proper event-level record and evidence boundary are available.
+
+---
+
+# 2. Case Summary
 
 ## Case Name
 
-Excessive Image Noise After Calibration
+Excessive Spatially Random Image Noise After Calibration
+
+## Case Boundary
+
+This Case applies to image noise with changing spatial locations across repeated acquisitions.
+
+It does not represent:
+
+- fixed defective pixels;
+- fixed row/column artifacts;
+- periodic interference patterns;
+- image transfer corruption;
+- anti-scatter grid orientation or general image non-uniformity.
+
+Primary routing: [Noise DecisionTree](../../09_DecisionTree/Image/Noise.md).
 
 ---
 
-# 2. Customer Environment
+# 3. Customer Environment
 
-Product：
+Product:
 
 - Pluto1717
 
-Detector Status：
+Detector Status:
 
 - New Installation
 
-Operation：
+Operation:
 
-- Offset Calibration Completed
-- Gain Calibration Completed
+- Offset Calibration completed;
+- Gain Calibration completed.
 
-Environment：
+Environment:
 
-- Hospital DR Room
+- Hospital DR Room.
 
----
+Evidence limitations:
 
-# 3. Fault Description
-
-客户反馈：
-
-探测器能够正常采图。
-
-图像整体存在大量随机噪点。
-
-没有固定位置。
-
-重新曝光后：
-
-噪点位置不断变化。
-
-客户怀疑：
-
-Detector 出现大量坏点。
+- detector SN not preserved;
+- SDK / firmware version not preserved;
+- calibration timestamp not preserved;
+- environmental interference source was not instrumented or measured;
+- before/after RAW and noise statistics are not attached.
 
 ---
 
-# 4. Troubleshooting Timeline
+# 4. Fault Description
 
-## Step 1
+Customer reported:
 
-确认 Detector 通信状态。
+- detector could acquire images normally;
+- the image contained a large amount of random noise;
+- abnormal points did not remain at fixed detector coordinates;
+- after repeated exposure, the apparent noise positions changed.
 
-结果：
+Initial customer concern:
 
-正常。
+- large number of detector defective pixels.
 
----
+Initial FAE classification:
 
-## Step 2
-
-检查 Defect Template。
-
-结果：
-
-正常加载。
-
-坏点数量正常。
-
-排除 Defect Template 异常。
+- random / non-fixed noise candidate;
+- fixed Defect mechanism not supported by the observed spatial behavior.
 
 ---
 
-## Step 3
+# 5. Evidence Classification
 
-连续采集暗场图。
+| Evidence | Observation | Supported Finding |
+|---|---|---|
+| Detector communication | Normal | Communication failure was not observed in the recorded event |
+| Image acquisition | Successful | Detector could complete acquisition |
+| Defect Template | Loaded; defect count reported normal | Large fixed-pixel defect pattern was not supported |
+| Repeated images | Noise location changed | Spatially non-fixed/random behavior supported |
+| Consecutive dark images | Random noise pattern changed between acquisitions | Fixed detector-coordinate defect was not supported |
+| Calibration environment | Abnormal interference reported during Offset Calibration | Calibration-input/environment issue became a candidate path |
+| Recalibration | Offset and Gain recalibration completed after interference handling | Corrective action applied |
+| Verification | Noise returned to normal; repeated acquisition passed | Resolution supported |
+| Interference measurement | Not preserved | Exact environmental mechanism not verified |
 
-观察发现：
+Important boundary:
 
-随机噪点位置不断变化。
-
-并非固定像素异常。
-
----
-
-## Step 4
-
-检查 Offset Calibration。
-
-发现：
-
-Offset Calibration 执行时环境存在异常干扰。
+Changing noise positions support a random/temporal-noise branch, but do not by themselves prove that calibration was the sole cause.
 
 ---
 
-## Step 5
+# 6. Troubleshooting Timeline
 
-重新完成：
+## Step 1 — Confirm Detector Communication and Acquisition
 
-- Offset Calibration
-- Gain Calibration
+Result:
 
-再次采图。
+- detector communication normal;
+- image acquisition successful.
 
-图像恢复正常。
+Finding:
 
----
-
-# 5. Root Cause
-
-Offset Calibration 数据异常，导致后续图像噪声增加。
-
-详细分析参见：
-
-- ../../07_FailureKnowledge/ImageFailure/NoiseFailure.md
+No communication failure was recorded in this event.
 
 ---
 
-# 6. Solution
+## Step 2 — Check Defect Template and Fixed-Pixel Evidence
 
-处理措施：
+Observed:
 
-- 排除环境干扰
-- 重新执行 Offset Calibration
-- 重新执行 Gain Calibration
-- 验证图像质量
+- Defect Template loaded normally;
+- defect count reported within the expected range;
+- noise did not remain at fixed pixel coordinates.
 
-无需更换 Detector。
+Finding:
 
----
-
-# 7. Verification
-
-验证结果：
-
-- 图像噪声恢复正常
-- 无随机异常
-- 图像均匀性正常
-- 客户连续采图验证通过
+The recorded evidence did not support a large fixed Defect population as the primary explanation.
 
 ---
 
-# 8. Lessons Learned
+## Step 3 — Compare Consecutive Dark Images
 
-- 随机噪点通常不是坏点。
-- Noise 与 Defect 应首先区分。
-- 校准环境异常可能直接导致 Noise 增加。
-- 不建议在未确认原因前直接重新生成 Defect Template。
+Observation:
 
----
+- random noise locations changed between acquisitions;
+- the same detector coordinates were not persistently abnormal.
 
-# 9. Related Documents
+Finding:
 
-Image Diagnosis：
+Spatially non-fixed/random behavior was confirmed.
 
-- NoiseArtifact
+Recommended evidence for future Cases:
 
-Failure Knowledge：
-
-- NoiseFailure.md
-
-Decision Tree：
-
-- Noise.md
-
-Tools：
-
-- CalibrationTools.md
+- preserve multiple RAW/dark images;
+- record acquisition timestamps;
+- compare fixed-pattern versus temporal variation;
+- calculate applicable image statistics where tools are available.
 
 ---
 
-# 10. Revision History
+## Step 4 — Review Calibration Conditions
+
+Investigation found:
+
+- abnormal environmental interference was present during Offset Calibration.
+
+Evidence boundary:
+
+The specific interference source was not preserved or measured. Therefore the record supports an abnormal calibration environment as a strong candidate, not a fully verified physical mechanism.
+
+---
+
+## Step 5 — Controlled Corrective Recalibration
+
+After removing or avoiding the identified abnormal environmental condition:
+
+1. perform Offset Calibration using the approved procedure;
+2. perform Gain Calibration where required by the applicable product workflow;
+3. preserve calibration completion results;
+4. repeat representative image acquisition.
+
+Result:
+
+- image noise returned to normal appearance.
+
+---
+
+# 7. Current Conclusion
+
+## Verified Findings
+
+- image noise was spatially non-fixed across repeated acquisitions;
+- detector communication and acquisition were normal;
+- Defect Template was loaded and no large abnormal fixed-defect pattern was reported;
+- abnormal environmental interference was reported during Offset Calibration;
+- recalibration after environmental handling was followed by normal image quality;
+- repeated customer acquisition verification passed.
+
+## Root Cause
+
+Not Fully Confirmed.
+
+## Supported Finding
+
+The recorded event is consistent with abnormal calibration input/environment contributing to increased random image noise.
+
+## Suspected Failure Mechanism
+
+Abnormal Offset calibration data caused by environmental interference or unstable calibration conditions, resulting in increased residual/random image noise.
+
+The exact interference source and causal mechanism were not measured in the current Case.
+
+---
+
+# 8. Resolution
+
+Recorded corrective path:
+
+- identify and remove/avoid abnormal environmental interference;
+- repeat Offset Calibration according to the approved procedure;
+- repeat Gain Calibration where required;
+- verify image quality under the original operating condition.
+
+The Case does not establish that all random noise should be solved by recalibration. If noise remains unchanged after controlled calibration, continue through the relevant Noise DecisionTree branches for:
+
+- exposure/generator variation;
+- power/environmental interference;
+- temporal detector behavior;
+- transfer/processing path;
+- other product-specific causes.
+
+---
+
+# 9. Verification
+
+Recorded result:
+
+- image noise returned to normal;
+- no obvious random abnormality remained;
+- image uniformity returned to normal appearance;
+- customer continuous-acquisition verification passed.
+
+For future Cases, verification should preserve:
+
+- before/after RAW and corrected images;
+- repeated acquisition count;
+- calibration logs;
+- environment record;
+- exposure conditions;
+- noise statistics where available.
+
+---
+
+# 10. Diagnostic Lessons
+
+- Random noise and fixed Defect should be separated before selecting a correction path.
+- Spatial position is an important diagnostic discriminator: fixed-pattern versus changing-pattern behavior.
+- A successful recalibration proves that the corrective path was effective, but does not automatically prove the exact physical source of the original noise.
+- Preserve calibration environment evidence before recalibration whenever possible.
+- Do not regenerate a Defect Template solely because random noise is visible.
+- Image non-uniformity caused by external components such as an anti-scatter grid belongs to a different diagnostic category.
+
+---
+
+# 11. Knowledge Feedback Review
+
+| Layer | Result | Action / Reason |
+|---|---|---|
+| FailureKnowledge | No direct update required | [NoiseFailure](../../07_FailureKnowledge/ImageFailure/NoiseFailure.md) remains the generic mechanism layer |
+| DecisionTree | No direct update required | Existing Noise DecisionTree remains the correct routing entry |
+| SOP | No direct update required | Existing calibration/image troubleshooting procedures remain applicable |
+| Tools | Evidence enhancement recommended | CalibrationTools can support future calibration evidence preservation |
+| Case | Updated | Retained one primary Noise event and removed unrelated duplicated Grid experience |
+| External-system Case | Follow-up required | Grid installation event should be independently admitted before reuse |
+
+---
+
+# 12. Evidence Gap for Promotion to Verified
+
+Missing evidence:
+
+- detector SN;
+- SDK / firmware versions;
+- calibration logs and exact parameter set;
+- before/after RAW and dark images;
+- noise statistics;
+- measured interference source;
+- controlled comparison isolating the environmental variable.
+
+Without these, the Case remains `Resolved` rather than `Verified`.
+
+---
+
+# 13. Related Documents
+
+- [NoiseArtifact](../../08_ImageDiagnosis/NoiseArtifact/)
+- [NoiseFailure](../../07_FailureKnowledge/ImageFailure/NoiseFailure.md)
+- [Noise DecisionTree](../../09_DecisionTree/Image/Noise.md)
+- [Calibration SOP](../../10_SOP/Calibration.md)
+- [ImageTroubleshooting SOP](../../10_SOP/ImageTroubleshooting.md)
+- [CalibrationTools](../../17_Tools/SDKTool/CalibrationTools.md)
+- [Case Admission Checklist](../CaseAdmissionChecklist.md)
+- [Knowledge Feedback Record](../KnowledgeFeedbackRecord.md)
+
+---
+
+# 14. Revision History
 
 | Version | Date | Description |
-|----------|------|-------------|
-| V1.0 | 2026-08 | 建立 Noise 现场案例。 |
-
----
-
-## Case 03 – Grid Installed in Wrong Direction
-
-### Product
-
-Mercu1724
-
-### Customer
-
-OEM Customer
-
-### Symptom
-
-- Image shows obvious non-uniformity.
-- Brightness is inconsistent across the image.
-- Detector communication is normal.
-- Calibration has been completed.
-- Recalibration does not improve the image.
-
-### Investigation
-
-The following items were verified:
-
-- Detector communication: Normal
-- Firmware version: Normal
-- Offset calibration: Passed
-- Gain calibration: Passed
-- Ghost correction: Passed
-
-No abnormalities were found in the detector.
-
-Further inspection revealed that the anti-scatter grid was installed in the wrong orientation.
-
-### Root Cause
-
-Incorrect grid installation introduced additional X-ray attenuation, resulting in image non-uniformity.
-
-The detector was operating normally.
-
-### Corrective Action
-
-1. Confirm the installation direction of the grid.
-2. Reinstall the grid according to the manufacturer's specification.
-3. Repeat image acquisition.
-4. Compare the image before and after correction.
-
-### Verification
-
-After correcting the grid orientation:
-
-- Image uniformity returned to normal.
-- No additional calibration was required.
-- Detector function remained normal.
-
-### Lessons Learned
-
-Image non-uniformity is not always caused by detector failure.
-
-Before repeating calibration or replacing hardware, verify external imaging components such as the grid and X-ray generator.
-
----
-
-## Field Experience 01 – Image Non-uniformity Caused by Incorrect Grid Installation
-
-### Source
-
-FAE Pre-sales Weekly Report
-
-### Product
-
-Mercu1724
-
-### Symptom
-
-- Image shows obvious brightness non-uniformity.
-- Local contrast is inconsistent.
-- Detector communication is normal.
-- Offset, Gain and Ghost calibration have all passed.
-- Recalibration does not improve image quality.
-
-### Investigation
-
-The following items were verified:
-
-- Detector communication: Normal
-- Firmware version: Compatible
-- Offset calibration: Passed
-- Gain calibration: Passed
-- Ghost correction: Passed
-
-No abnormalities were found in the detector.
-
-Further inspection of the imaging system found that the anti-scatter grid had been installed in the wrong orientation.
-
-### Root Cause
-
-The image artifact was caused by incorrect installation of the anti-scatter grid.
-
-The detector hardware, firmware and calibration data were all functioning normally.
-
-### Failure Classification
-
-- Detector Hardware：No
-- Detector Firmware：No
-- Detector Configuration：No
-- Customer Environment：Yes
-- Third-party Equipment：Yes
-
-### Solution
-
-1. Confirm the installation direction of the anti-scatter grid.
-2. Reinstall the grid according to the manufacturer's specification.
-3. Repeat image acquisition.
-4. Compare image uniformity before and after correction.
-
-### Verification
-
-After reinstalling the grid correctly:
-
-- Image uniformity returned to normal.
-- No recalibration was required.
-- Detector performance remained normal.
-
-### Lessons Learned
-
-Image non-uniformity is not always caused by detector defects.
-
-When calibration results are normal but image quality remains abnormal, external imaging components such as the anti-scatter grid should be inspected before replacing detector hardware.
+|---|---|---|
+| V1.1 | 2026-08-10 | Batch 5 admission audit: retained primary random-noise event, changed status to Resolved, separated evidence from suspected mechanism, removed duplicated unrelated Grid experience |
+| V1.0 | 2026-08 | Initial Noise field case |

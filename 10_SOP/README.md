@@ -1,61 +1,193 @@
 # Standard Operating Procedures (SOP)
 
-> DetectorAssistant Standard Operating Procedures
+> DetectorAssistant standardized execution layer
+>
+> Purpose: convert a confirmed engineering task into a repeatable, verifiable, and recordable operation.
 
 ---
 
 # Overview
 
-The SOP module defines standardized operational procedures for Field Application Engineers (FAEs), Technical Support Engineers, Production Engineers, and Quality Engineers.
+`10_SOP` is the execution layer of DetectorAssistant.
 
-Unlike other modules that explain principles, troubleshooting logic, or product knowledge, this module focuses on **how to perform tasks correctly, consistently, safely, and efficiently**.
+Use this module after the engineer has identified the task to perform, or when a DecisionTree has routed the issue to a standardized action.
 
-Each SOP provides a step-by-step operational guide based on actual engineering workflows and references the corresponding knowledge modules where detailed technical explanations are available.
+The SOP layer answers:
 
----
+- What operation must be performed?
+- What must be prepared before the operation?
+- Which tool, file, or evidence is required?
+- What result is acceptable?
+- What should be done when the expected result is not achieved?
+- What record must be retained after completion?
 
-# Objectives
-
-The SOP module aims to:
-
-- Standardize engineering operations.
-- Reduce human error.
-- Improve troubleshooting efficiency.
-- Ensure operation consistency.
-- Shorten engineer training time.
-- Preserve field engineering experience.
+This module does not replace root-cause analysis. If the task itself is not yet clear, start from `08_ImageDiagnosis`, `09_DecisionTree`, `07_FailureKnowledge`, or `12_ErrorCode` as appropriate.
 
 ---
 
-# Applicable Scope
+# Quick Field Entry
 
-This SOP library applies to:
+## Image Abnormality
 
-- Detector Installation
-- Network Configuration
-- Detector Calibration
-- Firmware Upgrade
-- Image Troubleshooting
-- Remote Technical Support
-- Detector Replacement
-- Preventive Maintenance
-- RMA Processing
+Observed image is abnormal and the corrective procedure must be executed:
 
-Applicable personnel:
+- [Image Troubleshooting SOP](ImageTroubleshooting.md)
 
-- Field Application Engineer (FAE)
-- Technical Support Engineer
-- Production Engineer
-- Quality Engineer
-- R&D Engineer (Reference)
+Typical upstream entry:
+
+- [Image Diagnosis](../08_ImageDiagnosis/README.md)
+- [Image DecisionTree](../09_DecisionTree/Image/)
+
+Typical supporting tools:
+
+- [ImageJ](../17_Tools/ImageJ/README.md)
+- [Offset Viewer](../17_Tools/OffsetViewer/README.md)
+- [Log Viewer](../17_Tools/Log/README.md)
 
 ---
 
-# SOP Writing Principles
+## Network Configuration or Communication Problem
 
-All SOP documents follow the same structure to ensure consistency throughout the knowledge base.
+Detector cannot communicate, cannot be reached, or requires network configuration:
 
-Each SOP shall contain the following sections:
+- [Network Configuration SOP](NetworkConfiguration.md)
+
+Typical upstream entry:
+
+- [Connection DecisionTree](../09_DecisionTree/Connection/)
+- [Communication ErrorCode](../12_ErrorCode/Communication/)
+
+Typical supporting tools:
+
+- [Ping](../17_Tools/Ping/README.md)
+- [Wireshark](../17_Tools/Wireshark/README.md)
+
+---
+
+## Calibration Failure or Calibration Task
+
+Offset, Gain, Defect, or other supported calibration operations require standardized execution:
+
+- [Calibration SOP](Calibration.md)
+
+Typical upstream entry:
+
+- [Calibration DecisionTree](../09_DecisionTree/Calibration/)
+- [Calibration ErrorCode](../12_ErrorCode/Calibration/)
+
+Typical supporting tool:
+
+- [Calibration Tools](../17_Tools/SDKTool/CalibrationTools.md)
+
+---
+
+## Firmware Upgrade or Recovery
+
+A firmware upgrade, compatibility correction, or firmware recovery operation is required:
+
+- [Firmware Upgrade SOP](FirmwareUpgrade.md)
+
+Typical upstream entry:
+
+- [Firmware DecisionTree](../09_DecisionTree/Firmware/)
+- [Firmware ErrorCode](../12_ErrorCode/Firmware/)
+
+Typical supporting tool:
+
+- [Firmware Upgrade Tool Guide](../17_Tools/SDKTool/FirmwareUpgrade.md)
+
+---
+
+## Detector Installation
+
+New detector installation or initial system deployment:
+
+- [Detector Installation SOP](DetectorInstallation.md)
+
+---
+
+## Remote Technical Support
+
+Remote diagnosis, evidence collection, or guided customer troubleshooting:
+
+- [Remote Support SOP](RemoteSupport.md)
+
+---
+
+## Detector Replacement
+
+Detector replacement and post-replacement verification:
+
+- [Detector Replacement SOP](DetectorReplacement.md)
+
+---
+
+## Preventive Maintenance
+
+Scheduled inspection or preventive maintenance activity:
+
+- [Preventive Maintenance SOP](PreventiveMaintenance.md)
+
+---
+
+## RMA Processing
+
+A detector or component must enter the return-material / failure-handling process:
+
+- [RMA SOP](RMA.md)
+
+---
+
+# Current SOP Library
+
+| SOP | Primary Use |
+|---|---|
+| [Detector Installation](DetectorInstallation.md) | New detector installation and initial verification |
+| [Network Configuration](NetworkConfiguration.md) | Network setup and communication verification |
+| [Calibration](Calibration.md) | Standard calibration execution and verification |
+| [Firmware Upgrade](FirmwareUpgrade.md) | Firmware update and upgrade verification |
+| [Image Troubleshooting](ImageTroubleshooting.md) | Standard response to image abnormalities |
+| [Remote Support](RemoteSupport.md) | Remote diagnosis and evidence collection |
+| [Detector Replacement](DetectorReplacement.md) | Replacement and post-replacement verification |
+| [Preventive Maintenance](PreventiveMaintenance.md) | Periodic inspection and maintenance |
+| [RMA](RMA.md) | Return-material and failure-handling process |
+
+The table above is derived only from the current files in `10_SOP`.
+
+---
+
+# Standard Execution Model
+
+Every SOP should be executable as the following closed loop:
+
+```text
+Input
+  ↓
+Process
+  ↓
+Output
+  ↓
+Acceptance Criteria
+  ↓
+Exception Handling
+  ↓
+Record / Evidence
+```
+
+The minimum operational principles are:
+
+1. Start each step with an action.
+2. Perform one primary action per step.
+3. Use measurable acceptance criteria where possible.
+4. Preserve original logs and files before destructive changes.
+5. Do not skip the verification step after the operation.
+6. Route unresolved exceptions back to the appropriate DecisionTree or ErrorCode.
+
+---
+
+# Standard SOP Structure
+
+The target structure for SOP documents is:
 
 1. Scope
 2. Objective
@@ -71,139 +203,100 @@ Each SOP shall contain the following sections:
 12. Records
 13. Related Documents
 
----
+The mandatory opening concepts are:
 
-# Standard Workflow Format
+- Scope
+- Objective
+- Responsibility
 
-Every operational step should follow the format below.
-
-```text
-Input
-
-↓
-
-Process
-
-↓
-
-Output
-
-↓
-
-Acceptance Criteria
-
-↓
-
-Exception Handling
-```
-
-Each step should describe only one action.
-
-Use measurable descriptions whenever possible.
-
-Avoid combining multiple operations into a single step.
+Where practical, the procedure itself should follow the `Input → Process → Output → Acceptance Criteria → Exception Handling` model.
 
 ---
 
-# General SOP Workflow
+# When Not to Start with an SOP
+
+Do not use an SOP as a substitute for diagnosis when the problem category is still unknown.
+
+Use the following routing first:
 
 ```text
-Preparation
-
-↓
-
-Environment Check
-
-↓
-
-Detector Check
-
-↓
-
-Software Preparation
-
-↓
-
-Operation Execution
-
-↓
-
-Verification
-
-↓
-
-Troubleshooting (if required)
-
-↓
-
-Completion
-
-↓
-
-Record Keeping
-```
-
----
-
-# Document Structure
-
-```text
+Unknown Field Problem
+        ↓
+Symptom / Error Classification
+        ↓
+08_ImageDiagnosis or 12_ErrorCode
+        ↓
+09_DecisionTree
+        ↓
+Confirmed Task
+        ↓
 10_SOP
-│
-├── README.md
-├── DetectorInstallation.md
-├── NetworkConfiguration.md
-├── Calibration.md
-├── FirmwareUpgrade.md
-├── ImageTroubleshooting.md
-├── RemoteSupport.md
-├── DetectorReplacement.md
-├── PreventiveMaintenance.md
-└── RMA.md
+        ↓
+17_Tools + Evidence
+        ↓
+11_Case / Knowledge Feedback
 ```
+
+For a known operational task, entering the corresponding SOP directly is appropriate.
 
 ---
 
-# Standard Responsibilities
+# Evidence and Record Requirements
 
-## Field Application Engineer (FAE)
+Before modifying detector configuration, calibration data, firmware, or other operational state, preserve the relevant evidence.
 
-Responsible for:
+Typical records include:
+
+- Detector model and serial number
+- Firmware version
+- SDK version
+- Calibration version or status
+- Detector log
+- Network configuration
+- Test images
+- Operation time
+- Operator
+- Customer information where applicable
+
+The exact record set should follow the specific SOP and failure scenario.
+
+---
+
+# Roles
+
+## Field Application Engineer
+
+Typical responsibilities:
 
 - On-site installation
 - Detector configuration
 - Calibration
-- Troubleshooting
-- Customer support
-- Technical verification
-
----
+- Troubleshooting execution
+- Customer technical support
+- On-site verification
 
 ## Technical Support Engineer
 
-Responsible for:
+Typical responsibilities:
 
 - Remote diagnosis
 - Log analysis
-- SDK troubleshooting
-- Software support
-
----
+- SDK and software support
+- Evidence review
+- Escalation coordination
 
 ## Production Engineer
 
-Responsible for:
+Typical responsibilities:
 
 - Factory configuration
 - Initial calibration
 - Firmware programming
 - Product verification
 
----
-
 ## Quality Engineer
 
-Responsible for:
+Typical responsibilities:
 
 - Quality inspection
 - OQC verification
@@ -212,121 +305,79 @@ Responsible for:
 
 ---
 
-# Standard Records
+# Relationship with Other Modules
 
-Every SOP should specify the records that must be retained.
-
-Typical records include:
-
-- Detector Serial Number
-- Firmware Version
-- SDK Version
-- Calibration Version
-- Detector.log
-- Network Configuration
-- Test Images
-- Operation Time
-- Operator
-- Customer Information (if applicable)
-
----
-
-# Safety Requirements
-
-Before performing any operation:
-
-- Confirm detector power status.
-- Verify communication status.
-- Confirm correct detector model.
-- Confirm compatible SDK version.
-- Verify firmware compatibility.
-- Ensure calibration files are backed up before modification.
-- Preserve original logs before troubleshooting.
-
----
-
-# Decision Principles
-
-When abnormal conditions occur:
-
-1. Stop the current operation if there is a risk of data corruption or hardware damage.
-2. Preserve all logs and original files before making changes.
-3. Follow the corresponding DecisionTree document.
-4. Refer to the associated ErrorCode document if an error is reported.
-5. Escalate to R&D only after completing all standard troubleshooting steps.
-
----
-
-# Related Modules
-
-| Module | Purpose |
-|---------|---------|
-| 03_Hardware | Hardware architecture and components |
-| 04_Communication | Communication mechanisms |
-| 05_Calibration | Calibration principles |
-| 06_Workflow | Business and engineering workflows |
-| 07_FailureKnowledge | Failure mechanisms |
-| 08_ImageDiagnosis | Image abnormalities and analysis |
-| 09_DecisionTree | Troubleshooting decision logic |
-| 11_Case | Field troubleshooting cases |
-| 12_ErrorCode | Error code reference |
-| 13_Template | Standard engineering templates |
-| 14_Glossary | Standard terminology |
+| Module | Relationship to SOP |
+|---|---|
+| [Workflow](../06_Workflow/README.md) | Defines broader engineering or business flow |
+| [Failure Knowledge](../07_FailureKnowledge/README.md) | Explains failure classes and mechanisms |
+| [Image Diagnosis](../08_ImageDiagnosis/README.md) | Classifies observed image phenomena |
+| [DecisionTree](../09_DecisionTree/README.md) | Determines which diagnostic or operational branch to take |
+| [Case](../11_Case/README.md) | Preserves verified field conclusions and evidence |
+| [ErrorCode](../12_ErrorCode/README.md) | Interprets reported SDK, communication, firmware, calibration, or generator errors |
+| [Tools](../17_Tools/README.md) | Provides execution, verification, and evidence tools |
 
 ---
 
 # SOP Usage Flow
 
 ```text
-Receive Task
-
-↓
-
-Read Relevant SOP
-
-↓
-
-Prepare Environment
-
-↓
-
-Perform Operation
-
-↓
-
-Verify Result
-
-↓
-
-If Normal
-    ↓
-Complete Record
-
-If Abnormal
-    ↓
-DecisionTree
-
-↓
-
-ErrorCode
-
-↓
-
-FailureKnowledge
-
-↓
-
-Case
-
-↓
-
-Escalation (if required)
+Receive Task or Confirmed Diagnosis
+        ↓
+Select SOP
+        ↓
+Check Preconditions
+        ↓
+Prepare Tools and Files
+        ↓
+Preserve Original Evidence
+        ↓
+Execute Procedure
+        ↓
+Verify Acceptance Criteria
+        ↓
+     ┌───┴───┐
+     │       │
+   PASS     FAIL
+     │       │
+     ▼       ▼
+Record    DecisionTree / ErrorCode
+     │       ↓
+     │   Next Diagnostic Branch
+     │
+     ▼
+Close Task / Update Case if Verified Knowledge Is New
 ```
+
+---
+
+# Maintenance Rules
+
+1. Do not change the frozen first-level directory structure through this README.
+2. Add a new SOP only when a repeatable operational procedure exists.
+3. Every new SOP should define scope, objective, responsibility, procedure, acceptance criteria, exception handling, records, and related documents.
+4. A new SOP must link to the relevant DecisionTree, Tool, ErrorCode, Workflow, or Case where those modules exist.
+5. Do not create placeholder links for future documents.
+6. If a real field case exposes a missing or unsafe operation, update the SOP only after the corrective procedure is technically verified.
+
+---
+
+# Related Modules
+
+- [Project README](../README.md)
+- [Workflow](../06_Workflow/README.md)
+- [Failure Knowledge](../07_FailureKnowledge/README.md)
+- [Image Diagnosis](../08_ImageDiagnosis/README.md)
+- [DecisionTree](../09_DecisionTree/README.md)
+- [Case](../11_Case/README.md)
+- [ErrorCode](../12_ErrorCode/README.md)
+- [Tools](../17_Tools/README.md)
 
 ---
 
 # Revision History
 
 | Version | Date | Description |
-|---------|------|-------------|
+|---|---|---|
+| v1.1 | 2026-08-10 | Rebuilt README as a field-task navigation layer using the current SOP file set; preserved SOP execution and maintenance standards |
 | v1.0 | 2026-08-07 | Initial release |

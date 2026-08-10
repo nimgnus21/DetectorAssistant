@@ -24,10 +24,11 @@ Applicable Products:
 
 Related Documents:
 
-- [WhiteDotsArtifact](../../08_ImageDiagnosis/WhiteDotsArtifact/)
-- [PixelFailure](../../07_FailureKnowledge/ImageFailure/PixelFailure.md)
-- [WhiteDots DecisionTree](../../09_DecisionTree/Image/WhiteDots.md)
-- [DefectCalibration](../../05_Calibration/DefectCalibration.md)
+- [DeadPixel](../../08_ImageDiagnosis/DeadPixel/)
+- [BadPixelArtifact](../../07_FailureKnowledge/ImageFailure/BadPixelArtifact.md)
+- [WhiteDotArtifact](../../07_FailureKnowledge/ImageFailure/WhiteDotArtifact.md)
+- [WhiteDot DecisionTree](../../09_DecisionTree/Image/WhiteDot.md)
+- [Defect Calibration](../../05_Calibration/Defect/)
 - [Calibration SOP](../../10_SOP/Calibration.md)
 - [CalibrationTools](../../17_Tools/SDKTool/CalibrationTools.md)
 - [Case Admission Checklist](../CaseAdmissionChecklist.md)
@@ -272,9 +273,9 @@ For future verification preserve:
 
 | Layer | Result | Action / Reason |
 |---|---|---|
-| FailureKnowledge | No direct update required | PixelFailure remains the generic mechanism layer |
-| DecisionTree | No direct update required | WhiteDots DecisionTree remains the routing entry |
-| Calibration | No direct update required | DefectCalibration remains the execution path |
+| FailureKnowledge | No direct update required | BadPixelArtifact and WhiteDotArtifact provide the existing generic mechanism layer |
+| DecisionTree | No direct update required | WhiteDot DecisionTree remains the routing entry |
+| Calibration | No direct update required | Defect calibration directory remains the execution entry |
 | Tools | No direct update required | CalibrationTools remains the evidence/operation entry |
 | Case | Updated | Direct hardware-exclusion claim replaced by template-lineage evidence and suspected mechanism |
 
@@ -302,5 +303,5 @@ Without these, the Case remains `Resolved` rather than `Verified`.
 
 | Version | Date | Description |
 |---|---|---|
-| V1.1 | 2026-08-10 | Batch 5 paired audit: aligned WhiteDots with fixed-coordinate evidence chain and template-lineage verification model |
+| V1.1 | 2026-08-10 | Batch 5 paired audit: aligned WhiteDots with fixed-coordinate evidence chain and template-lineage verification model; repaired Related Documents links to existing repository nodes |
 | V1.0 | 2026-08 | Initial White Dots field case |

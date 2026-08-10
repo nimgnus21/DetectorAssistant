@@ -4,9 +4,9 @@
 >
 > Category: Decision Tree
 >
-> Version: v4.0
+> Version: v4.1
 >
-> Last Updated: 2026-08-06
+> Last Updated: 2026-08-10
 
 ---
 
@@ -53,20 +53,14 @@ The SDK reports a license-related error.
 Typical symptoms include:
 
 - License Invalid
-
 - License Not Found
-
 - License Expired
-
 - Activation Failed
-
 - License Verification Failed
-
 - Hardware Key Not Found
-
 - License Server Unreachable
-
 - SDK Initialization Failed (License)
+- Image Locked（经现场验证的 License 相关场景）
 
 ---
 
@@ -87,6 +81,8 @@ Identify the observed behavior.
 □ Activation failed
 
 □ Offline activation failed
+
+□ Image Locked
 
 □ Unknown license error
 
@@ -126,17 +122,11 @@ Verification Status
 
 ```
 Application      □
-
 SDK              □
-
 License File     □
-
 Dongle           □
-
 Activation       □
-
 Verification     □
-
 Detector Ready   □
 ```
 
@@ -204,6 +194,7 @@ SDK Investigation       Problem Solved
 | USB Dongle Missing | Dongle unplugged | Reconnect dongle |
 | License Server Offline | Server unavailable | Verify server |
 | Invalid License | Wrong SDK version | Replace license |
+| Image Locked | License abnormality confirmed by applicable field case | Verify and replace the corresponding license |
 
 ---
 
@@ -219,6 +210,8 @@ Typical investigation order:
 4. Verify computer fingerprint.
 5. Verify hardware dongle.
 6. Verify license server.
+
+For license file replacement, backup and post-replacement acquisition verification, use the dedicated [License Management Tool](../../17_Tools/SDKTool/LicenseManagement.md).
 
 ---
 
@@ -242,8 +235,8 @@ Most likely affected modules
 
 | Tool | Purpose | Expected Result |
 |------|---------|----------------|
+| [License Management Tool](../../17_Tools/SDKTool/LicenseManagement.md) | Backup, replace and verify applicable LIC file | License verification and acquisition can proceed |
 | SDK Demo | Verify activation | SDK starts normally |
-| License Tool | Check license | License valid |
 | Device Manager | Detect USB dongle | Dongle detected |
 | SDK Log | Verify license loading | Success |
 
@@ -290,21 +283,13 @@ Verify
 Collect before escalation
 
 - Detector Model
-
 - Detector SN
-
 - SDK Version
-
 - License Version
-
 - License Type
-
 - Activation Status
-
 - Error Code
-
 - SDK Log
-
 - License Screenshot
 
 ---
@@ -314,9 +299,7 @@ Collect before escalation
 ## License
 
 - Missing license
-
 - Invalid license
-
 - Expired license
 
 ---
@@ -324,7 +307,6 @@ Collect before escalation
 ## SDK
 
 - Version mismatch
-
 - Activation failure
 
 ---
@@ -332,7 +314,6 @@ Collect before escalation
 ## Hardware
 
 - USB dongle missing
-
 - Dongle driver abnormal
 
 ---
@@ -340,9 +321,7 @@ Collect before escalation
 ## System
 
 - Computer changed
-
 - License path changed
-
 - License server unavailable
 
 ---
@@ -371,6 +350,10 @@ Priority 5
 
 Priority 6
 
+- Use [License Management Tool](../../17_Tools/SDKTool/LicenseManagement.md) for applicable file replacement and verification.
+
+Priority 7
+
 - Escalate with license information.
 
 ---
@@ -380,11 +363,8 @@ Priority 6
 Escalate when:
 
 - License remains invalid after reactivation.
-
 - SDK Demo reports the same license error.
-
 - SDK version matches the license.
-
 - Activation has been verified.
 
 ---
@@ -394,10 +374,9 @@ Escalate when:
 ## Software
 
 - SDKInitializationFailed.md
-
 - APIError.md
-
 - SDKException.md
+- [License Management Tool](../../17_Tools/SDKTool/LicenseManagement.md)
 
 ## Reference
 
@@ -409,4 +388,5 @@ Escalate when:
 
 | Version | Date | Description |
 |---------|------|-------------|
+| v4.1 | 2026-08-10 | Linked License Management Tool and added Image Locked classification |
 | v4.0 | 2026-08-06 | Initial release |

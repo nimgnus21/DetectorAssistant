@@ -10,270 +10,145 @@
 
 This document describes error codes that may occur during Defect calibration.
 
-Defect calibration identifies defective pixels and generates a defect template for image correction. The quality of the acquired calibration images directly affects the accuracy of the generated defect map.
+Defect calibration identifies defective pixels and generates a defect template for image correction. Calibration image quality, trigger correctness, exposure condition, and defect-map capacity must be evaluated separately.
 
 ---
 
 # Related Commands
 
-- Cmd_DefectInit
-- Cmd_LoadTemporaryDefectFile
-- Cmd_DefectSelectCurrent
-- Cmd_DefectSelectAll
-- Cmd_DefectGeneration
-- Cmd_FinishGenerationProcess
-- Cmd_DownloadCaliFile
-- Cmd_SelectCaliFile
-
----
+- `Cmd_DefectInit`
+- `Cmd_LoadTemporaryDefectFile`
+- `Cmd_DefectSelectCurrent`
+- `Cmd_DefectSelectAll`
+- `Cmd_DefectGeneration`
+- `Cmd_FinishGenerationProcess`
+- `Cmd_DownloadCaliFile`
+- `Cmd_SelectCaliFile`
 
 # Related Events
 
-- Evt_TaskResult_Succeed
-- Evt_TaskResult_Failed
-- Evt_GeneralError
+- `Evt_TaskResult_Succeed`
+- `Evt_TaskResult_Failed`
+- `Evt_GeneralError`
+
+---
+
+# Error Code → Diagnostic Entry
+
+| Error | Primary Path | Tool / Evidence |
+|---|---|---|
+| `Err_Cali_GeneralError` | [DefectFailure](../../09_DecisionTree/Calibration/DefectFailure.md) | State, image completeness, log |
+| `Err_Cali_DataNotReadyForGen` | [DefectFailure](../../09_DecisionTree/Calibration/DefectFailure.md) | Image count and selection |
+| `Err_Cali_UnexpectImage_DoseHighHigh` | [DefectFailure](../../09_DecisionTree/Calibration/DefectFailure.md) | Exposure/generator evidence |
+| `Err_Cali_UnexpectImage_MistakeTrigger` | [DefectFailure](../../09_DecisionTree/Calibration/DefectFailure.md) | Trigger mode, waveform/timing where available |
+| `Err_TooMuchDefectPoints` | [DefectFailure](../../09_DecisionTree/Calibration/DefectFailure.md) | Defect map/count and threshold evidence |
+| `Err_FPD_HWCaliFileError` | [Calibration](../../10_SOP/Calibration.md) | Template identity, download/selection result |
 
 ---
 
 # Error Codes
 
----
-
 ## Err_Cali_GeneralError
 
-### Description
-
-General error occurred during Defect calibration.
-
-### Possible Causes
-
-- Calibration interrupted.
-- Detector communication failure.
-- Internal calibration algorithm exception.
-- Detector state changed during generation.
-
-### Recommended Actions
-
-1. Verify detector status is **Ready**.
-2. Restart Defect calibration.
-3. Check Detector.log.
-4. Repeat the calibration process.
-
----
+Preserve the current calibration context, detector state, input image set, and `Detector.log`, then enter [DefectFailure](../../09_DecisionTree/Calibration/DefectFailure.md). Do not repeat generation until the failed stage is identified.
 
 ## Err_Cali_DataNotReadyForGen
 
-### Description
-
-The SDK has not received sufficient image data to generate the defect template.
-
-### Possible Causes
-
-- Image acquisition incomplete.
-- Missing calibration images.
-- Incorrect image selection.
-- Acquisition interrupted.
-
-### Recommended Actions
-
-1. Verify all calibration images are available.
-2. Repeat image acquisition if necessary.
-3. Execute `Cmd_DefectGeneration` again.
-
----
+Verify the required image set and selected images before generation. Check for image loss or interruption, then reacquire only the invalid or missing dataset according to [Calibration](../../10_SOP/Calibration.md).
 
 ## Err_Cali_UnexpectImage_DoseHighHigh
 
-### Description
+The image dose exceeded the expected Defect calibration condition.
 
-The acquired image dose is too high for Defect calibration.
-
-### Possible Causes
-
-- Exposure dose exceeds calibration requirements.
-- Incorrect generator settings.
-- Wrong calibration procedure.
-
-### Recommended Actions
-
-1. Reduce exposure dose.
-2. Verify calibration protocol.
-3. Acquire a new image set.
-
----
+1. Record the actual exposure settings.
+2. Verify the applicable product calibration procedure.
+3. Verify generator output rather than changing thresholds blindly.
+4. Acquire a new dataset only after the exposure condition is corrected.
 
 ## Err_Cali_UnexpectImage_MistakeTrigger
 
-### Description
+The received image does not match the expected trigger/exposure mode.
 
-The received image does not match the expected trigger or exposure mode.
-
-### Possible Causes
-
-- Wrong trigger mode.
-- Exposure request mismatch.
-- Incorrect acquisition configuration.
-
-### Recommended Actions
-
-1. Verify trigger mode.
-2. Verify generator configuration.
-3. Restart Defect calibration.
-
----
+1. Record detector trigger mode and acquisition mode.
+2. Verify generator trigger configuration.
+3. Check timing and signal evidence where available.
+4. Continue through [DefectFailure](../../09_DecisionTree/Calibration/DefectFailure.md); do not classify this as an image-quality problem alone.
 
 ## Err_TooMuchDefectPoints
 
-### Description
+The generated defect map exceeds supported hardware correction capacity.
 
-The generated defect map exceeds the FPGA hardware correction capacity.
-
-### Possible Causes
-
-- Excessive detector defects.
-- Incorrect defect threshold.
-- Detector hardware degradation.
-
-### Recommended Actions
-
-1. Review the generated defect map.
-2. Reduce false defect detection.
-3. Replace the detector if the defect count exceeds hardware limits.
-
----
+1. Preserve the generated map and defect-count evidence.
+2. Verify the defect threshold and false-defect contribution.
+3. Regenerate only with a documented parameter change.
+4. If the count remains beyond supported capacity, escalate as a detector/hardware limitation rather than forcing template selection.
 
 ## Err_FPD_HWCaliFileError
 
-### Description
+The detector cannot use the intended hardware calibration file.
 
-The detector cannot execute hardware calibration because the calibration template is unavailable or invalid.
-
-### Possible Causes
-
-- Defect template not downloaded.
-- Wrong template selected.
-- Template file corrupted.
-- Hardware calibration configuration incorrect.
-
-### Recommended Actions
-
-1. Download the defect template again.
-2. Select the correct hardware template.
-3. Verify template integrity.
+1. Preserve the existing template and log evidence.
+2. Verify template identity and integrity.
+3. Download the intended template.
+4. Select the intended template.
+5. Verify hardware calibration state with controlled acquisition.
 
 ---
 
-# Field Experience
+# Product-Specific Field Rule: Pluto0900X
 
-## Pluto0900X Defect Calibration
+For **Pluto0900X Defect calibration**, the SDK changes internal processing state when the **63rd image of the third image group** is received.
 
-During Defect calibration of the **Pluto0900X** series, the SDK changes its internal processing state when the **63rd image** of the third image group is received.
+**Do not stop exposure at image 63. Acquisition must continue until image 64 has been received.**
 
-**Do not stop exposure after image 63.**
-
-Image acquisition **must continue until image 64 has been received**. Stopping at image 63 may interrupt the calibration workflow and prevent successful template generation.
-
-Recommended practice:
-
-- Allow the third image group to complete all 64 images.
-- Wait for the acquisition task to finish normally.
-- Execute `Cmd_DefectGeneration`.
-- Execute `Cmd_FinishGenerationProcess`.
+This is a product-specific rule and must not be generalized to other models without verification.
 
 ---
 
-## Hardware Defect Calibration
+# Verification Rule
 
-When using hardware Defect correction:
+A Defect calibration issue is closed only when:
 
-```
-Cmd_DownloadCaliFile
-
-↓
-
-Cmd_SelectCaliFile
-
-↓
-
-Hardware Defect Correction Enabled
-```
-
-The detector will not use the generated template until it has been downloaded and selected.
+- the intended image set completed;
+- trigger/exposure conditions are verified where relevant;
+- generation and `Cmd_FinishGenerationProcess` completed;
+- the intended hardware template is downloaded/selected where applicable;
+- controlled acquisition confirms the original symptom or error is resolved.
 
 ---
 
-## Template Generation Workflow
+# Evidence Package
 
-```
-Cmd_DefectInit
+Collect:
 
-↓
+- exact error/event and timestamp;
+- detector state;
+- image count and selection state;
+- exposure parameters;
+- trigger mode and timing evidence where applicable;
+- defect map/count and threshold where applicable;
+- template identity and hardware selection result;
+- original image/RAW evidence when relevant;
+- `Detector.log`;
+- controlled verification result.
 
-Acquire Defect Images
-
-↓
-
-Cmd_DefectSelectAll
-
-↓
-
-Cmd_DefectGeneration
-
-↓
-
-Cmd_FinishGenerationProcess
-```
-
-Do not terminate the process before `Cmd_FinishGenerationProcess` completes.
+Use [LogExport](../../17_Tools/SDKTool/LogExport.md) for log preservation.
 
 ---
 
-# Diagnostic Checklist
+# Related DecisionTree / SOP / Tool
 
-Verify the following items:
+- [DefectFailure](../../09_DecisionTree/Calibration/DefectFailure.md)
+- [Calibration](../../10_SOP/Calibration.md)
+- [CalibrationTools](../../17_Tools/SDKTool/CalibrationTools.md)
+- [DTDITool](../../17_Tools/SDKTool/DTDITool.md)
+- [ModeConfiguration](../../17_Tools/SDKTool/ModeConfiguration.md)
+- [LogExport](../../17_Tools/SDKTool/LogExport.md)
 
-- Detector status is Ready.
-- Trigger mode is correct.
-- Exposure dose meets calibration requirements.
-- Complete calibration image set acquired.
-- Third image group completed successfully.
-- Hardware template downloaded (if applicable).
-- Detector.log contains no calibration exceptions.
+# Related Case / Knowledge
 
----
-
-# Related DecisionTree
-
-- 09_DecisionTree/Calibration/DefectFailure.md
-
----
-
-# Related Case
-
-- 11_Case/Calibration/DefectGenerationFailed.md
-
----
-
-# Related Workflow
-
-- 05_Calibration/DefectCalibration.md
-- 06_Workflow/CalibrationWorkflow.md
-
----
-
-# Related FailureKnowledge
-
-- 07_FailureKnowledge/CalibrationFailure/DefectFailure.md
-
----
-
-# Related Log
-
-```
-Detector.log
-```
-
-Defect calibration failures should always be analyzed together with Detector.log, calibration image completeness, trigger configuration, exposure parameters, and hardware calibration settings.
+- [DefectGenerationFailed](../../11_Case/Calibration/DefectGenerationFailed.md)
+- [DefectFailure](../../07_FailureKnowledge/CalibrationFailure/DefectFailure.md)
 
 ---
 
@@ -281,4 +156,5 @@ Defect calibration failures should always be analyzed together with Detector.log
 
 | Version | Date | Description |
 |---------|------|-------------|
+| v1.1 | 2026-08-10 | Added per-error diagnostic mapping, evidence package, Pluto0900X boundary and closure verification |
 | v1.0 | 2026-08-07 | Initial release |

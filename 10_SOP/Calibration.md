@@ -6,7 +6,7 @@
 >
 > Category: Detector Calibration
 >
-> Version: v1.1
+> Version: v1.2
 
 ---
 
@@ -72,8 +72,8 @@ Before calibration, confirm:
 - [SDK Tool / iDetector](../17_Tools/SDKTool/iDetectorQuickTroubleshooting.md)
 - [DTDI Tool](../17_Tools/SDKTool/DTDITool.md)
 - [Calibration Tools](../17_Tools/SDKTool/CalibrationTools.md)
-- [Offset Viewer](../17_Tools/OffsetViewer/)（Offset 结果或异常分析时）
-- [Log Viewer](../17_Tools/LogViewer/)（重复失败或 SDK 事件分析时）
+- [Offset Viewer](../17_Tools/Offset%20Viewer/)（Offset 结果或异常分析时）
+- [Log Viewer](../17_Tools/Log%20Viewer/)（重复失败或 SDK 事件分析时）
 
 ---
 
@@ -216,7 +216,7 @@ Generation completed successfully.
 
 ### Exception Handling
 
-Preserve `Detector.log`; use [Log Viewer](../17_Tools/LogViewer/) for repeated failures. Refer to the [Calibration DecisionTree](../09_DecisionTree/Calibration/) and applicable calibration error-code documentation.
+Preserve `Detector.log`; use [Log Viewer](../17_Tools/Log%20Viewer/) for repeated failures. Refer to the [Calibration DecisionTree](../09_DecisionTree/Calibration/) and applicable calibration error-code documentation.
 
 ---
 
@@ -302,7 +302,7 @@ Download completed successfully.
 
 ### Exception Handling
 
-Verify communication first, then inspect template compatibility. Use [SDK Tool / iDetector](../17_Tools/SDKTool/iDetectorQuickTroubleshooting.md) and [Log Viewer](../17_Tools/LogViewer/) when an error is reported.
+Verify communication first, then inspect template compatibility. Use [SDK Tool / iDetector](../17_Tools/SDKTool/iDetectorQuickTroubleshooting.md) and [Log Viewer](../17_Tools/Log%20Viewer/) when an error is reported.
 
 ---
 
@@ -348,7 +348,7 @@ Detector Ready.
 - Verify ghost artifacts.
 - Verify line artifacts.
 
-Use [Offset Viewer](../17_Tools/OffsetViewer/) when Offset-related abnormality is suspected.
+Use [Offset Viewer](../17_Tools/Offset%20Viewer/) when Offset-related abnormality is suspected.
 
 ### Output
 
@@ -459,8 +459,8 @@ Record the following information:
 - [SDK Tool / iDetector](../17_Tools/SDKTool/iDetectorQuickTroubleshooting.md)
 - [Calibration Tools](../17_Tools/SDKTool/CalibrationTools.md)
 - [DTDI Tool](../17_Tools/SDKTool/DTDITool.md)
-- [Offset Viewer](../17_Tools/OffsetViewer/)
-- [Log Viewer](../17_Tools/LogViewer/)
+- [Offset Viewer](../17_Tools/Offset%20Viewer/)
+- [Log Viewer](../17_Tools/Log%20Viewer/)
 
 ---
 
@@ -468,5 +468,6 @@ Record the following information:
 
 | Version | Date | Description |
 |---------|------|-------------|
+| v1.2 | 2026-08-10 | Fixed Log Viewer and Offset Viewer repository paths |
 | v1.1 | 2026-08-10 | Added direct tool links and calibration-to-image verification flow |
 | v1.0 | 2026-08-07 | Initial release |

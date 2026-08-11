@@ -4,30 +4,21 @@
 >
 > Category: Decision Tree
 >
-> Version: v1.0
+> Version: v1.1
 >
-> Last Updated: 2026-08-06
+> Last Updated: 2026-08-11
 
 ---
 
-# Symptom
+# Diagnostic Boundary
 
-Vertical line artifacts appear in the acquired image.
+This DecisionTree routes a **vertical-line phenomenon**. It must not infer a specific failed channel, component, or hardware mechanism from image morphology alone.
 
-Typical symptoms include:
-
-- One vertical line
-- Multiple vertical lines
-- Bright vertical line
-- Dark vertical line
-- Intermittent vertical line
-- Vertical stripe across the entire image
+`Column Readout / ADC / TFT / FPGA / Hardware` are candidate branches only after evidence supports them.
 
 ---
 
 # Symptom Classification
-
-Before troubleshooting, identify the defect pattern.
 
 □ Single bright line
 
@@ -43,88 +34,101 @@ Before troubleshooting, identify the defect pattern.
 
 □ Line appears in every image
 
+□ Full-height / Partial-height
+
+□ RAW confirmed / RAW not yet checked
+
+Do not assign root cause at this stage.
+
 ---
 
 # Diagnostic Flow
 
-```
-                Vertical Line
-                      │
-         Present in Every Image?
-                      │
-          ┌───────────┴───────────┐
-          │                       │
-         NO                      YES
-          │                       │
- Check Exposure             Continue
-                                  │
-                                  ▼
-         SDK Demo Also Shows Line?
-                                  │
-                   ┌──────────────┴──────────────┐
-                   │                             │
-                  NO                            YES
-                   │                             │
-         Customer Software              Continue
-                                  │
-                                  ▼
-        Offset Calibration Passed?
-                                  │
-                   ┌──────────────┴──────────────┐
-                   │                             │
-                  NO                            YES
-                   │                             │
-         Rebuild Offset                 Continue
-                                  │
-                                  ▼
-         Gain Calibration Passed?
-                                  │
-                   ┌──────────────┴──────────────┐
-                   │                             │
-                  NO                            YES
-                   │                             │
-         Rebuild Gain                  Continue
-                                  │
-                                  ▼
-      Position Changes After Calibration?
-                                  │
-                   ┌──────────────┴──────────────┐
-                   │                             │
-                  YES                           NO
-                   │                             │
-        Calibration Issue              Continue
-                                  │
-                                  ▼
-       Compare Another Detector
-                                  │
-                   ┌──────────────┴──────────────┐
-                   │                             │
-            Problem Gone                 Still Present
-                   │                             │
-        Environment Related          Continue
-                                  │
-                                  ▼
-          Suspect Hardware?
-                                  │
-         ┌──────────┬──────────┬──────────┐
-         │          │          │
-       TFT      Gate Driver   Readout
+```text
+Vertical Line
+      │
+      ▼
+Repeated acquisitions?
+      │
+  ┌───┴───┐
+  NO     YES
+  │       │
+Check    Continue
+exposure    │
+/history    ▼
+       Fixed position?
+          │
+      ┌───┴───┐
+     NO      YES
+      │        │
+ Check       Continue
+ timing        │
+ /acq         ▼
+         RAW also contains line?
+             │
+       ┌─────┴─────┐
+      NO           YES
+       │             │
+ Process /        Continue
+ display              │
+ branch               ▼
+                Check Dark / calibration
 ```
 
 ---
 
-# Quick Checklist
+# Calibration Evidence
 
-Verify:
+Check:
 
-- □ Offset calibration
-- □ Gain calibration
-- □ Firmware version
-- □ SDK version
-- □ Exposure settings
-- □ Detector temperature
-- □ Same position in every image
-- □ SDK Demo verification
+1. Offset status / result
+2. Gain status / result
+3. Defect context where applicable
+4. Dark image
+5. RAW image
+
+If calibration is abnormal, follow the Calibration DecisionTree.
+
+If recalibration does not remove the line, record this as evidence. It does not by itself prove hardware failure.
+
+---
+
+# Software Boundary
+
+Compare with SDK Demo where applicable.
+
+```text
+Customer Application only
+→ investigate application / processing branch
+
+SDK Demo also reproduces
+→ continue detector-side evidence collection
+```
+
+SDK Demo reproduction is supporting evidence, not a standalone hardware proof.
+
+---
+
+# Hardware Candidate Branch
+
+Only raise detector-side hardware mechanisms after evidence supports a persistent structured artifact, preferably including:
+
+- fixed position;
+- RAW confirmation;
+- repeated acquisition;
+- calibration checks;
+- SDK Demo comparison where applicable;
+- comparison detector / environment evidence where applicable.
+
+Possible candidates may include:
+
+- column readout path;
+- TFT-related path;
+- ADC / acquisition path;
+- FPGA / data acquisition path;
+- other detector-side hardware.
+
+These are candidate mechanisms, not confirmed root causes.
 
 ---
 
@@ -136,127 +140,56 @@ Collect before escalation:
 - Detector SN
 - Firmware Version
 - SDK Version
-- Original Image (RAW)
-- Window/Level Image
-- Offset File
-- Gain File
+- Original RAW image
+- Processed image
+- repeated acquisitions
+- abnormal column coordinate
+- Dark image where available
+- Offset / Gain context
 - Calibration Log
 - Detector Status Screenshot
 
 ---
 
-# Possible Root Causes
+# Root-Cause Output Rule
 
-## Calibration
+If only an image is available:
 
-- Offset abnormal
+```text
+Observed phenomenon: vertical line
+Root Cause: Not Confirmed
 
-- Gain abnormal
+Next evidence:
+- RAW
+- repeated images
+- fixed column coordinate
+- Dark / calibration context
+- SDK Demo comparison where applicable
+```
 
----
-
-## TFT
-
-- TFT switching failure
-
-- TFT leakage
-
----
-
-## Gate Driver
-
-- Gate output abnormal
-
-- Missing gate pulse
-
----
-
-## Readout Circuit
-
-- Column readout abnormal
-
-- Analog signal interruption
-
----
-
-## ADC
-
-- ADC channel abnormal
-
----
-
-## FPGA
-
-- Data acquisition abnormal
-
----
-
-# Recommended Actions
-
-Priority 1
-
-- Verify Offset.
-
-- Verify Gain.
-
-Priority 2
-
-- Compare RAW images.
-
-- Compare with another detector.
-
-Priority 3
-
-- Check line position consistency.
-
-Priority 4
-
-- Escalate to hardware investigation.
+Do **not** output `Channel abnormality`, `ADC channel abnormal`, or a specific hardware failure as confirmed root cause from the image alone.
 
 ---
 
 # Escalation Criteria
 
-Escalate when:
+Escalate to hardware/R&D analysis when the evidence supports a persistent detector-side candidate and supported calibration/software branches do not explain the artifact.
 
-- Line remains after recalibration.
-
-- Same line appears in SDK Demo.
-
-- Line position is fixed.
-
-- Another detector works normally.
-
-- Hardware defect is suspected.
+Preserve the evidence package and uncertainty boundary in the escalation record.
 
 ---
 
 # Related Documents
 
-## Workflow
-
-- 06_Workflow/ImageWorkflow.md
-
-## Case
-
-- 11_Case/Image/VerticalLine.md
-
-## Failure Knowledge
-
-- 07_FailureKnowledge/TFT/
-
-- 07_FailureKnowledge/GateDriver/
-
-- 07_FailureKnowledge/Readout/
-
-## Reference
-
-- 15_Reference/ImageReference.md
+- [VerticalLine Case](../../11_Case/Image/VerticalLine.md)
+- [Image Diagnosis](../../08_ImageDiagnosis/README.md)
+- [Image Troubleshooting SOP](../../10_SOP/ImageTroubleshooting.md)
 
 ---
 
 # Revision History
 
 | Version | Date | Description |
-|---------|------|-------------|
+|---|---|---|
+| v1.1 | 2026-08-11 | Added evidence-first routing and prohibited direct channel/hardware conclusions from image morphology alone |
 | v1.0 | 2026-08-06 | Initial release |

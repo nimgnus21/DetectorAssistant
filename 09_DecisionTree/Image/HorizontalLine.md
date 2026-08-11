@@ -4,9 +4,17 @@
 >
 > Category: Decision Tree
 >
-> Version: v2.0
+> Version: v2.1
 >
-> Last Updated: 2026-08-06
+> Last Updated: 2026-08-11
+
+---
+
+# Diagnostic Boundary
+
+This DecisionTree routes a **horizontal-line phenomenon**. It must not infer a specific failed channel, component, or hardware mechanism from image morphology alone.
+
+`Channel / Row Readout / Gate Driver / TFT / FPGA` are candidate branches only after the required evidence is collected.
 
 ---
 
@@ -25,122 +33,113 @@ Typical symptoms include:
 
 ---
 
-# Symptom Classification
+# Step 1 — Phenomenon Classification
 
-Identify the observed pattern.
+Identify:
 
-□ Single Line
+□ Single / Multiple
 
-□ Multiple Lines
+□ Bright / Dark
 
-□ Bright Line
+□ Fixed / Changing position
 
-□ Dark Line
+□ Every image / Intermittent
 
-□ Fixed Position
+□ Full-width / Partial-width
 
-□ Random Position
+□ RAW confirmed / RAW not yet checked
 
-□ Appears Every Image
-
-□ Appears Occasionally
+Do not assign a root cause at this stage.
 
 ---
 
-# Diagnostic Flow
+# Step 2 — Reproducibility
 
-```
-             Horizontal Line
-                    │
-      Appears in Every Image?
-                    │
-           YES             NO
-            │               │
-      Continue        Check Exposure
-            │
-            ▼
-     SDK Demo Reproduces?
-            │
-      YES          NO
-       │            │
-Continue      Customer Software
-       │
-       ▼
-Offset Calibration Normal?
-       │
- YES         NO
-  │           │
-Continue   Rebuild Offset
-  │
-  ▼
-Gain Calibration Normal?
-  │
-YES         NO
- │           │
-Continue   Rebuild Gain
- │
- ▼
-Fixed Position?
- │
-YES         NO
- │           │
-Continue   Timing Issue
- │
- ▼
-Hardware Analysis
+```text
+Horizontal Line
+      │
+      ▼
+Appears in repeated acquisitions?
+      │
+  ┌───┴───┐
+  NO     YES
+  │       │
+Check    Continue
+exposure    │
+/history    ▼
+       Fixed position?
+          │
+      ┌───┴───┐
+     NO      YES
+      │        │
+ Check       Continue
+ timing        │
+ /acq         ▼
+         RAW also contains line?
+             │
+       ┌─────┴─────┐
+      NO           YES
+       │             │
+ Process /        Continue
+ display              │
+ branch               ▼
+                Check Dark / calibration
 ```
 
 ---
 
-# Diagnosis Hint
+# Step 3 — Calibration Evidence
 
-Why suspect hardware?
+Check, in order:
 
-A horizontal line generally indicates that one detector row is abnormal.
+1. Offset status / result
+2. Gain status / result
+3. Defect context where applicable
+4. Dark image
+5. RAW image
 
-Possible affected modules include:
+If calibration data is abnormal, follow the Calibration DecisionTree.
 
-- Gate Driver
-- Row Timing
-- TFT Gate Control
-- Readout Timing
-- FPGA Timing Logic
-
-If the line position is fixed across repeated acquisitions and remains after recalibration, hardware investigation should be prioritized.
+If recalibration does not remove the line, record that as evidence. Do not convert this result directly into hardware failure.
 
 ---
 
-# Hardware Hint
+# Step 4 — Software Boundary
 
-Possible related hardware:
+Compare with SDK Demo when applicable.
 
-★★★★★ Gate Driver
+```text
+Customer Application only
+→ investigate application / processing branch
 
-★★★★☆ TFT Gate
+SDK Demo also reproduces
+→ continue detector-side evidence collection
+```
 
-★★★★☆ Timing Controller
-
-★★★☆☆ FPGA
-
-★★☆☆☆ Readout Circuit
+This comparison does not by itself prove hardware failure.
 
 ---
 
-# Quick Checklist
+# Step 5 — Hardware Candidate Branch
 
-□ Offset regenerated
+Only enter the hardware candidate branch when evidence supports all or most of the following:
 
-□ Gain regenerated
+- line is repeatable;
+- position is fixed or otherwise structurally consistent;
+- RAW contains the same artifact;
+- relevant calibration checks do not explain it;
+- SDK Demo reproduces it where applicable;
+- comparison detector / environment evidence is available where applicable.
 
-□ Firmware verified
+Possible candidate mechanisms may include:
 
-□ SDK verified
+- row readout path;
+- Gate Driver / TFT gate control;
+- timing-related logic;
+- FPGA / acquisition path;
+- other detector-side hardware.
 
-□ Same position confirmed
-
-□ SDK Demo verified
-
-□ RAW image collected
+These remain **candidate mechanisms** until hardware or equivalent technical evidence confirms them.
 
 ---
 
@@ -153,90 +152,55 @@ Collect:
 - Firmware Version
 - SDK Version
 - RAW Image
-- Window Image
-- Offset File
-- Gain File
+- Processed / Window Image
+- repeated acquisitions
+- abnormal row coordinate
+- Dark image where available
+- Offset / Gain context
 - Calibration Log
 - Detector Status
 
 ---
 
-# Possible Root Causes
+# Root-Cause Output Rule
 
-## Calibration
+If only an image is available, output:
 
-- Offset abnormal
+```text
+Observed phenomenon: horizontal line
+Root Cause: Not Confirmed
 
-- Gain abnormal
+Next evidence:
+- RAW
+- repeated images
+- fixed row coordinate
+- Dark / calibration context
+- SDK Demo comparison where applicable
+```
 
----
-
-## Hardware
-
-- Gate Driver failure
-
-- TFT Gate failure
-
-- Timing Controller abnormal
-
-- FPGA timing error
-
----
-
-## Software
-
-- SDK display issue
-
-- Image rendering issue
-
----
-
-# Recommended Actions
-
-Priority 1
-
-Verify calibration.
-
-Priority 2
-
-Compare RAW image.
-
-Priority 3
-
-Compare another detector.
-
-Priority 4
-
-Escalate to hardware investigation.
+Do **not** output `Channel abnormality` as a confirmed conclusion from the image alone.
 
 ---
 
 # Escalation Criteria
 
-Escalate when:
+Escalate to hardware/R&D analysis when the collected evidence supports a persistent detector-side candidate and the supported calibration/software branches do not explain the artifact.
 
-- Fixed-position line remains after calibration.
-- SDK Demo reproduces the issue.
-- RAW image contains the same artifact.
-- Comparison detector is normal.
-- Hardware fault is suspected.
+The escalation record must preserve the evidence package and the exact uncertainty boundary.
 
 ---
 
 # Related Documents
 
-Workflow
-
-Case
-
-FailureKnowledge
-
-Reference
+- [HorizontalLine Case](../../11_Case/Image/HorizontalLine.md)
+- [Image Diagnosis](../../08_ImageDiagnosis/README.md)
+- [Image Troubleshooting SOP](../../10_SOP/ImageTroubleshooting.md)
 
 ---
 
 # Revision History
 
 | Version | Date | Description |
-|---------|------|-------------|
+|---|---|---|
+| v2.1 | 2026-08-11 | Added evidence-first routing and prohibited direct channel/hardware conclusions from image morphology alone |
 | v2.0 | 2026-08-06 | Added Diagnosis Hint and Hardware Hint |

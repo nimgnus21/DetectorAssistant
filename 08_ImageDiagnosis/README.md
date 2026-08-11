@@ -6,6 +6,66 @@
 
 ---
 
+# Diagnostic Guardrail — Mandatory
+
+`08_ImageDiagnosis` is a **phenomenon-classification layer**, not a root-cause classifier.
+
+When an abnormal image is uploaded, the first response must describe the observable phenomenon and the evidence that is still missing. Do **not** promote a hardware, channel, readout, calibration, network, or software mechanism to a confirmed root cause from image morphology alone.
+
+```text
+Image
+  ↓
+Observable Phenomenon
+  ↓
+Pattern / Position / Repeatability / RAW Evidence
+  ↓
+Candidate Branches
+  ↓
+Evidence Verification
+  ↓
+Mechanism / Root Cause
+```
+
+## Mandatory anti-premature-conclusion rules
+
+1. A single image is sufficient to describe an image phenomenon, but is not sufficient to confirm a specific failed component or channel.
+2. `Channel abnormality`, `Row Readout`, `Column Readout`, `Hardware Failure`, and similar mechanism-level labels are **candidate branches**, not default conclusions.
+3. Do not infer a channel failure solely because an artifact is a line, stripe, band, or fixed pattern.
+4. Fixed row / column / pixel observations must first be checked against RAW, repeated acquisition, Dark, and Offset / Gain / Defect context.
+5. Residual-image phenomena must be distinguished by acquisition sequence and frame history before assigning Ghost / Lag mechanism.
+6. If evidence is insufficient, explicitly return `Root Cause: Not Confirmed` and list the next evidence required.
+7. `11_Case` conclusions must not be generalized beyond the evidence boundary recorded in that Case.
+
+## Minimum image-analysis response
+
+For every uploaded abnormal image, return:
+
+```text
+Observed phenomenon:
+- What is visibly present?
+
+Pattern:
+- fixed / variable / periodic / unknown
+
+Position:
+- row / column / point / area / whole image / unknown
+
+Current confidence:
+- phenomenon classification only / mechanism candidate / verified cause
+
+Do not conclude yet:
+- specific channel/component/hardware unless supported by evidence
+
+Required evidence:
+- RAW
+- repeated acquisition
+- fixed coordinate where applicable
+- Dark / calibration context where applicable
+- acquisition sequence where applicable
+```
+
+---
+
 # Overview
 
 `08_ImageDiagnosis` is the phenomenon-oriented image knowledge layer of DetectorAssistant.
@@ -133,7 +193,7 @@ Record orientation, periodicity, fixed position, and whether the same pattern ex
 Start with:
 
 - [Noise](Noise/)
-- [Non-Uniformity](NonUniformity/)
+- [NonUniformity](NonUniformity/)
 
 Record exposure conditions, repeated acquisition behavior, dark / RAW comparison, and calibration context before assigning a root cause.
 
@@ -240,6 +300,7 @@ A Case must contain verified evidence and a traceable conclusion. Do not promote
 4. Remove obsolete links rather than replacing them with guessed paths.
 5. Keep phenomenon description separate from root-cause conclusion.
 6. When a verified field case changes the diagnostic boundary, update the relevant phenomenon knowledge and its DecisionTree together.
+7. Keep mechanism-level labels conditional until supporting evidence is recorded.
 
 ---
 
@@ -258,4 +319,5 @@ A Case must contain verified evidence and a traceable conclusion. Do not promote
 
 | Version | Date | Description |
 |---|---|---|
+| v1.1 | 2026-08-11 | Added evidence-first diagnostic guardrails to prevent image morphology from being promoted directly to channel, hardware, or other mechanism-level root causes |
 | v1.0 | 2026-08-10 | Rebuilt root entry from the current repository structure without adding new image categories or files |
